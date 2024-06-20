@@ -2,6 +2,7 @@ package com.hana.hana1pick.domain.deposit.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.autotranfer.entity.AutoTransfer;
+import com.hana.hana1pick.domain.celublog.entity.Celublog;
 import com.hana.hana1pick.domain.common.entity.Account;
 import com.hana.hana1pick.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -30,4 +31,8 @@ public class Deposit extends Account {
     @OneToMany(mappedBy = "deposit")
     @JsonManagedReference
     private List<AutoTransfer> autoTransferList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "outAcc")
+    @JsonManagedReference
+    private List<Celublog> celublogList = new ArrayList<>();
 }
