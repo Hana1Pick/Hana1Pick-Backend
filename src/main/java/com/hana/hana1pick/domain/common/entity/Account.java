@@ -11,10 +11,6 @@ import java.time.LocalDate;
 @EntityListeners(AuditingEntityListener.class)
 public class Account {
 
-    @Id
-    @Column
-    private String accountId;
-
     @Column
     @NotNull
     private String accPw;
