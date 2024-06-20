@@ -1,5 +1,7 @@
 package com.hana.hana1pick.domain.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.hana.hana1pick.domain.celublog.entity.Celublog;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,6 +12,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -59,4 +63,8 @@ public class User {
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Deposit deposit;
+
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<Celublog> celublogList = new ArrayList<>();
 }

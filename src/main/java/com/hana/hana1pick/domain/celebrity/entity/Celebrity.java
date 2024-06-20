@@ -1,6 +1,7 @@
 package com.hana.hana1pick.domain.celebrity.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.hana.hana1pick.domain.celublog.entity.Celublog;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,4 +34,8 @@ public class Celebrity {
     @OneToMany(mappedBy = "celebrity")
     @JsonManagedReference
     private List<CelubPhoto> photoList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "celebrity")
+    @JsonManagedReference
+    private List<Celublog> celublogList = new ArrayList<>();
 }
