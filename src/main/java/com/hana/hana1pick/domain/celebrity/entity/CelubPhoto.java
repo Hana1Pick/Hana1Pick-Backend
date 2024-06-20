@@ -7,30 +7,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @EntityListeners(AuditingEntityListener.class)
-public class Celebrity {
+public class CelubPhoto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "celebrity_idx")
+    @Column(name = "photo_idx")
     private Long idx;
 
-    @Column
-    private String name;
-
-    @Column
-    private CelubType type;
-
-    @Column
-    private String thumbnail;
-
-    @OneToMany(mappedBy = "celebrity")
+    @ManyToOne
+    @JoinColumn(name = "celebrity_idx")
     @JsonManagedReference
-    private List<CelubPhoto> photoList = new ArrayList<>();
+    private Celebrity celebrity;
+
+    @Column
+    private String imgSrc;
 }
