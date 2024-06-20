@@ -1,5 +1,5 @@
 FROM azul/zulu-openjdk:17
-ENV JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64
+ENV JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
 ENV PATH=$JAVA_HOME/bin:$PATH
 VOLUME /tmp
 ARG JAR_FILE="build/libs/*.jar"
