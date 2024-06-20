@@ -3,6 +3,8 @@ package com.hana.hana1pick.domain.user.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.celublog.entity.Celublog;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
+import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
+import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -67,4 +69,13 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
     private List<Celublog> celublogList = new ArrayList<>();
+
+    // 개설자로 소유하고 있는 모아클럽
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private MoaClub moaClub;
+
+    // 내가 참여하고 있는 모아클럽 리스트
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private final List<MoaClubMembers> clubList = new ArrayList<>();
 }
