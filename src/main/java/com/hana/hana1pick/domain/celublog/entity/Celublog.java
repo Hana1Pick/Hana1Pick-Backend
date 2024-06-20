@@ -1,6 +1,7 @@
 package com.hana.hana1pick.domain.celublog.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.celebrity.entity.Celebrity;
 import com.hana.hana1pick.domain.common.entity.Account;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
@@ -10,6 +11,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -41,4 +45,8 @@ public class Celublog extends Account {
     @JoinColumn(name = "user_idx")
     @JsonBackReference
     private User user;
+
+    @OneToMany(mappedBy = "celublog")
+    @JsonManagedReference
+    private List<Rules> ruleList = new ArrayList<>();
 }
