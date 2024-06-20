@@ -1,5 +1,6 @@
 package com.hana.hana1pick.domain.user.entity;
 
+import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -55,4 +56,7 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private UserTrsfLimit userTrsfLimit;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Deposit deposit;
 }
