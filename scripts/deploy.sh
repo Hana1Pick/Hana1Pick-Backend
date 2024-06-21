@@ -11,4 +11,4 @@ sudo docker pull ga0nii/hana1pick:latest
 docker run -d -p 8080:8080 --name app ga0nii/hana1pick:latest
 
 # 사용하지 않는 불필요한 이미지 삭제 -> 현재 컨테이너가 물고 있는 이미지는 삭제되지 않습니다.
-docker rmi ga0nii/hana1pick:latest || true
+docker rmi -f $(docker images -f "dangling=true" -q) || true
