@@ -24,7 +24,7 @@ public class MoaClub extends Account {
     @Column
     private String accountId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_idx")
     private User user;
 
@@ -35,7 +35,7 @@ public class MoaClub extends Account {
     private Long clubFee;
 
     @Column
-    private LocalDateTime atDate;
+    private int atDate;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
