@@ -15,6 +15,7 @@ import com.hana.hana1pick.domain.user.repository.UserRepository;
 import com.hana.hana1pick.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class MoaClubService {
     private final UserRepository userRepository;
     private final DepositRepository depositRepository;
     private final AccIdGenerator accIdGenerator;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public SuccessResult<OpenMoaClubResDto> openMoaClub(OpenMoaClubReqDto request) {
         // 예외처리
@@ -46,7 +48,7 @@ public class MoaClubService {
 
         // MoaClub 생성
         MoaClub moaClub = MoaClub.builder()
-                .accPw(request.getAccPw())
+                .accPw(passwordEncoder.encode(request.getAccPw()))
                 .balance(0L)
                 .status(ACTIVE)
                 .accountId(accId)
