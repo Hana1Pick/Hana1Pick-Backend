@@ -3,6 +3,7 @@ package com.hana.hana1pick.domain.moaclub.entity;
 import com.hana.hana1pick.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "moaclub_members")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class MoaClubMembers {
 
     @EmbeddedId
