@@ -11,16 +11,26 @@ import static org.springframework.http.HttpStatus.*;
 public enum BaseResponseStatus {
     /**
      * 200 : 요청 성공
+     * 201 : 생성 성공
      */
-    SUCCESS1(OK, "요청에 성공하였습니다."),
-    SUCCESS2(CREATED, "생성에 성공하였습니다."),
+    // moaclub
+    MOACLUB_CREATED_SUCCESS(CREATED, "모아클럽 개설 성공"),
 
     /**
      * 202 : Request 오류
      */
     // Common
     SYSTEM_ERROR(ACCEPTED, "E100","알 수 없는 오류 서버팀에 문의주세요."),
-    REQUEST_ERROR(ACCEPTED, "E101","입력값을 확인해주세요.");
+    REQUEST_ERROR(ACCEPTED, "E101","입력값을 확인해주세요."),
+
+    // User
+    USER_NOT_FOUND(ACCEPTED, "E200", "존재하지 않는 회원입니다."),
+
+    // Deposit
+    DEPOSIT_NOT_FOUND(ACCEPTED, "E300", "존재하지 않는 계좌입니다."),
+    NOT_ACCOUNT_OWNER(ACCEPTED, "E301", "계좌의 소유자가 아닙니다."),
+    INVALID_TRANSFER_AMOUNT(ACCEPTED, "E302", "유효하지 않은 금액입니다.")
+    ;
 
     private final HttpStatus httpStatus;
     private String errorCode;
