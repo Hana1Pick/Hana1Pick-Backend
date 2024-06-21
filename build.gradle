@@ -37,6 +37,10 @@ dependencies {
 
     // Property Encryption
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'
+
+    //Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.session:spring-session-data-redis'
 }
 
 tasks.named('test') {
