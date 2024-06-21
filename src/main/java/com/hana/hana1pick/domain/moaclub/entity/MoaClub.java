@@ -2,14 +2,12 @@ package com.hana.hana1pick.domain.moaclub.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.common.entity.Account;
+import com.hana.hana1pick.domain.common.entity.AccountStatus;
 import com.hana.hana1pick.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,4 +38,15 @@ public class MoaClub extends Account {
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private final List<MoaClubMembers> clubMemberList = new ArrayList<>();
+
+    @Builder
+    public MoaClub(String accPw, Long balance, AccountStatus status,
+                   String accountId, User user, String name, Long clubFee, int atDate) {
+        super(accPw, balance, status);
+        this.accountId = accountId;
+        this.user = user;
+        this.name = name;
+        this.clubFee = clubFee;
+        this.atDate = atDate;
+    }
 }
