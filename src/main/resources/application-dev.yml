@@ -8,7 +8,6 @@ server:
 spring:
   application:
     name: Hana1Pick
-
   datasource:
     url: ENC(1bABXwaT1V38CgkPMc2mUm3NbEhkEzpZD8RDXc97VJVO8+ht6pXIvox3wG2QNqheBdwlk328vhMl7NQBUFjV6Zz7uuLzKZi+c55w40oUdJJ860FZ/Jkr05UGnsoe2iJA)
     username: ENC(hcNtwlmLW45yLgLo1SCenQ==)
@@ -24,9 +23,21 @@ spring:
         show_sql: true
         format_sql: true
         default_batch_fetch_size: 1000
-
   data:
     redis:
       host: localhost
       port: 6379
       password: ENC(sKNJHs6GxopYsPXKdf7UCg==)
+
+  springdoc:
+    swagger-ui:
+      tags-sorter: method
+      display-request-duration: true
+    api-docs:
+      path: /api-docs/json
+      groups:
+        enabled: true
+    cache:
+      disabled: true
+    default-consumes-media-type: application/json;charset=UTF-8
+    default-produces-media-type: application/json;charset=UTF-81
