@@ -70,7 +70,12 @@ public class MoaClubService {
 
     public SuccessResult inviteMoaClub(InviteMoaClubReqDto request) {
         MoaClub club = getClubByAccId(request.getAccountId());
-        club.invite(request.getInviteeList());
+
+        // 동명이인 처리
+        List<String> uniqueNameList = assignUniqueNames(request.getInviteeList());
+
+        // 초대 멤버 저장
+        club.invite(uniqueNameList);
 
         return success(MOACLUB_INVITE_SUCCESS);
     }
@@ -120,5 +125,27 @@ public class MoaClubService {
     private MoaClub getClubByAccId(String accId) {
         return moaClubRepository.findById(accId)
                 .orElseThrow(() -> new BaseException(MOACLUB_NOT_FOUND));
+    }
+
+    private List<String> assignUniqueNames(List<String> inviteeList) {
+        List<String> uniqueNameList = new ArrayList<>();
+
+        Map<String, Integer> frequencyMap = new HashMap<>();
+        for (String name : inviteeList) {
+            frequencyMap.put(name, frequencyMap.getOrDefault(name, 0) + 1);
+        }
+
+        Map<String, Integer> countMap = new HashMap<>();
+        for (String name : inviteeList) {
+            int count = countMap.getOrDefault(name, 0) + 1;
+            countMap.put(name, count);
+            if (frequencyMap.get(name) > 1) {
+                uniqueNameList.add(name + count);
+            } else {
+                uniqueNameList.add(name);
+            }
+        }
+
+        return uniqueNameList;
     }
 }
