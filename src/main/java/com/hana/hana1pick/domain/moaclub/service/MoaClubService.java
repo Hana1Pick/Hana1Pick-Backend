@@ -6,6 +6,7 @@ import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
 import com.hana.hana1pick.domain.moaclub.dto.response.AccPwCheckResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
+import com.hana.hana1pick.domain.moaclub.dto.response.ClubResDto;
 import com.hana.hana1pick.domain.moaclub.entity.ClubMembersId;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.hana.hana1pick.domain.common.entity.AccountStatus.*;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole.*;
@@ -87,6 +89,19 @@ public class MoaClubService {
         updateInviteeList(user, moaClub, uniqueName);
 
         return success(MOACLUB_JOIN_SUCCESS);
+    }
+
+    public SuccessResult<ClubResDto> getMoaClub(AccIdReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+
+        // 클럽 회원인지 확인
+        validateClubMember(user, moaClub);
+
+        // 클럽 회원 정보 저장
+        List<ClubResDto.MoaClubMember> clubMemberList = getClubMemberList(moaClub);
+
+        return success(MOACLUB_FETCH_SUCCESS, ClubResDto.of(moaClub, clubMemberList));
     }
 
     public SuccessResult<AccPwCheckResDto> checkAccPw(ClubPwReqDto request) {
@@ -272,5 +287,19 @@ public class MoaClubService {
                 }
             }
         }
+    }
+
+    private void validateClubMember(User user, MoaClub moaClub) {
+        boolean isClubMember = moaClub.getClubMemberList().stream()
+                .anyMatch(clubMembers -> clubMembers.getUser().equals(user));
+        if (!isClubMember) {
+            throw new BaseException(USER_NOT_CLUB_MEMBER);
+        }
+    }
+
+    private List<ClubResDto.MoaClubMember> getClubMemberList(MoaClub moaClub) {
+        return moaClub.getClubMemberList().stream()
+                .map(member -> ClubResDto.MoaClubMember.from(member))
+                .collect(Collectors.toList());
     }
 }
