@@ -13,6 +13,9 @@ public enum BaseResponseStatus {
      * 200 : 요청 성공
      * 201 : 생성 성공
      */
+    // Account
+    ACCOUNT_PW_CHECK_SUCCESS(OK, "계좌 비밀번호 확인 성공"),
+
     // moaclub
     MOACLUB_CREATED_SUCCESS(CREATED, "모아클럽 개설 성공"),
     MOACLUB_INVITE_SUCCESS(OK, "모아클럽 초대 성공"),

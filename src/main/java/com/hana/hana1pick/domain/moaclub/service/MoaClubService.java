@@ -4,6 +4,7 @@ import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
+import com.hana.hana1pick.domain.moaclub.dto.response.AccPwCheckResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
 import com.hana.hana1pick.domain.moaclub.entity.ClubMembersId;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
@@ -87,6 +88,14 @@ public class MoaClubService {
         return success(MOACLUB_JOIN_SUCCESS);
     }
 
+    public SuccessResult<AccPwCheckResDto> checkAccPw(AccPwCheckReqDto request) {
+        String accPwCheck = clubMembersRepository.findAccPwByAccountId(request.getAccountId(), request.getUserIdx())
+                .orElseThrow(() -> new BaseException(MOACLUB_NOT_FOUND));
+        boolean isPwValid = passwordEncoder.matches(request.getAccPw(), accPwCheck);
+
+        return success(ACCOUNT_PW_CHECK_SUCCESS, new AccPwCheckResDto(isPwValid));
+    }
+
     public SuccessResult updateMoaClub(ClubUpdateReqDto request) {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getAccountId());
@@ -149,7 +158,7 @@ public class MoaClubService {
 
     private void createClubMembers(User user, MoaClub club, String userName, String accPw) {
         ClubMembersId clubMembersId = new ClubMembersId(club.getAccountId(), user.getIdx());
-        MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user, userName, accPw);
+        MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user, userName, passwordEncoder.encode(accPw));
         clubMembersRepository.save(clubMembers);
 
         user.getClubList().add(clubMembers);
