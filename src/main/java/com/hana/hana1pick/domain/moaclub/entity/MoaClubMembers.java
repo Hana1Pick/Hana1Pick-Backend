@@ -2,6 +2,7 @@ package com.hana.hana1pick.domain.moaclub.entity;
 
 import com.hana.hana1pick.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +29,12 @@ public class MoaClubMembers {
     private User user;
 
     @Column
+    @NotNull
     private String userName;
+
+    @Column
+    @NotNull
+    private String accPw;
 
     public void updateUserName(String userName) {
         this.userName = userName;

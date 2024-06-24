@@ -3,7 +3,7 @@ package com.hana.hana1pick.domain.moaclub.service;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
-import com.hana.hana1pick.domain.moaclub.dto.request.AccIdReqDto;
+import com.hana.hana1pick.domain.moaclub.dto.request.JoinMoaClubReqDto;
 import com.hana.hana1pick.domain.moaclub.dto.request.InviteMoaClubReqDto;
 import com.hana.hana1pick.domain.moaclub.dto.request.OpenMoaClubReqDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.OpenMoaClubResDto;
@@ -55,7 +55,7 @@ public class MoaClubService {
         user.getOwnerClubList().add(moaClub);
 
         // MoaClubMembers 생성
-        createClubMembers(user, moaClub, user.getName());
+        createClubMembers(user, moaClub, user.getName(), request.getAccPw());
 
         return success(MOACLUB_CREATED_SUCCESS, new OpenMoaClubResDto(accId));
     }
@@ -72,7 +72,7 @@ public class MoaClubService {
         return success(MOACLUB_INVITE_SUCCESS);
     }
 
-    public SuccessResult joinMoaClub(AccIdReqDto request) {
+    public SuccessResult joinMoaClub(JoinMoaClubReqDto request) {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getAccountId());
 
@@ -83,7 +83,7 @@ public class MoaClubService {
         String uniqueName = generateUniqueName(user.getName(), moaClub);
 
         // 모아클럽 참여
-        createClubMembers(user, moaClub, uniqueName);
+        createClubMembers(user, moaClub, uniqueName, request.getAccPw());
         updateInviteeList(user, moaClub, uniqueName);
 
         return success(MOACLUB_JOIN_SUCCESS);
@@ -136,9 +136,9 @@ public class MoaClubService {
         return accId;
     }
 
-    private void createClubMembers(User user, MoaClub club, String userName) {
+    private void createClubMembers(User user, MoaClub club, String userName, String accPw) {
         ClubMembersId clubMembersId = new ClubMembersId(club.getAccountId(), user.getIdx());
-        MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user, userName);
+        MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user, userName, accPw);
         clubMembersRepository.save(clubMembers);
 
         user.getClubList().add(clubMembers);

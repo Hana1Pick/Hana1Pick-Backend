@@ -5,8 +5,9 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-public class AccIdReqDto {
+public class JoinMoaClubReqDto {
 
     private String accountId;
     private UUID userIdx;
+    private String accPw;
 }
