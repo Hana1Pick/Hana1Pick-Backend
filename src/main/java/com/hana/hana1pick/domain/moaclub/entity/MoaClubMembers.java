@@ -26,4 +26,11 @@ public class MoaClubMembers {
     @ManyToOne
     @JoinColumn(name = "user_idx")
     private User user;
+
+    @Column
+    private String userName;
+
+    public void updateUserName(String userName) {
+        this.userName = userName;
+    }
 }

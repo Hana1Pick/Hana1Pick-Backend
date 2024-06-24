@@ -63,7 +63,7 @@ public class MoaClubService {
         user.getOwnerClubList().add(moaClub);
 
         // MoaClubMembers 생성
-        createClubMembers(user, moaClub);
+        createClubMembers(user, moaClub, user.getName());
 
         return success(MOACLUB_CREATED_SUCCESS, new OpenMoaClubResDto(accId));
     }
@@ -113,9 +113,9 @@ public class MoaClubService {
         return accId;
     }
 
-    private void createClubMembers(User user, MoaClub club) {
+    private void createClubMembers(User user, MoaClub club, String userName) {
         ClubMembersId clubMembersId = new ClubMembersId(club.getAccountId(), user.getIdx());
-        MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user);
+        MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user, userName);
         clubMembersRepository.save(clubMembers);
 
         user.getMemberClubList().add(clubMembers);
