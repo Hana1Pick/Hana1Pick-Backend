@@ -192,6 +192,11 @@ public class MoaClubService {
     }
 
     private void joinExceptionHandling(User user, MoaClub moaClub) {
+        // 해지된 계좌인지 확인
+        if (moaClub.getStatus().equals(INACTIVE)) {
+            throw new BaseException(INACTIVE_MOACLUB);
+        }
+
         // 초대받은 사용자인지 확인
         boolean hasPermission = false;
 
