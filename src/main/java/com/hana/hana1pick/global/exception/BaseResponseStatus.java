@@ -21,6 +21,7 @@ public enum BaseResponseStatus {
     MOACLUB_INVITE_SUCCESS(OK, "모아클럽 초대 성공"),
     MOACLUB_JOIN_SUCCESS(OK, "모아클럽 가입 성공"),
     MOACLUB_UPDATE_SUCCESS(OK, "모아클럽 수정 성공"),
+    MOACLUB_MEMBER_PW_UPDATE_SUCCESS(OK, "모아클럽 멤버 비밀번호 수정 성공"),
 
     /**
      * 202 : Request 오류
@@ -42,7 +43,8 @@ public enum BaseResponseStatus {
     NO_PERMISSION_TO_ACCESS_MOACLUB(ACCEPTED, "E401", "클럽 접근권한이 없습니다."),
     USER_ALREADY_JOINED(ACCEPTED, "E402", "이미 가입된 클럽입니다."),
     INACTIVE_MOACLUB(ACCEPTED, "E403", "해지된 클럽입니다."),
-    NO_PERMISSION_TO_UPDATE(ACCEPTED, "E404", "클럽 수정 권한이 없습니다.")
+    NO_PERMISSION_TO_UPDATE(ACCEPTED, "E404", "클럽 수정 권한이 없습니다."),
+    USER_NOT_CLUB_MEMBER(ACCEPTED, "E405", "클럽 멤버가 아닙니다.")
     ;
 
     private final HttpStatus httpStatus;
