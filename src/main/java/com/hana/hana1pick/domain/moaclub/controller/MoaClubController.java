@@ -1,9 +1,7 @@
 package com.hana.hana1pick.domain.moaclub.controller;
 
-import com.hana.hana1pick.domain.moaclub.dto.request.JoinMoaClubReqDto;
-import com.hana.hana1pick.domain.moaclub.dto.request.InviteMoaClubReqDto;
-import com.hana.hana1pick.domain.moaclub.dto.request.OpenMoaClubReqDto;
-import com.hana.hana1pick.domain.moaclub.dto.response.OpenMoaClubResDto;
+import com.hana.hana1pick.domain.moaclub.dto.request.*;
+import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
 import com.hana.hana1pick.domain.moaclub.service.MoaClubService;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,19 +20,19 @@ public class MoaClubController {
 
     @Operation(summary = "모아클럽 개설")
     @PostMapping
-    public SuccessResult<OpenMoaClubResDto> openMoaClub(@RequestBody OpenMoaClubReqDto request) {
+    public SuccessResult<ClubOpeningResDto> openMoaClub(@RequestBody ClubOpeningReqDto request) {
         return moaClubService.openMoaClub(request);
     }
 
     @Operation(summary = "모아클럽 초대")
     @PostMapping("/invitations")
-    public SuccessResult inviteMoaClub(@RequestBody InviteMoaClubReqDto request) {
+    public SuccessResult inviteMoaClub(@RequestBody ClubInvitationReqDto request) {
         return moaClubService.inviteMoaClub(request);
     }
 
     @Operation(summary = "모아클럽 가입")
     @PostMapping("/admission")
-    public SuccessResult joinMoaClub(@RequestBody JoinMoaClubReqDto request) {
+    public SuccessResult joinMoaClub(@RequestBody ClubJoinReqDto request) {
         return moaClubService.joinMoaClub(request);
     }
 }

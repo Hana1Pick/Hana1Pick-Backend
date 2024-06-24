@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-public class OpenMoaClubReqDto {
+public class ClubOpeningReqDto {
 
     private String accountId;
     private UUID userIdx;
