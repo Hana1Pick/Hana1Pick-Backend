@@ -87,6 +87,19 @@ public class MoaClubService {
         return success(MOACLUB_JOIN_SUCCESS);
     }
 
+    public SuccessResult updateMoaClub(ClubUpdateReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+
+        // 개설자인지 확인
+        validateFounder(user, moaClub);
+
+        // 모아클럽 수정
+        moaClubRepository.save(moaClub.update(request));
+
+        return success(MOACLUB_UPDATE_SUCCESS);
+    }
+
     private MoaClub createMoaClub(ClubOpeningReqDto request, User user, String accId) {
         return MoaClub.builder()
                 .accPw(passwordEncoder.encode(request.getAccPw()))
@@ -230,5 +243,12 @@ public class MoaClubService {
         }
 
         moaClub.getInviteeList().put(uniqueName, JOINED);
+    }
+
+    private void validateFounder(User user, MoaClub moaClub) {
+        if (!moaClub.getUser().equals(user)) {
+            throw new BaseException(NO_PERMISSION_TO_UPDATE);
+        }
+
     }
 }
