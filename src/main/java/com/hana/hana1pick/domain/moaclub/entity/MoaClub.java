@@ -3,6 +3,7 @@ package com.hana.hana1pick.domain.moaclub.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.common.entity.Account;
 import com.hana.hana1pick.domain.common.entity.AccountStatus;
+import com.hana.hana1pick.domain.moaclub.dto.request.ClubUpdateReqDto;
 import com.hana.hana1pick.domain.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -71,5 +72,13 @@ public class MoaClub extends Account {
         for (String name : invitees) {
             this.inviteeList.put(name, PENDING);
         }
+    }
+
+    public MoaClub update(ClubUpdateReqDto request) {
+        this.name = name.equals(request.getName()) || request.getName() == null ? name : request.getName();
+        this.clubFee = request.getClubFee();
+        this.atDate = request.getAtDate();
+
+        return this;
     }
 }
