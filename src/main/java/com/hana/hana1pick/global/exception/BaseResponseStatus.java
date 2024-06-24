@@ -36,7 +36,8 @@ public enum BaseResponseStatus {
     // MoaClub
     MOACLUB_NOT_FOUND(ACCEPTED, "E400", "존재하지 않는 모아클럽입니다."),
     NO_PERMISSION_TO_ACCESS_MOACLUB(ACCEPTED, "E401", "클럽 접근권한이 없습니다."),
-    USER_ALREADY_JOINED(ACCEPTED, "E402", "이미 가입된 클럽입니다.")
+    USER_ALREADY_JOINED(ACCEPTED, "E402", "이미 가입된 클럽입니다."),
+    INACTIVE_MOACLUB(ACCEPTED, "E403", "해지된 클럽입니다.")
     ;
 
     private final HttpStatus httpStatus;
