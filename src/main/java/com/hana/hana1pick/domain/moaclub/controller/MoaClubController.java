@@ -3,6 +3,7 @@ package com.hana.hana1pick.domain.moaclub.controller;
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
 import com.hana.hana1pick.domain.moaclub.dto.response.AccPwCheckResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
+import com.hana.hana1pick.domain.moaclub.dto.response.ClubResDto;
 import com.hana.hana1pick.domain.moaclub.service.MoaClubService;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +33,12 @@ public class MoaClubController {
     @PostMapping("/admission")
     public SuccessResult joinMoaClub(@RequestBody ClubPwReqDto request) {
         return moaClubService.joinMoaClub(request);
+    }
+
+    @Operation(summary = "모아클럽 조회")
+    @PostMapping("/info")
+    public SuccessResult<ClubResDto> getMoaClub(@RequestBody AccIdReqDto request) {
+        return moaClubService.getMoaClub(request);
     }
 
     @Operation(summary = "계좌 비밀번호 확인")

@@ -59,6 +59,8 @@ public class User {
     @Column
     private String rankPredict;
 
+    private String profile;
+
     @OneToOne(mappedBy = "user")
     private UserTrsfLimit userTrsfLimit;
 

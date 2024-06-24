@@ -22,7 +22,7 @@ public enum BaseResponseStatus {
     MOACLUB_JOIN_SUCCESS(OK, "모아클럽 가입 성공"),
     MOACLUB_UPDATE_SUCCESS(OK, "모아클럽 수정 성공"),
     MOACLUB_MEMBER_PW_UPDATE_SUCCESS(OK, "모아클럽 멤버 비밀번호 수정 성공"),
-
+    MOACLUB_FETCH_SUCCESS(OK, "모아클럽 조회 성공"),
     /**
      * 202 : Request 오류
      */
