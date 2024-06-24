@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.common.entity.Account;
 import com.hana.hana1pick.domain.common.entity.AccountStatus;
 import com.hana.hana1pick.domain.moaclub.dto.request.ClubUpdateReqDto;
-import com.hana.hana1pick.domain.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -27,10 +26,6 @@ public class MoaClub extends Account {
     @Id
     @Column
     private String accountId;
-
-    @ManyToOne
-    @JoinColumn(name = "user_idx")
-    private User user;
 
     @Column
     private String name;
@@ -57,10 +52,9 @@ public class MoaClub extends Account {
 
     @Builder
     public MoaClub(String accPw, Long balance, AccountStatus status,
-                   String accountId, User user, String name, Long clubFee, int atDate, Currency currency) {
+                   String accountId, String name, Long clubFee, int atDate, Currency currency) {
         super(accPw, balance, status);
         this.accountId = accountId;
-        this.user = user;
         this.name = name;
         this.clubFee = clubFee;
         this.atDate = atDate;
