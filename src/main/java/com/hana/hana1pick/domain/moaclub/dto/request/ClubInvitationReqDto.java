@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class InviteMoaClubReqDto {
+public class ClubInvitationReqDto {
 
     private String accountId;
     private List<String> inviteeList;

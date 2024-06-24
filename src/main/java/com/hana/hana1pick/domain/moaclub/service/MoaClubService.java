@@ -3,10 +3,8 @@ package com.hana.hana1pick.domain.moaclub.service;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
-import com.hana.hana1pick.domain.moaclub.dto.request.JoinMoaClubReqDto;
-import com.hana.hana1pick.domain.moaclub.dto.request.InviteMoaClubReqDto;
-import com.hana.hana1pick.domain.moaclub.dto.request.OpenMoaClubReqDto;
-import com.hana.hana1pick.domain.moaclub.dto.response.OpenMoaClubResDto;
+import com.hana.hana1pick.domain.moaclub.dto.request.*;
+import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
 import com.hana.hana1pick.domain.moaclub.entity.ClubMembersId;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
@@ -41,7 +39,7 @@ public class MoaClubService {
     private final AccIdGenerator accIdGenerator;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public SuccessResult<OpenMoaClubResDto> openMoaClub(OpenMoaClubReqDto request) {
+    public SuccessResult<ClubOpeningResDto> openMoaClub(ClubOpeningReqDto request) {
         // 예외처리
         User user = getUserByIdx(request.getUserIdx());
         openExceptionHandling(request, user);
@@ -57,10 +55,10 @@ public class MoaClubService {
         // MoaClubMembers 생성
         createClubMembers(user, moaClub, user.getName(), request.getAccPw());
 
-        return success(MOACLUB_CREATED_SUCCESS, new OpenMoaClubResDto(accId));
+        return success(MOACLUB_CREATED_SUCCESS, new ClubOpeningResDto(accId));
     }
 
-    public SuccessResult inviteMoaClub(InviteMoaClubReqDto request) {
+    public SuccessResult inviteMoaClub(ClubInvitationReqDto request) {
         MoaClub club = getClubByAccId(request.getAccountId());
 
         // 동명이인 처리
@@ -72,7 +70,7 @@ public class MoaClubService {
         return success(MOACLUB_INVITE_SUCCESS);
     }
 
-    public SuccessResult joinMoaClub(JoinMoaClubReqDto request) {
+    public SuccessResult joinMoaClub(ClubJoinReqDto request) {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getAccountId());
 
@@ -89,7 +87,7 @@ public class MoaClubService {
         return success(MOACLUB_JOIN_SUCCESS);
     }
 
-    private MoaClub createMoaClub(OpenMoaClubReqDto request, User user, String accId) {
+    private MoaClub createMoaClub(ClubOpeningReqDto request, User user, String accId) {
         return MoaClub.builder()
                 .accPw(passwordEncoder.encode(request.getAccPw()))
                 .balance(0L)
@@ -103,7 +101,7 @@ public class MoaClubService {
                 .build();
     }
 
-    private void openExceptionHandling(OpenMoaClubReqDto request, User user) {
+    private void openExceptionHandling(ClubOpeningReqDto request, User user) {
         // 출금계좌가 사용자 소유 계좌가 아닌 경우
         Deposit outAcc = getDepositByAccId(request.getAccountId());
 
