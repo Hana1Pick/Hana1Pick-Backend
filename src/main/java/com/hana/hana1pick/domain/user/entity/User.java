@@ -77,5 +77,5 @@ public class User {
     // 내가 참여하고 있는 모아클럽 리스트
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
-    private final List<MoaClubMembers> memberClubList = new ArrayList<>();
+    private final List<MoaClubMembers> clubList = new ArrayList<>();
 }

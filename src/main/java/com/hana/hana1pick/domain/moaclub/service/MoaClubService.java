@@ -118,7 +118,7 @@ public class MoaClubService {
         MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user, userName);
         clubMembersRepository.save(clubMembers);
 
-        user.getMemberClubList().add(clubMembers);
+        user.getClubList().add(clubMembers);
         club.getClubMemberList().add(clubMembers);
     }
 
