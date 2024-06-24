@@ -36,6 +36,10 @@ public class MoaClubMembers {
     @NotNull
     private String accPw;
 
+    @Column
+    @NotNull
+    private MoaClubMemberRole role;
+
     public void updateUserName(String userName) {
         this.userName = userName;
     }

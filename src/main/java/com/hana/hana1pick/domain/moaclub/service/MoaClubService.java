@@ -8,6 +8,7 @@ import com.hana.hana1pick.domain.moaclub.dto.response.AccPwCheckResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
 import com.hana.hana1pick.domain.moaclub.entity.ClubMembersId;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
+import com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubMembersRepository;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubRepository;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 import static com.hana.hana1pick.domain.common.entity.AccountStatus.*;
+import static com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole.*;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubStatus.JOINED;
 import static com.hana.hana1pick.global.exception.BaseResponse.*;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
@@ -49,12 +51,11 @@ public class MoaClubService {
         String accId = getAccId();
 
         // MoaClub 생성
-        MoaClub moaClub = createMoaClub(request, user, accId);
+        MoaClub moaClub = createMoaClub(request, accId);
         moaClubRepository.save(moaClub);
-        user.getOwnerClubList().add(moaClub);
 
         // MoaClubMembers 생성
-        createClubMembers(user, moaClub, user.getName(), request.getAccPw());
+        createClubMembers(user, moaClub, user.getName(), request.getAccPw(), FOUNDER);
 
         return success(MOACLUB_CREATED_SUCCESS, new ClubOpeningResDto(accId));
     }
@@ -82,7 +83,7 @@ public class MoaClubService {
         String uniqueName = generateUniqueName(user.getName(), moaClub);
 
         // 모아클럽 참여
-        createClubMembers(user, moaClub, uniqueName, request.getAccPw());
+        createClubMembers(user, moaClub, uniqueName, request.getAccPw(), MEMBER);
         updateInviteeList(user, moaClub, uniqueName);
 
         return success(MOACLUB_JOIN_SUCCESS);
@@ -119,13 +120,12 @@ public class MoaClubService {
         return success(MOACLUB_MEMBER_PW_UPDATE_SUCCESS);
     }
 
-    private MoaClub createMoaClub(ClubOpeningReqDto request, User user, String accId) {
+    private MoaClub createMoaClub(ClubOpeningReqDto request, String accId) {
         return MoaClub.builder()
                 .accPw(passwordEncoder.encode(request.getAccPw()))
                 .balance(0L)
                 .status(ACTIVE)
                 .accountId(accId)
-                .user(user)
                 .name(request.getName())
                 .clubFee(request.getClubFee())
                 .atDate(request.getAtDate())
@@ -166,9 +166,9 @@ public class MoaClubService {
         return accId;
     }
 
-    private void createClubMembers(User user, MoaClub club, String userName, String accPw) {
+    private void createClubMembers(User user, MoaClub club, String userName, String accPw, MoaClubMemberRole role) {
         ClubMembersId clubMembersId = new ClubMembersId(club.getAccountId(), user.getIdx());
-        MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user, userName, passwordEncoder.encode(accPw));
+        MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user, userName, passwordEncoder.encode(accPw), role);
         clubMembersRepository.save(clubMembers);
 
         user.getClubList().add(clubMembers);
@@ -265,9 +265,12 @@ public class MoaClubService {
     }
 
     private void validateFounder(User user, MoaClub moaClub) {
-        if (!moaClub.getUser().equals(user)) {
-            throw new BaseException(NO_PERMISSION_TO_UPDATE);
+        for (MoaClubMembers member : moaClub.getClubMemberList()) {
+            if (member.getRole() == FOUNDER) {
+                if (!member.getUser().equals(user)) {
+                    throw new BaseException(NO_PERMISSION_TO_UPDATE);
+                }
+            }
         }
-
     }
 }
