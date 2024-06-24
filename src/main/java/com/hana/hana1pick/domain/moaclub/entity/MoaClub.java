@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.hana.hana1pick.domain.moaclub.entity.MoaClubStatus.*;
+
 @Entity
 @Table(name = "moaclub")
 @Getter
@@ -63,5 +65,11 @@ public class MoaClub extends Account {
         this.atDate = atDate;
         this.currency = currency;
         this.inviteeList = new HashMap<>();
+    }
+
+    public void invite(List<String> invitees) {
+        for (String name : invitees) {
+            this.inviteeList.put(name, PENDING);
+        }
     }
 }

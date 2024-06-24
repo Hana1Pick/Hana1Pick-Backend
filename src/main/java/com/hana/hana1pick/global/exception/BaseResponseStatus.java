@@ -15,6 +15,7 @@ public enum BaseResponseStatus {
      */
     // moaclub
     MOACLUB_CREATED_SUCCESS(CREATED, "모아클럽 개설 성공"),
+    MOACLUB_INVITE_SUCCESS(OK, "모아클럽 초대 성공"),
 
     /**
      * 202 : Request 오류
@@ -29,7 +30,10 @@ public enum BaseResponseStatus {
     // Deposit
     DEPOSIT_NOT_FOUND(ACCEPTED, "E300", "존재하지 않는 계좌입니다."),
     NOT_ACCOUNT_OWNER(ACCEPTED, "E301", "계좌의 소유자가 아닙니다."),
-    INVALID_TRANSFER_AMOUNT(ACCEPTED, "E302", "유효하지 않은 금액입니다.")
+    INVALID_TRANSFER_AMOUNT(ACCEPTED, "E302", "유효하지 않은 금액입니다."),
+
+    // MoaClub
+    MOACLUB_NOT_FOUND(ACCEPTED, "E400", "존재하지 않는 모아클럽입니다.")
     ;
 
     private final HttpStatus httpStatus;

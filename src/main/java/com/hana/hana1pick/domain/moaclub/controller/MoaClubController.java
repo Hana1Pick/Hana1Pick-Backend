@@ -1,5 +1,6 @@
 package com.hana.hana1pick.domain.moaclub.controller;
 
+import com.hana.hana1pick.domain.moaclub.dto.request.InviteMoaClubReqDto;
 import com.hana.hana1pick.domain.moaclub.dto.request.OpenMoaClubReqDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.OpenMoaClubResDto;
 import com.hana.hana1pick.domain.moaclub.service.MoaClubService;
@@ -22,5 +23,11 @@ public class MoaClubController {
     @PostMapping
     public SuccessResult<OpenMoaClubResDto> openMoaClub(@RequestBody OpenMoaClubReqDto request) {
         return moaClubService.openMoaClub(request);
+    }
+
+    @Operation(summary = "모아클럽 초대")
+    @PostMapping("/invitations")
+    public SuccessResult inviteMoaClub(@RequestBody InviteMoaClubReqDto request) {
+        return moaClubService.inviteMoaClub(request);
     }
 }

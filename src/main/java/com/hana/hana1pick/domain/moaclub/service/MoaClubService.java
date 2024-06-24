@@ -3,6 +3,7 @@ package com.hana.hana1pick.domain.moaclub.service;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
+import com.hana.hana1pick.domain.moaclub.dto.request.InviteMoaClubReqDto;
 import com.hana.hana1pick.domain.moaclub.dto.request.OpenMoaClubReqDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.OpenMoaClubResDto;
 import com.hana.hana1pick.domain.moaclub.entity.ClubMembersId;
@@ -67,6 +68,13 @@ public class MoaClubService {
         return success(MOACLUB_CREATED_SUCCESS, new OpenMoaClubResDto(accId));
     }
 
+    public SuccessResult inviteMoaClub(InviteMoaClubReqDto request) {
+        MoaClub club = getClubByAccId(request.getAccountId());
+        club.invite(request.getInviteeList());
+
+        return success(MOACLUB_INVITE_SUCCESS);
+    }
+
     private void exceptionHandling(OpenMoaClubReqDto request, User user) {
         // 출금계좌가 사용자 소유 계좌가 아닌 경우
         Deposit outAcc = getDepositByAccId(request.getAccountId());
@@ -107,5 +115,10 @@ public class MoaClubService {
 
         user.getMemberClubList().add(clubMembers);
         club.getClubMemberList().add(clubMembers);
+    }
+
+    private MoaClub getClubByAccId(String accId) {
+        return moaClubRepository.findById(accId)
+                .orElseThrow(() -> new BaseException(MOACLUB_NOT_FOUND));
     }
 }
