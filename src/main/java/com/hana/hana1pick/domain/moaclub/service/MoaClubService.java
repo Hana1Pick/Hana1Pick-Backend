@@ -50,17 +50,7 @@ public class MoaClubService {
         String accId = getAccId();
 
         // MoaClub 생성
-        MoaClub moaClub = MoaClub.builder()
-                .accPw(passwordEncoder.encode(request.getAccPw()))
-                .balance(0L)
-                .status(ACTIVE)
-                .accountId(accId)
-                .user(user)
-                .name(request.getName())
-                .clubFee(request.getClubFee())
-                .atDate(request.getAtDate())
-                .currency(request.getCurrency())
-                .build();
+        MoaClub moaClub = createMoaClub(request, user, accId);
         moaClubRepository.save(moaClub);
         user.getOwnerClubList().add(moaClub);
 
@@ -94,19 +84,23 @@ public class MoaClubService {
 
         // 모아클럽 참여
         createClubMembers(user, moaClub, uniqueName);
-        if (user.getName().equals(uniqueName)) {
-            List<String> inviteeList = new ArrayList<>(moaClub.getInviteeList().keySet());
-            long count = inviteeList.stream()
-                    .filter(name -> name.startsWith(user.getName()))
-                    .count();
-
-            if (count >= 2) {
-                uniqueName = user.getName() + 1;
-            }
-        }
-        moaClub.getInviteeList().put(uniqueName, JOINED);
+        updateInviteeList(user, moaClub, uniqueName);
 
         return success(MOACLUB_JOIN_SUCCESS);
+    }
+
+    private MoaClub createMoaClub(OpenMoaClubReqDto request, User user, String accId) {
+        return MoaClub.builder()
+                .accPw(passwordEncoder.encode(request.getAccPw()))
+                .balance(0L)
+                .status(ACTIVE)
+                .accountId(accId)
+                .user(user)
+                .name(request.getName())
+                .clubFee(request.getClubFee())
+                .atDate(request.getAtDate())
+                .currency(request.getCurrency())
+                .build();
     }
 
     private void openExceptionHandling(OpenMoaClubReqDto request, User user) {
@@ -218,5 +212,20 @@ public class MoaClubService {
                 throw new BaseException(USER_ALREADY_JOINED);
             }
         }
+    }
+
+    private void updateInviteeList(User user, MoaClub moaClub, String uniqueName) {
+        if (user.getName().equals(uniqueName)) {
+            List<String> inviteeList = new ArrayList<>(moaClub.getInviteeList().keySet());
+            long count = inviteeList.stream()
+                    .filter(name -> name.startsWith(user.getName()))
+                    .count();
+
+            if (count >= 2) {
+                uniqueName = user.getName() + 1;
+            }
+        }
+
+        moaClub.getInviteeList().put(uniqueName, JOINED);
     }
 }
