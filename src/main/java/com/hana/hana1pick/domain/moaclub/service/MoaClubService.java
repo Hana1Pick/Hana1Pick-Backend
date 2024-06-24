@@ -3,6 +3,7 @@ package com.hana.hana1pick.domain.moaclub.service;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
+import com.hana.hana1pick.domain.moaclub.dto.request.AccIdReqDto;
 import com.hana.hana1pick.domain.moaclub.dto.request.InviteMoaClubReqDto;
 import com.hana.hana1pick.domain.moaclub.dto.request.OpenMoaClubReqDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.OpenMoaClubResDto;
@@ -20,9 +21,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import java.util.*;
 
 import static com.hana.hana1pick.domain.common.entity.AccountStatus.*;
+import static com.hana.hana1pick.domain.moaclub.entity.MoaClubStatus.JOINED;
 import static com.hana.hana1pick.global.exception.BaseResponse.*;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 
@@ -42,7 +44,7 @@ public class MoaClubService {
     public SuccessResult<OpenMoaClubResDto> openMoaClub(OpenMoaClubReqDto request) {
         // 예외처리
         User user = getUserByIdx(request.getUserIdx());
-        exceptionHandling(request, user);
+        openExceptionHandling(request, user);
 
         // 계좌번호 생성
         String accId = getAccId();
@@ -80,7 +82,34 @@ public class MoaClubService {
         return success(MOACLUB_INVITE_SUCCESS);
     }
 
-    private void exceptionHandling(OpenMoaClubReqDto request, User user) {
+    public SuccessResult joinMoaClub(AccIdReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+
+        // 예외처리
+        joinExceptionHandling(user, moaClub);
+
+        // 초대 목록 상태 변경 및 동명이인 처리
+        String uniqueName = generateUniqueName(user.getName(), moaClub);
+
+        // 모아클럽 참여
+        createClubMembers(user, moaClub, uniqueName);
+        if (user.getName().equals(uniqueName)) {
+            List<String> inviteeList = new ArrayList<>(moaClub.getInviteeList().keySet());
+            long count = inviteeList.stream()
+                    .filter(name -> name.startsWith(user.getName()))
+                    .count();
+
+            if (count >= 2) {
+                uniqueName = user.getName() + 1;
+            }
+        }
+        moaClub.getInviteeList().put(uniqueName, JOINED);
+
+        return success(MOACLUB_JOIN_SUCCESS);
+    }
+
+    private void openExceptionHandling(OpenMoaClubReqDto request, User user) {
         // 출금계좌가 사용자 소유 계좌가 아닌 경우
         Deposit outAcc = getDepositByAccId(request.getAccountId());
 
@@ -120,6 +149,8 @@ public class MoaClubService {
 
         user.getClubList().add(clubMembers);
         club.getClubMemberList().add(clubMembers);
+        userRepository.save(user);
+        moaClubRepository.save(club);
     }
 
     private MoaClub getClubByAccId(String accId) {
@@ -147,5 +178,45 @@ public class MoaClubService {
         }
 
         return uniqueNameList;
+    }
+
+    private String generateUniqueName(String name, MoaClub moaClub) {
+        long count = moaClub.getInviteeList().entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith(name) && entry.getValue() == JOINED)
+                .count();
+
+        if (count == 0) {
+            return name;
+        } else if (count == 1) {
+            moaClub.getClubMemberList().stream()
+                    .filter(member -> member.getUserName().equals(name))
+                    .forEach(member -> member.updateUserName(name + 1));
+            return name + 2;
+        } else {
+            return name + (count + 1);
+        }
+    }
+
+    private void joinExceptionHandling(User user, MoaClub moaClub) {
+        // 초대받은 사용자인지 확인
+        boolean hasPermission = false;
+
+        for (String name : moaClub.getInviteeList().keySet()) {
+            if (name.startsWith(user.getName())) {
+                hasPermission = true;
+                break;
+            }
+        }
+
+        if (!hasPermission) {
+            throw new BaseException(NO_PERMISSION_TO_ACCESS_MOACLUB);
+        }
+
+        // 이미 가입한 클럽인지 확인
+        for (MoaClubMembers clubMembers : user.getClubList()) {
+            if (clubMembers.getClub().equals(moaClub)) {
+                throw new BaseException(USER_ALREADY_JOINED);
+            }
+        }
     }
 }
