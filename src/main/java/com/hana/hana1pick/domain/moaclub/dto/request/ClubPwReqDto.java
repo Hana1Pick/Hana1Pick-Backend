@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-public class AccPwCheckReqDto {
+public class ClubPwReqDto {
 
     private String accountId;
     private UUID userIdx;

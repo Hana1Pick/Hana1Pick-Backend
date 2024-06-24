@@ -39,4 +39,8 @@ public class MoaClubMembers {
     public void updateUserName(String userName) {
         this.userName = userName;
     }
+
+    public void updateAccPw(String accPw) {
+        this.accPw = accPw;
+    }
 }

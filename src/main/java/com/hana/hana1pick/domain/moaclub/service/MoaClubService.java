@@ -71,7 +71,7 @@ public class MoaClubService {
         return success(MOACLUB_INVITE_SUCCESS);
     }
 
-    public SuccessResult joinMoaClub(ClubJoinReqDto request) {
+    public SuccessResult joinMoaClub(ClubPwReqDto request) {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getAccountId());
 
@@ -88,7 +88,7 @@ public class MoaClubService {
         return success(MOACLUB_JOIN_SUCCESS);
     }
 
-    public SuccessResult<AccPwCheckResDto> checkAccPw(AccPwCheckReqDto request) {
+    public SuccessResult<AccPwCheckResDto> checkAccPw(ClubPwReqDto request) {
         String accPwCheck = clubMembersRepository.findAccPwByAccountId(request.getAccountId(), request.getUserIdx())
                 .orElseThrow(() -> new BaseException(MOACLUB_NOT_FOUND));
         boolean isPwValid = passwordEncoder.matches(request.getAccPw(), accPwCheck);
@@ -107,6 +107,16 @@ public class MoaClubService {
         moaClubRepository.save(moaClub.update(request));
 
         return success(MOACLUB_UPDATE_SUCCESS);
+    }
+
+    public SuccessResult updateMoaClubMemberPw(ClubPwReqDto request) {
+        ClubMembersId clubMembersId = new ClubMembersId(request.getAccountId(), request.getUserIdx());
+        MoaClubMembers clubMember = clubMembersRepository.findById(clubMembersId)
+                .orElseThrow(() -> new BaseException(USER_NOT_CLUB_MEMBER));
+
+        clubMember.updateAccPw(passwordEncoder.encode(request.getAccPw()));
+
+        return success(MOACLUB_MEMBER_PW_UPDATE_SUCCESS);
     }
 
     private MoaClub createMoaClub(ClubOpeningReqDto request, User user, String accId) {

@@ -30,13 +30,13 @@ public class MoaClubController {
 
     @Operation(summary = "모아클럽 가입")
     @PostMapping("/admission")
-    public SuccessResult joinMoaClub(@RequestBody ClubJoinReqDto request) {
+    public SuccessResult joinMoaClub(@RequestBody ClubPwReqDto request) {
         return moaClubService.joinMoaClub(request);
     }
 
     @Operation(summary = "계좌 비밀번호 확인")
     @PostMapping("/password-check")
-    public SuccessResult<AccPwCheckResDto> checkAccPw(@RequestBody AccPwCheckReqDto request) {
+    public SuccessResult<AccPwCheckResDto> checkAccPw(@RequestBody ClubPwReqDto request) {
         return moaClubService.checkAccPw(request);
     }
 
@@ -44,5 +44,11 @@ public class MoaClubController {
     @PutMapping
     public SuccessResult updateMoaClub(@RequestBody ClubUpdateReqDto request) {
         return moaClubService.updateMoaClub(request);
+    }
+
+    @Operation(summary = "모아클럽 회원 비밀번호 수정")
+    @PutMapping("/member")
+    public SuccessResult updateMoaClubMemberPw(@RequestBody ClubPwReqDto request) {
+        return moaClubService.updateMoaClubMemberPw(request);
     }
 }
