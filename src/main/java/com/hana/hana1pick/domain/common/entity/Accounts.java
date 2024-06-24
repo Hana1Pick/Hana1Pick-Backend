@@ -4,7 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.UUID;
 
@@ -14,7 +13,7 @@ import java.util.UUID;
 public class Accounts {
     @Id
     private UUID userIdx;
-    private String depositId;
-    private String celublogId;
-    private String moaclubId;
+    private String accountId;
+    private String accountType;
+    private Integer accountStatus;
 }
