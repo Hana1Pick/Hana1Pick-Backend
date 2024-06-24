@@ -4,7 +4,6 @@ import com.hana.hana1pick.domain.acchistory.dto.request.AccHistoryReqDto;
 import com.hana.hana1pick.domain.acchistory.dto.response.AccHistoryResDto;
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.repository.AccHistoryRepository;
-import com.hana.hana1pick.domain.common.entity.Account;
 import com.hana.hana1pick.domain.common.entity.Accounts;
 import com.hana.hana1pick.domain.common.repository.AccountsRepository;
 import com.hana.hana1pick.domain.user.entity.User;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -65,7 +63,6 @@ public class AccHistoryService {
     log.info("[getAccountHistory] accHisList: {}", accHisList.stream().toString());
 
     return success(ACCOUNT_HISTORY_SUCCESS, accHisList);
-
   }
 
   // 입금인지 출금인지 확인하고 반환 객체 생성
@@ -88,7 +85,7 @@ public class AccHistoryService {
   }
 
   private Accounts getAccByUserIdxAndAccId(UUID userIdx, String accountId) {
-    return accountsRepository.findByIdAndAccountId(userIdx, accountId)
+    return accountsRepository.findByUserIdxAndAccountId(userIdx, accountId)
             .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
   }
 
@@ -99,9 +96,8 @@ public class AccHistoryService {
     }
 
     // 해지된 계좌인 경우
-    if (account.getStatus() == INACTIVE) {
+    if (account.getAccountStatus().equals(INACTIVE)) {
       throw new BaseException(ACCOUNT_INACTIVE);
     }
   }
-
 }
