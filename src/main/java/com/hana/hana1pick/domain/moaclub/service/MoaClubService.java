@@ -56,6 +56,7 @@ public class MoaClubService {
                 .name(request.getName())
                 .clubFee(request.getClubFee())
                 .atDate(request.getAtDate())
+                .currency(request.getCurrency())
                 .build();
         moaClubRepository.save(moaClub);
         user.getOwnerClubList().add(moaClub);
