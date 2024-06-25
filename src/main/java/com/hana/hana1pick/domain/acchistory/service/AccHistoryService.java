@@ -33,41 +33,29 @@ public class AccHistoryService {
 
   // 계좌 내역 조회
   public SuccessResult<List<AccHistoryResDto>> getAccountHistory(AccHistoryReqDto request) {
+    // 1. requestDto에서 값 꺼내기 : accountId
+    String accountId = request.getAccountId();
 
-    // 사용자, 계좌 정보 가져오기
-    User user = getUserByIdx(request.getUserIdx());
-    // 요청 계좌번호 저장
-    String reqAccountId = request.getAccountId();
+    // 2. 예외처리
+    validateAccount(accountId);
+    log.info("Request accountId: {}", accountId);
 
-    Accounts account = getAccByUserIdxAndAccId(request.getUserIdx(), reqAccountId);
-
-    // 예외처리
-    exceptionHandling(user, account);
-
-    // 거래 내역 조회
-    List<AccountHistory> accountHistories = accHistoryRepository.findByAccCode(reqAccountId);
-
-    // 로그 찍기
-    log.info("[getAccountHistory]");
-
-    // 반환 값 생성
-    List<AccHistoryResDto> accHisList = accountHistories.stream()
-            .map(ah -> makeAccHistoryResDto(ah, reqAccountId, user))
-            .collect(Collectors.toList());
+    // 3. 거래 내역 조회 및 반환 값 생성
+    List<AccHistoryResDto> accountHistories = findByAccountId(accountId);
 
     // 응답 데이터 로그 출력
-    log.info("[getAccountHistory] accHisList: {}", accHisList.stream().toString());
+    log.info("[getAccountHistory] accHisList: {}", accountHistories);
 
-    return success(ACCOUNT_HISTORY_SUCCESS, accHisList);
+    return success(ACCOUNT_HISTORY_SUCCESS, accountHistories);
   }
 
   // 입금인지 출금인지 확인하고 반환 객체 생성
-  private AccHistoryResDto makeAccHistoryResDto(AccountHistory accountHistory, String reqAccountId, User user) {
+  private AccHistoryResDto makeAccHistoryResDto(AccountHistory accountHistory, String reqAccountId) {
     // 요청 계좌번호가 입금인지 출금인지 확인
     boolean isDeposit = accountHistory.getInAccId().equals(reqAccountId);
 
     // target: 입금 계좌일 경우 출금 계좌를, 출금 계좌일 경우 입금 계좌를 반환
-    String target = isDeposit ? accountHistory.getOutAccId() : accountHistory.getInAccId();
+    String target = reqAccountId;
 
     // target 계좌 정보를 가져옴
     Accounts targetAccount = getAccByAccId(target);
@@ -76,12 +64,11 @@ public class AccHistoryService {
     if (isDeposit && targetAccount.getAccountType().equals("celublog")) {
       String memo = accountHistory.getMemo(); // 메모 정보
       String hashtags = accountHistory.getHashtag(); // 해시태그 정보
-      target = String.format("%s, Memo: %s, Hashtags: %s", target, memo, hashtags);
-    }else{
+      target = String.format("규칙: %s, 해시태그: %s", memo, hashtags);
+    } else {
       // target 계좌의 사용자 이름 가져오기
-
-
-
+      User targetUser = getUserByIdx(targetAccount.getUserIdx());
+      target = targetUser.getName();
     }
 
     // 이체 내역(입금/출금)
@@ -97,46 +84,38 @@ public class AccHistoryService {
             .transAmount(transAmount)
             .balance(balance)
             .build();
-
-    // target 계좌번호로 계좌 내역 가져오기
-    List<AccountHistory> accountHistories = accHistoryRepository.findByAccCode(target);
-
-    // getAccByAccId(target);
-
-    //
-
-//    return AccHistoryResDto.builder()
-//            .transDate(accountHistory.getTransDate())
-//            .transType(accountHistory.getTransType())
-//            .target(target)
-//            .transAmount(accountHistory.getTransAmount())
-//            .balance(isDeposit ? accountHistory.getAfterInBal() : accountHistory.getAfterOutBal())
-//            .build();
-    return null;
   }
-  private Accounts getAccByAccId(String accountId) {
-    return (Accounts) accountsRepository.findByAccountId(accountId)
-            .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
-  }
-
 
   private User getUserByIdx(UUID userIdx) {
     return userRepository.findById(userIdx)
             .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
   }
 
-  private Accounts getAccByUserIdxAndAccId(UUID userIdx, String accountId) {
-    return accountsRepository.findByUserIdxAndAccountId(userIdx, accountId)
+  private Accounts getAccByAccId(String accountId) {
+    return accountsRepository.findByAccountId(accountId)
             .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
   }
 
-  private void exceptionHandling(User user, Accounts account) {
-    // 사용자의 계좌가 아닌 경우
-    if (!account.getUserIdx().equals(user.getIdx())) {
-      throw new BaseException(NOT_ACCOUNT_OWNER);
+  // response 객체 생성
+  private List<AccHistoryResDto> findByAccountId(String accountId) {
+    // 1. 계좌 내역 조회
+    List<AccountHistory> result = accHistoryRepository.findByAccCode(accountId);
+    // 2. 계좌 내역이 없는 경우
+    if (result.isEmpty()) {
+      throw new BaseException(ACCOUNT_NOT_FOUND);
     }
+    // 3. 계좌 내역이 있는 경우
+    return result.stream()
+            .map(accountHistory -> makeAccHistoryResDto(accountHistory, accountId))
+            .collect(Collectors.toList());
+  }
 
-    // 해지된 계좌인 경우
+  private void validateAccount(String accountId) {
+    // 계좌가 존재하는지 확인
+    Accounts account = accountsRepository.findByAccountId(accountId)
+            .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
+
+    // 해지된 계좌인지 확인
     if (account.getAccountStatus().equals(INACTIVE)) {
       throw new BaseException(ACCOUNT_INACTIVE);
     }
