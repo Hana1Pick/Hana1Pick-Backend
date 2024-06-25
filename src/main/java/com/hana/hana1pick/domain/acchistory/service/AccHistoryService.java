@@ -112,10 +112,9 @@ public class AccHistoryService {
   private List<AccHistoryResDto> findByAccountId(String accountId) {
     // 1. 계좌 내역 조회
     List<AccountHistory> result = accHistoryRepository.findByAccCode(accountId);
-    // 2. 계좌 내역이 없는 경우
-    if (result.isEmpty()) {
-      throw new BaseException(ACCOUNT_NOT_FOUND);
-    }
+
+    // 2. 계좌 내역이 없는 경우 -> 예외처리 삭제, 빈 리스트 반환
+
     // 3. 계좌 내역이 있는 경우
     return result.stream()
             .map(accountHistory -> makeAccHistoryResDto(accountHistory, accountId))
