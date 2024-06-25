@@ -23,6 +23,10 @@ public enum BaseResponseStatus {
     MOACLUB_UPDATE_SUCCESS(OK, "모아클럽 수정 성공"),
     MOACLUB_MEMBER_PW_UPDATE_SUCCESS(OK, "모아클럽 멤버 비밀번호 수정 성공"),
     MOACLUB_FETCH_SUCCESS(OK, "모아클럽 조회 성공"),
+
+    // Account
+    ACCOUNT_CASH_OUT_LIST_SUCCESS(OK, "계좌 번호 목록 조회 성공"),
+
     /**
      * 202 : Request 오류
      */
