@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -135,6 +134,28 @@ public class MoaClubService {
         }
 
         return success(MOACLUB_FEE_STATUS_FETCH_SUCCESS, clubFeeStatus);
+    }
+
+    public SuccessResult leaveMoaClub(ClubMemberLeaveReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+
+        MoaClubMembers clubMember = getClubMemberByUserAndClub(user, moaClub);
+
+        // 탈퇴하려는 클럽멤버가 개설자인지 확인
+        if (clubMember.getRole() == FOUNDER) {
+            // 클럽 멤버가 남아있는지 확인
+            checkRemainingMembers(moaClub);
+
+            // 개설자 입출금 통장으로 전액 입금 후 모아클럽 해지
+            // 입금 - 추후 개발 예정
+            clubMember.updateUserRole(NONMEMBER);
+            moaClub.closeAccount();
+        } else {
+            clubMember.updateUserRole(NONMEMBER);
+        }
+
+        return success(MOACLUB_MEMBER_LEAVE_SUCCESS);
     }
 
     private MoaClub createMoaClub(ClubOpeningReqDto request, String accId) {
@@ -334,6 +355,21 @@ public class MoaClubService {
             return new ClubFeeStatusResDto(member.getUserName(), totalAmount, PAID);
         } else {
             return new ClubFeeStatusResDto(member.getUserName(), 0L, UNPAID);
+        }
+    }
+
+    private MoaClubMembers getClubMemberByUserAndClub(User user, MoaClub moaClub) {
+        ClubMembersId clubMembersId = new ClubMembersId(moaClub.getAccountId(), user.getIdx());
+        return clubMembersRepository.findById(clubMembersId)
+                .orElseThrow(() -> new BaseException(MOACLUB_MEMBER_NOT_FOUND));
+    }
+
+    private void checkRemainingMembers(MoaClub moaClub) {
+        boolean hasMember = moaClub.getClubMemberList().stream()
+                .anyMatch(member -> member.getRole() == MEMBER);
+
+        if (hasMember) {
+            throw new BaseException(MOACLUB_HAS_MEMBER);
         }
     }
 }
