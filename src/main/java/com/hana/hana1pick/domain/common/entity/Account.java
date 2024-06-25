@@ -17,8 +17,8 @@ public class Account {
     @Column
     private Long balance;
 
-    @Column
     @CreatedDate
+    @Column(updatable = false)
     private LocalDate createDate;
 
     @Column
