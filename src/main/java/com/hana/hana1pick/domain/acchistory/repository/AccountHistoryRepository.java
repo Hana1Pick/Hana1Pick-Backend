@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface AccountHistoryRepository extends JpaRepository<AccountHistory, Long> {
-    @Query("SELECT DISTINCT ah.inAccId FROM AccountHistory ah WHERE ah.outAccId = :outAccId ORDER BY ah.transDate DESC LIMIT 5")
+    @Query("SELECT DISTINCT ah.inAccId FROM AccountHistory ah WHERE ah.outAccId = :outAccId ORDER BY ah.transDate DESC LIMIT 4")
     List<String> findDistinctInAccIdByOutAccIdOrderByTransDateDesc(String outAccId);
 }
