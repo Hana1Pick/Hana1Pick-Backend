@@ -4,6 +4,7 @@ import com.hana.hana1pick.domain.acchistory.dto.request.AccHistoryReqDto;
 import com.hana.hana1pick.domain.acchistory.dto.response.AccHistoryResDto;
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.repository.AccHistoryRepository;
+import com.hana.hana1pick.domain.common.entity.AccountStatus;
 import com.hana.hana1pick.domain.common.entity.Accounts;
 import com.hana.hana1pick.domain.common.repository.AccountsRepository;
 import com.hana.hana1pick.domain.user.entity.User;
@@ -74,12 +75,21 @@ public class AccHistoryService {
     // 이체 내역(입금/출금)
     Long transAmount = isDeposit ? accountHistory.getTransAmount() : -accountHistory.getTransAmount();
 
+    // 거래 유형(입금/출금/자동이체)
+    String transType;
+
+    if ("AUTO_TRANSFER".equals(accountHistory.getTransType())) {
+      transType = "AUTO_TRANSFER";
+    } else {
+      transType = transAmount < 0 ? "WITHDRAW" : "DEPOSIT";
+    }
+
     // 잔액
     Long balance = isDeposit ? accountHistory.getAfterInBal() : accountHistory.getAfterOutBal();
 
     return AccHistoryResDto.builder()
             .transDate(accountHistory.getTransDate())
-            .transType(accountHistory.getTransType())
+            .transType(transType)
             .target(target)
             .transAmount(transAmount)
             .balance(balance)
@@ -116,7 +126,8 @@ public class AccHistoryService {
             .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
 
     // 해지된 계좌인지 확인
-    if (account.getAccountStatus().equals(INACTIVE)) {
+    AccountStatus status = AccountStatus.fromCode(account.getAccountStatus());
+    if (status == AccountStatus.INACTIVE) {
       throw new BaseException(ACCOUNT_INACTIVE);
     }
   }
