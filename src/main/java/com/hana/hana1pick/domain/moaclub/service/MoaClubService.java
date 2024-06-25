@@ -17,7 +17,6 @@ import com.hana.hana1pick.domain.user.repository.UserRepository;
 import com.hana.hana1pick.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 import static com.hana.hana1pick.domain.common.entity.AccountStatus.*;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole.*;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubStatus.JOINED;
+import static com.hana.hana1pick.domain.moaclub.entity.MoaClubStatus.PENDING;
 import static com.hana.hana1pick.global.exception.BaseResponse.*;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 
@@ -79,12 +79,14 @@ public class MoaClubService {
         // 예외처리
         joinExceptionHandling(user, moaClub);
 
-        // 초대 목록 상태 변경 및 동명이인 처리
+        // 동명이인 처리
         String uniqueName = generateUniqueName(user.getName(), moaClub);
 
         // 모아클럽 참여
         createClubMembers(user, moaClub, uniqueName, MEMBER);
-        updateInviteeList(user, moaClub, uniqueName);
+
+        // 초대 목록 상태 변경
+        updateInviteeList(user, moaClub);
 
         return success(MOACLUB_JOIN_SUCCESS);
     }
@@ -199,9 +201,17 @@ public class MoaClubService {
     }
 
     private String generateUniqueName(String name, MoaClub moaClub) {
-        long count = moaClub.getInviteeList().entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith(name) && entry.getValue() == JOINED)
+        long count = moaClub.getClubMemberList().stream()
+                .filter(member -> member.getUser().getName().equals(name))
                 .count();
+
+        if (getFounderName(moaClub.getClubMemberList()).equals(name)) {
+            moaClub.getClubMemberList().stream()
+                    .filter(member -> member.getRole().equals(FOUNDER))
+                    .forEach(member -> member.updateUserName(name + 1));
+
+            count = 1;
+        }
 
         if (count == 0) {
             return name;
@@ -213,6 +223,14 @@ public class MoaClubService {
         } else {
             return name + (count + 1);
         }
+    }
+
+    private String getFounderName(List<MoaClubMembers> clubMemberList) {
+        Optional<MoaClubMembers> founder = clubMemberList.stream()
+                .filter(member -> member.getRole() == FOUNDER)
+                .findFirst();
+
+        return founder.map(MoaClubMembers::getUserName).orElse(null);
     }
 
     private void joinExceptionHandling(User user, MoaClub moaClub) {
@@ -243,19 +261,11 @@ public class MoaClubService {
         }
     }
 
-    private void updateInviteeList(User user, MoaClub moaClub, String uniqueName) {
-        if (user.getName().equals(uniqueName)) {
-            List<String> inviteeList = new ArrayList<>(moaClub.getInviteeList().keySet());
-            long count = inviteeList.stream()
-                    .filter(name -> name.startsWith(user.getName()))
-                    .count();
-
-            if (count >= 2) {
-                uniqueName = user.getName() + 1;
-            }
-        }
-
-        moaClub.getInviteeList().put(uniqueName, JOINED);
+    private void updateInviteeList(User user, MoaClub moaClub) {
+        moaClub.getInviteeList().entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith(user.getName()) && entry.getValue() == PENDING)
+                .findFirst()
+                .ifPresent(entry -> moaClub.getInviteeList().put(entry.getKey(), JOINED));
     }
 
     private void validateFounder(User user, MoaClub moaClub) {
