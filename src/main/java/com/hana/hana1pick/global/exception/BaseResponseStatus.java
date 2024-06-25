@@ -33,10 +33,14 @@ public enum BaseResponseStatus {
     // User
     USER_NOT_FOUND(ACCEPTED, "E200", "존재하지 않는 회원입니다."),
 
-    // Deposit
-    DEPOSIT_NOT_FOUND(ACCEPTED, "E300", "존재하지 않는 계좌입니다."),
+    // Account
+    ACCOUNT_NOT_FOUND(ACCEPTED, "E300", "존재하지 않는 계좌입니다."),
     NOT_ACCOUNT_OWNER(ACCEPTED, "E301", "계좌의 소유자가 아닙니다."),
     INVALID_TRANSFER_AMOUNT(ACCEPTED, "E302", "유효하지 않은 금액입니다."),
+    ACCOUNT_INACTIVE(ACCEPTED, "E303", "해지된 계좌입니다."),
+
+    // Account History
+    ACCOUNT_HISTORY_SUCCESS(OK , "계좌 내역 조회 성공"),
 
     // MoaClub
     MOACLUB_NOT_FOUND(ACCEPTED, "E400", "존재하지 않는 모아클럽입니다."),
