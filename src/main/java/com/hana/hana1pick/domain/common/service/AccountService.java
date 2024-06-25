@@ -35,7 +35,7 @@ public class AccountService {
         String outAccId = request.getOutAccId();
 
         List<AccountInfoDto> myAccId = getAccountInfoFromAccounts(accountsRepository.findByUserIdxAndNotOutAccId(userIdx, outAccId));
-        List<AccountInfoDto> recentAccId = getAccountInfoFromAccountHistory(accountHistoryRepository.findDistinctInAccIdByOutAccIdOrderByTransDateDesc(outAccId));
+        List<AccountInfoDto> recentAccId = getAccountInfoFromAccountHistory(accountHistoryRepository.findDistinctInAccIdAndNameByOutAccIdOrderByTransDateDesc(outAccId));
 
         return success(ACCOUNT_CASH_OUT_LIST_SUCCESS, new AccountForCashOutResDto(myAccId, recentAccId));
     }
