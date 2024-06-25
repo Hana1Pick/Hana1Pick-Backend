@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.hana.hana1pick.domain.common.entity.AccountStatus.INACTIVE;
 import static com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import static com.hana.hana1pick.global.exception.BaseResponse.success;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
@@ -55,14 +54,17 @@ public class AccHistoryService {
     // 요청 계좌번호가 입금인지 출금인지 확인
     boolean isDeposit = accountHistory.getInAccId().equals(reqAccountId);
 
+    // 조회하려는 계좌
+    Accounts reqAccount = getAccByAccId(reqAccountId);
+
     // target: 입금 계좌일 경우 출금 계좌를, 출금 계좌일 경우 입금 계좌를 반환
-    String target = reqAccountId;
+    String target = isDeposit ? accountHistory.getOutAccId() : accountHistory.getInAccId();
 
     // target 계좌 정보를 가져옴
     Accounts targetAccount = getAccByAccId(target);
 
     // a계좌가 입금 계좌이고, a계좌가 celublog일 경우 target에 메모와 해시태그 담기
-    if (isDeposit && targetAccount.getAccountType().equals("celublog")) {
+    if (isDeposit && reqAccount.getAccountType().equals("celublog")) {
       String memo = accountHistory.getMemo(); // 메모 정보
       String hashtags = accountHistory.getHashtag(); // 해시태그 정보
       target = String.format("규칙: %s, 해시태그: %s", memo, hashtags);
