@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class OpenMoaClubResDto {
+public class ClubOpeningResDto {
 
     private String accountId;
 }
