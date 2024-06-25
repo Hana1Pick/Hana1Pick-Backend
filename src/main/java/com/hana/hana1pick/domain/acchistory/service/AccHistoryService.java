@@ -30,7 +30,6 @@ public class AccHistoryService {
   private final AccHistoryRepository accHistoryRepository;
   private final UserRepository userRepository;
   private final AccountsRepository accountsRepository;
-  private Accounts account;
 
   // 계좌 내역 조회
   public SuccessResult<List<AccHistoryResDto>> getAccountHistory(AccHistoryReqDto request) {
@@ -51,12 +50,9 @@ public class AccHistoryService {
     // 로그 찍기
     log.info("[getAccountHistory]");
 
-    // 반환 값
-    // List<AccHistoryResDto> accHisList = accountHistories.stream().map();
-
     // 반환 값 생성
     List<AccHistoryResDto> accHisList = accountHistories.stream()
-            .map(ah -> makeAccHistoryResDto(ah, reqAccountId))
+            .map(ah -> makeAccHistoryResDto(ah, reqAccountId, user))
             .collect(Collectors.toList());
 
     // 응답 데이터 로그 출력
@@ -66,18 +62,63 @@ public class AccHistoryService {
   }
 
   // 입금인지 출금인지 확인하고 반환 객체 생성
-  private AccHistoryResDto makeAccHistoryResDto(AccountHistory accountHistory, String reqAccountId) {
+  private AccHistoryResDto makeAccHistoryResDto(AccountHistory accountHistory, String reqAccountId, User user) {
+    // 요청 계좌번호가 입금인지 출금인지 확인
     boolean isDeposit = accountHistory.getInAccId().equals(reqAccountId);
+
+    // target: 입금 계좌일 경우 출금 계좌를, 출금 계좌일 경우 입금 계좌를 반환
     String target = isDeposit ? accountHistory.getOutAccId() : accountHistory.getInAccId();
+
+    // target 계좌 정보를 가져옴
+    Accounts targetAccount = getAccByAccId(target);
+
+    // a계좌가 입금 계좌이고, a계좌가 celublog일 경우 target에 메모와 해시태그 담기
+    if (isDeposit && targetAccount.getAccountType().equals("celublog")) {
+      String memo = accountHistory.getMemo(); // 메모 정보
+      String hashtags = accountHistory.getHashtag(); // 해시태그 정보
+      target = String.format("%s, Memo: %s, Hashtags: %s", target, memo, hashtags);
+    }else{
+      // target 계좌의 사용자 이름 가져오기
+
+
+
+    }
+
+    // 이체 내역(입금/출금)
+    Long transAmount = isDeposit ? accountHistory.getTransAmount() : -accountHistory.getTransAmount();
+
+    // 잔액
+    Long balance = isDeposit ? accountHistory.getAfterInBal() : accountHistory.getAfterOutBal();
 
     return AccHistoryResDto.builder()
             .transDate(accountHistory.getTransDate())
             .transType(accountHistory.getTransType())
             .target(target)
-            .transAmount(accountHistory.getTransAmount())
-            .balance(isDeposit ? accountHistory.getAfterInBal() : accountHistory.getAfterOutBal())
+            .transAmount(transAmount)
+            .balance(balance)
             .build();
+
+    // target 계좌번호로 계좌 내역 가져오기
+    List<AccountHistory> accountHistories = accHistoryRepository.findByAccCode(target);
+
+    // getAccByAccId(target);
+
+    //
+
+//    return AccHistoryResDto.builder()
+//            .transDate(accountHistory.getTransDate())
+//            .transType(accountHistory.getTransType())
+//            .target(target)
+//            .transAmount(accountHistory.getTransAmount())
+//            .balance(isDeposit ? accountHistory.getAfterInBal() : accountHistory.getAfterOutBal())
+//            .build();
+    return null;
   }
+  private Accounts getAccByAccId(String accountId) {
+    return (Accounts) accountsRepository.findByAccountId(accountId)
+            .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
+  }
+
 
   private User getUserByIdx(UUID userIdx) {
     return userRepository.findById(userIdx)
