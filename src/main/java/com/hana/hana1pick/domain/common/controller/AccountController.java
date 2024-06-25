@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.util.UUID;
+
+ @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/account")
 @Slf4j
@@ -20,14 +22,16 @@ public class AccountController {
     private final AccountService accountService;
 
     @Operation(summary = "이체받을 계좌 목록 추출")
-    @PostMapping("/cash-out")
-    public BaseResponse.SuccessResult<AccountForCashOutResDto> getAccountForCashOut(@RequestBody AccountForCashOutReqDto request) {
+    @GetMapping("/cash-out")
+    public BaseResponse.SuccessResult<AccountForCashOutResDto> getAccountForCashOut(@RequestParam UUID userIdx, @RequestParam String outAccId) {
+        AccountForCashOutReqDto request = new AccountForCashOutReqDto(userIdx, outAccId);
         return accountService.getAccountForCashOut(request);
     }
 
     @Operation(summary = "이체받을 계좌 목록 검색")
-    @PostMapping("/cash-out/history")
-    public BaseResponse.SuccessResult<AccountForCashOutHisResDto> getAccountHistoryForCashOut(@RequestBody AccountForCashOutHisReqDto request) {
+    @GetMapping("/cash-out/history")
+    public BaseResponse.SuccessResult<AccountForCashOutHisResDto> getAccountHistoryForCashOut(@RequestParam String outAccId, @RequestParam String query) {
+        AccountForCashOutHisReqDto request = new AccountForCashOutHisReqDto(outAccId, query);
         return accountService.getAccountHistoryForCashOut(request);
     }
 }
