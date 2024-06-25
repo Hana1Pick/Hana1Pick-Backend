@@ -11,9 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class AccHistoryResDto {
-
     private LocalDateTime transDate;
-    private TransType transType;
+    private String transType;
     private String target;
     private Long transAmount;
     private Long balance;
