@@ -142,6 +142,10 @@ public class MoaClubService {
     }
 
     private User getUserByIdx(UUID userIdx) {
+        return getUser(userIdx);
+    }
+
+    private User getUser(UUID userIdx) {
         return userRepository.findById(userIdx)
                 .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
     }
