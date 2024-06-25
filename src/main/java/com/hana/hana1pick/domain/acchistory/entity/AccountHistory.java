@@ -27,7 +27,7 @@ public class AccountHistory {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private TransType transType;
+    private TransType transType; // 거래 유형 (DEPOSIT, WITHDRAW, AUTO_TRANSFER)
 
     @Column
     private Long transAmount;
