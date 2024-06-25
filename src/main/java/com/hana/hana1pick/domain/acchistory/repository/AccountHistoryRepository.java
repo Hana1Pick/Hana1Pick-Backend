@@ -9,4 +9,7 @@ import java.util.List;
 public interface AccountHistoryRepository extends JpaRepository<AccountHistory, Long> {
     @Query("SELECT DISTINCT ah.inAccId, ah.inAccName FROM AccountHistory ah WHERE ah.outAccId = :outAccId ORDER BY ah.transDate DESC LIMIT 4")
     List<Object[]> findDistinctInAccIdByOutAccIdOrderByTransDateDesc(String outAccId);
+
+    @Query("SELECT DISTINCT ah.inAccId, ah.inAccName FROM AccountHistory ah WHERE ah.outAccId = :outAccId AND (ah.inAccId LIKE %:query% OR ah.inAccName LIKE %:query%) ORDER BY ah.transDate DESC")
+    List<Object[]> findDistinctInAccIdAndNameByOutAccIdAndQueryOrderByTransDateDesc(String outAccId, String query);
 }
