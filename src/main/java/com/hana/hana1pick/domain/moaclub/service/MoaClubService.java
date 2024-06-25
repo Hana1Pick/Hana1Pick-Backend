@@ -61,7 +61,7 @@ public class MoaClubService {
         moaClubRepository.save(moaClub);
 
         // MoaClubMembers 생성
-        createClubMembers(user, moaClub, user.getName(), FOUNDER);
+        createClubMembers(user, moaClub, user.getName(), MANAGER);
 
         return success(MOACLUB_CREATED_SUCCESS, new ClubOpeningResDto(accId));
     }
@@ -114,8 +114,8 @@ public class MoaClubService {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getAccountId());
 
-        // 개설자인지 확인
-        validateFounder(user, moaClub);
+        // 관리자인지 확인
+        validateManager(user, moaClub);
 
         // 모아클럽 수정
         moaClubRepository.save(moaClub.update(request));
@@ -142,12 +142,12 @@ public class MoaClubService {
 
         MoaClubMembers clubMember = getClubMemberByUserAndClub(user, moaClub);
 
-        // 탈퇴하려는 클럽멤버가 개설자인지 확인
-        if (clubMember.getRole() == FOUNDER) {
+        // 탈퇴하려는 클럽멤버가 관리자인지 확인
+        if (clubMember.getRole() == MANAGER) {
             // 클럽 멤버가 남아있는지 확인
             checkRemainingMembers(moaClub);
 
-            // 개설자 입출금 통장으로 전액 입금 후 모아클럽 해지
+            // 관리자 입출금 통장으로 전액 입금 후 모아클럽 해지
             // 입금 - 추후 개발 예정
             clubMember.updateUserRole(NONMEMBER);
             moaClub.closeAccount();
@@ -248,7 +248,7 @@ public class MoaClubService {
 
         if (getFounderName(moaClub.getClubMemberList()).equals(name)) {
             moaClub.getClubMemberList().stream()
-                    .filter(member -> member.getRole().equals(FOUNDER))
+                    .filter(member -> member.getRole().equals(MANAGER))
                     .forEach(member -> member.updateUserName(name + 1));
 
             count = 1;
@@ -268,7 +268,7 @@ public class MoaClubService {
 
     private String getFounderName(List<MoaClubMembers> clubMemberList) {
         Optional<MoaClubMembers> founder = clubMemberList.stream()
-                .filter(member -> member.getRole() == FOUNDER)
+                .filter(member -> member.getRole() == MANAGER)
                 .findFirst();
 
         return founder.map(MoaClubMembers::getUserName).orElse(null);
@@ -309,10 +309,10 @@ public class MoaClubService {
                 .ifPresent(entry -> moaClub.getInviteeList().put(entry.getKey(), JOINED));
     }
 
-    private void validateFounder(User user, MoaClub moaClub) {
+    private void validateManager(User user, MoaClub moaClub) {
         MoaClubMembers member = getClubMemberByUserAndClub(user, moaClub);
 
-        if (member.getRole() != FOUNDER) {
+        if (member.getRole() != MANAGER) {
             throw new BaseException(NO_PERMISSION_TO_UPDATE);
         }
     }
