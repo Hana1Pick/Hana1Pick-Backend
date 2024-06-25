@@ -36,6 +36,9 @@ public class AccountHistory {
     private String inAccId;
 
     @Column
+    private String inAccName;
+
+    @Column
     private String outAccId;
 
     @Column
