@@ -129,7 +129,9 @@ public class MoaClubService {
         List<ClubFeeStatusResDto> clubFeeStatus = new ArrayList<>();
 
         for (MoaClubMembers member : moaClub.getClubMemberList()) {
-            clubFeeStatus.add(getMemberFeeStatus(member, moaClub, request));
+            if (member.getRole() != NONMEMBER) {
+                clubFeeStatus.add(getMemberFeeStatus(member, moaClub, request));
+            }
         }
 
         return success(MOACLUB_FEE_STATUS_FETCH_SUCCESS, clubFeeStatus);
@@ -299,13 +301,19 @@ public class MoaClubService {
     private void validateClubMember(User user, MoaClub moaClub) {
         boolean isClubMember = moaClub.getClubMemberList().stream()
                 .anyMatch(clubMembers -> clubMembers.getUser().equals(user));
-        if (!isClubMember) {
+
+        boolean isNonMember = moaClub.getClubMemberList().stream()
+                .anyMatch(clubMembers -> clubMembers.getUser().equals(user)
+                        && clubMembers.getRole() == MoaClubMemberRole.NONMEMBER);
+
+        if (!isClubMember || isNonMember) {
             throw new BaseException(USER_NOT_CLUB_MEMBER);
         }
     }
 
     private List<ClubResDto.MoaClubMember> getClubMemberList(MoaClub moaClub) {
         return moaClub.getClubMemberList().stream()
+                .filter(member -> member.getRole() != NONMEMBER)
                 .map(member -> ClubResDto.MoaClubMember.from(member))
                 .collect(Collectors.toList());
     }
