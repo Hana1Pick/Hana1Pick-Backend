@@ -26,6 +26,7 @@ public enum BaseResponseStatus {
 
     // Account
     ACCOUNT_CASH_OUT_LIST_SUCCESS(OK, "계좌 번호 목록 조회 성공"),
+    ACCOUNT_CASH_OUT_HISTORY_LIST_SUCCESS(OK, "계좌 번호 목록 검색 성공"),
 
     /**
      * 202 : Request 오류

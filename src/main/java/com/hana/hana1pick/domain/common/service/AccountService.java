@@ -1,8 +1,10 @@
 package com.hana.hana1pick.domain.common.service;
 
 import com.hana.hana1pick.domain.acchistory.repository.AccountHistoryRepository;
+import com.hana.hana1pick.domain.common.dto.request.AccountForCashOutHisReqDto;
 import com.hana.hana1pick.domain.common.dto.request.AccountForCashOutReqDto;
 import com.hana.hana1pick.domain.common.dto.response.AccountForCashOutResDto;
+import com.hana.hana1pick.domain.common.dto.response.AccountForCashOutHisResDto;
 import com.hana.hana1pick.domain.common.dto.response.AccountInfoDto;
 import com.hana.hana1pick.domain.common.entity.Accounts;
 import com.hana.hana1pick.domain.common.repository.AccountsRepository;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.hana.hana1pick.global.exception.BaseResponse.success;
+import static com.hana.hana1pick.global.exception.BaseResponseStatus.ACCOUNT_CASH_OUT_HISTORY_LIST_SUCCESS;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.ACCOUNT_CASH_OUT_LIST_SUCCESS;
 
 @Service
@@ -35,6 +38,18 @@ public class AccountService {
         List<AccountInfoDto> recentAccId = getAccountInfoFromAccountHistory(accountHistoryRepository.findDistinctInAccIdByOutAccIdOrderByTransDateDesc(outAccId));
 
         return success(ACCOUNT_CASH_OUT_LIST_SUCCESS, new AccountForCashOutResDto(myAccId, recentAccId));
+    }
+
+    public BaseResponse.SuccessResult<AccountForCashOutHisResDto> getAccountHistoryForCashOut(AccountForCashOutHisReqDto request) {
+        String outAccId = request.getOutAccId();
+        String query = request.getQuery();
+
+        List<AccountInfoDto> accId = new ArrayList<>();
+        if(query != ""){
+            accId = getAccountInfoFromAccountHistory(accountHistoryRepository.findDistinctInAccIdAndNameByOutAccIdAndQueryOrderByTransDateDesc(outAccId, query));
+        }
+
+        return success(ACCOUNT_CASH_OUT_HISTORY_LIST_SUCCESS, new AccountForCashOutHisResDto(accId));
     }
 
     public List<AccountInfoDto> getAccountInfoFromAccounts(List<Accounts> accounts){
