@@ -5,12 +5,9 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-public class OpenMoaClubReqDto {
+public class AccIdReqDto {
 
     private String accountId;
     private UUID userIdx;
-    private String accPw;
-    private String name;
-    private Long clubFee;
-    private int atDate;
 }
+

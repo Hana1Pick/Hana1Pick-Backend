@@ -3,13 +3,12 @@ package com.hana.hana1pick.domain.user.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.celublog.entity.Celublog;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
-import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -55,10 +54,11 @@ public class User {
     private String address;
 
     @Column
-    private Long celebrity;
+    private String profile;
 
     @Column
-    private String rankPredict;
+    @NotNull
+    private String password;
 
     @OneToOne(mappedBy = "user")
     private UserTrsfLimit userTrsfLimit;
@@ -70,12 +70,8 @@ public class User {
     @JsonManagedReference
     private List<Celublog> celublogList = new ArrayList<>();
 
-    // 개설자로 소유하고 있는 모아클럽 리스트
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<MoaClub> ownerClubList = new ArrayList<>();
-
     // 내가 참여하고 있는 모아클럽 리스트
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
-    private final List<MoaClubMembers> memberClubList = new ArrayList<>();
+    private final List<MoaClubMembers> clubList = new ArrayList<>();
 }
