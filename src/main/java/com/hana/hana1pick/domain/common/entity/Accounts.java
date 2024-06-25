@@ -3,16 +3,17 @@ package com.hana.hana1pick.domain.common.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Immutable;
 
 import java.util.UUID;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@Immutable
 public class Accounts {
-    @Id
     private UUID userIdx;
+    private String email;
+    @Id
     private String accountId;
     private String accountType;
     private Integer accountStatus;
