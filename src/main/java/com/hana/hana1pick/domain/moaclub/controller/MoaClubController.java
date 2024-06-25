@@ -54,4 +54,10 @@ public class MoaClubController {
     public SuccessResult<List<ClubFeeStatusResDto>> getMoaClubFeeStatus(@RequestBody ClubFeeStatusReqDto request) {
         return moaClubService.getMoaClubFeeStatus(request);
     }
+
+    @Operation(summary = "모아클럽 탈퇴")
+    @DeleteMapping
+    public SuccessResult leaveMoaClub(@RequestBody ClubMemberLeaveReqDto request) {
+        return moaClubService.leaveMoaClub(request);
+    }
 }
