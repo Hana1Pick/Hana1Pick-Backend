@@ -16,13 +16,15 @@ public enum BaseResponseStatus {
     // User
     USER_PW_CHECK_SUCCESS(OK, "사용자 비밀번호 확인 성공"),
 
-    // moaclub
+    // MoaClub
     MOACLUB_CREATED_SUCCESS(CREATED, "모아클럽 개설 성공"),
     MOACLUB_INVITE_SUCCESS(OK, "모아클럽 초대 성공"),
     MOACLUB_JOIN_SUCCESS(OK, "모아클럽 가입 성공"),
     MOACLUB_UPDATE_SUCCESS(OK, "모아클럽 수정 성공"),
     MOACLUB_MEMBER_PW_UPDATE_SUCCESS(OK, "모아클럽 멤버 비밀번호 수정 성공"),
     MOACLUB_FETCH_SUCCESS(OK, "모아클럽 조회 성공"),
+    MOACLUB_FEE_STATUS_FETCH_SUCCESS(OK, "모아클럽 회비 내역 조회 성공"),
+
     /**
      * 202 : Request 오류
      */

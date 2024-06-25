@@ -1,6 +1,7 @@
 package com.hana.hana1pick.domain.moaclub.controller;
 
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
+import com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubResDto;
 import com.hana.hana1pick.domain.moaclub.service.MoaClubService;
@@ -8,6 +9,8 @@ import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,5 +47,11 @@ public class MoaClubController {
     @PutMapping
     public SuccessResult updateMoaClub(@RequestBody ClubUpdateReqDto request) {
         return moaClubService.updateMoaClub(request);
+    }
+
+    @Operation(summary = "모아클럽 입금현황 조회")
+    @PostMapping("/fee")
+    public SuccessResult<List<ClubFeeStatusResDto>> getMoaClubFeeStatus(@RequestBody ClubFeeStatusReqDto request) {
+        return moaClubService.getMoaClubFeeStatus(request);
     }
 }

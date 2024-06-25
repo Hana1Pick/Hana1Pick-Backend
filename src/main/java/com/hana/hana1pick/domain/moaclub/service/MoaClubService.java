@@ -1,9 +1,12 @@
 package com.hana.hana1pick.domain.moaclub.service;
 
+import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
+import com.hana.hana1pick.domain.acchistory.repository.AccHisRepository;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
+import com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubResDto;
 import com.hana.hana1pick.domain.moaclub.entity.ClubMembersId;
@@ -20,10 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hana.hana1pick.domain.common.entity.AccountStatus.*;
+import static com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto.ClubFeeStatus.PAID;
+import static com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto.ClubFeeStatus.UNPAID;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole.*;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubStatus.JOINED;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubStatus.PENDING;
@@ -41,6 +47,7 @@ public class MoaClubService {
     private final UserRepository userRepository;
     private final DepositRepository depositRepository;
     private final AccIdGenerator accIdGenerator;
+    private final AccHisRepository accHisRepository;
 
     public SuccessResult<ClubOpeningResDto> openMoaClub(ClubOpeningReqDto request) {
         // 예외처리
@@ -115,6 +122,17 @@ public class MoaClubService {
         moaClubRepository.save(moaClub.update(request));
 
         return success(MOACLUB_UPDATE_SUCCESS);
+    }
+
+    public SuccessResult<List<ClubFeeStatusResDto>> getMoaClubFeeStatus(ClubFeeStatusReqDto request) {
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+        List<ClubFeeStatusResDto> clubFeeStatus = new ArrayList<>();
+
+        for (MoaClubMembers member : moaClub.getClubMemberList()) {
+            clubFeeStatus.add(getMemberFeeStatus(member, moaClub, request));
+        }
+
+        return success(MOACLUB_FEE_STATUS_FETCH_SUCCESS, clubFeeStatus);
     }
 
     private MoaClub createMoaClub(ClubOpeningReqDto request, String accId) {
@@ -290,5 +308,24 @@ public class MoaClubService {
         return moaClub.getClubMemberList().stream()
                 .map(member -> ClubResDto.MoaClubMember.from(member))
                 .collect(Collectors.toList());
+    }
+
+    private ClubFeeStatusResDto getMemberFeeStatus(MoaClubMembers member, MoaClub moaClub, ClubFeeStatusReqDto request) {
+        User user = member.getUser();
+        Deposit deposit = user.getDeposit();
+
+        List<AccountHistory> accHisList = accHisRepository.findClubFeeHistory(
+                deposit.getAccountId(),
+                moaClub.getAccountId(),
+                request.getCheckDate().getYear(),
+                request.getCheckDate().getMonthValue()
+        );
+
+        if (!accHisList.isEmpty()) {
+            Long totalAmount = accHisList.stream().mapToLong(AccountHistory::getTransAmount).sum();
+            return new ClubFeeStatusResDto(member.getUserName(), totalAmount, PAID);
+        } else {
+            return new ClubFeeStatusResDto(member.getUserName(), 0L, UNPAID);
+        }
     }
 }
