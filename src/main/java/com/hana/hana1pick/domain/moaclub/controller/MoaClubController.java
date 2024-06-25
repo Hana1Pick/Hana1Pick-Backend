@@ -1,7 +1,6 @@
 package com.hana.hana1pick.domain.moaclub.controller;
 
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
-import com.hana.hana1pick.domain.moaclub.dto.response.AccPwCheckResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubResDto;
 import com.hana.hana1pick.domain.moaclub.service.MoaClubService;
@@ -31,7 +30,7 @@ public class MoaClubController {
 
     @Operation(summary = "모아클럽 가입")
     @PostMapping("/admission")
-    public SuccessResult joinMoaClub(@RequestBody ClubPwReqDto request) {
+    public SuccessResult joinMoaClub(@RequestBody AccIdReqDto request) {
         return moaClubService.joinMoaClub(request);
     }
 
@@ -41,21 +40,9 @@ public class MoaClubController {
         return moaClubService.getMoaClub(request);
     }
 
-    @Operation(summary = "계좌 비밀번호 확인")
-    @PostMapping("/password-check")
-    public SuccessResult<AccPwCheckResDto> checkAccPw(@RequestBody ClubPwReqDto request) {
-        return moaClubService.checkAccPw(request);
-    }
-
     @Operation(summary = "모아클럽 수정")
     @PutMapping
     public SuccessResult updateMoaClub(@RequestBody ClubUpdateReqDto request) {
         return moaClubService.updateMoaClub(request);
-    }
-
-    @Operation(summary = "모아클럽 회원 비밀번호 수정")
-    @PutMapping("/member")
-    public SuccessResult updateMoaClubMemberPw(@RequestBody ClubPwReqDto request) {
-        return moaClubService.updateMoaClubMemberPw(request);
     }
 }

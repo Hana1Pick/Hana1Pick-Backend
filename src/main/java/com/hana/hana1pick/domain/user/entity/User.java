@@ -5,10 +5,10 @@ import com.hana.hana1pick.domain.celublog.entity.Celublog;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -54,12 +54,11 @@ public class User {
     private String address;
 
     @Column
-    private Long celebrity;
+    private String profile;
 
     @Column
-    private String rankPredict;
-
-    private String profile;
+    @NotNull
+    private String password;
 
     @OneToOne(mappedBy = "user")
     private UserTrsfLimit userTrsfLimit;

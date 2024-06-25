@@ -34,17 +34,9 @@ public class MoaClubMembers {
 
     @Column
     @NotNull
-    private String accPw;
-
-    @Column
-    @NotNull
     private MoaClubMemberRole role;
 
     public void updateUserName(String userName) {
         this.userName = userName;
-    }
-
-    public void updateAccPw(String accPw) {
-        this.accPw = accPw;
     }
 }
