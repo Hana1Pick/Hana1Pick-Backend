@@ -51,9 +51,9 @@ public class MoaClub extends Account {
     private final List<MoaClubMembers> clubMemberList = new ArrayList<>();
 
     @Builder
-    public MoaClub(String accPw, Long balance, AccountStatus status,
+    public MoaClub(Long balance, AccountStatus status,
                    String accountId, String name, Long clubFee, int atDate, Currency currency) {
-        super(accPw, balance, status);
+        super(balance, status);
         this.accountId = accountId;
         this.name = name;
         this.clubFee = clubFee;

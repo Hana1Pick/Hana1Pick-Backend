@@ -1,4 +1,4 @@
-package com.hana.hana1pick.domain.moaclub.dto.response;
+package com.hana.hana1pick.domain.user.dto.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class AccPwCheckResDto {
+public class PwCheckResDto {
 
     private boolean check;
 }

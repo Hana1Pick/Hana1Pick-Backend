@@ -4,7 +4,6 @@ import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
-import com.hana.hana1pick.domain.moaclub.dto.response.AccPwCheckResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubResDto;
 import com.hana.hana1pick.domain.moaclub.entity.ClubMembersId;
@@ -42,7 +41,6 @@ public class MoaClubService {
     private final UserRepository userRepository;
     private final DepositRepository depositRepository;
     private final AccIdGenerator accIdGenerator;
-    private final BCryptPasswordEncoder passwordEncoder;
 
     public SuccessResult<ClubOpeningResDto> openMoaClub(ClubOpeningReqDto request) {
         // 예외처리
@@ -57,7 +55,7 @@ public class MoaClubService {
         moaClubRepository.save(moaClub);
 
         // MoaClubMembers 생성
-        createClubMembers(user, moaClub, user.getName(), request.getAccPw(), FOUNDER);
+        createClubMembers(user, moaClub, user.getName(), FOUNDER);
 
         return success(MOACLUB_CREATED_SUCCESS, new ClubOpeningResDto(accId));
     }
@@ -74,7 +72,7 @@ public class MoaClubService {
         return success(MOACLUB_INVITE_SUCCESS);
     }
 
-    public SuccessResult joinMoaClub(ClubPwReqDto request) {
+    public SuccessResult joinMoaClub(AccIdReqDto request) {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getAccountId());
 
@@ -85,7 +83,7 @@ public class MoaClubService {
         String uniqueName = generateUniqueName(user.getName(), moaClub);
 
         // 모아클럽 참여
-        createClubMembers(user, moaClub, uniqueName, request.getAccPw(), MEMBER);
+        createClubMembers(user, moaClub, uniqueName, MEMBER);
         updateInviteeList(user, moaClub, uniqueName);
 
         return success(MOACLUB_JOIN_SUCCESS);
@@ -104,14 +102,6 @@ public class MoaClubService {
         return success(MOACLUB_FETCH_SUCCESS, ClubResDto.of(moaClub, clubMemberList));
     }
 
-    public SuccessResult<AccPwCheckResDto> checkAccPw(ClubPwReqDto request) {
-        String accPwCheck = clubMembersRepository.findAccPwByAccountId(request.getAccountId(), request.getUserIdx())
-                .orElseThrow(() -> new BaseException(MOACLUB_NOT_FOUND));
-        boolean isPwValid = passwordEncoder.matches(request.getAccPw(), accPwCheck);
-
-        return success(ACCOUNT_PW_CHECK_SUCCESS, new AccPwCheckResDto(isPwValid));
-    }
-
     public SuccessResult updateMoaClub(ClubUpdateReqDto request) {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getAccountId());
@@ -125,19 +115,8 @@ public class MoaClubService {
         return success(MOACLUB_UPDATE_SUCCESS);
     }
 
-    public SuccessResult updateMoaClubMemberPw(ClubPwReqDto request) {
-        ClubMembersId clubMembersId = new ClubMembersId(request.getAccountId(), request.getUserIdx());
-        MoaClubMembers clubMember = clubMembersRepository.findById(clubMembersId)
-                .orElseThrow(() -> new BaseException(USER_NOT_CLUB_MEMBER));
-
-        clubMember.updateAccPw(passwordEncoder.encode(request.getAccPw()));
-
-        return success(MOACLUB_MEMBER_PW_UPDATE_SUCCESS);
-    }
-
     private MoaClub createMoaClub(ClubOpeningReqDto request, String accId) {
         return MoaClub.builder()
-                .accPw(passwordEncoder.encode(request.getAccPw()))
                 .balance(0L)
                 .status(ACTIVE)
                 .accountId(accId)
@@ -181,9 +160,9 @@ public class MoaClubService {
         return accId;
     }
 
-    private void createClubMembers(User user, MoaClub club, String userName, String accPw, MoaClubMemberRole role) {
+    private void createClubMembers(User user, MoaClub club, String userName, MoaClubMemberRole role) {
         ClubMembersId clubMembersId = new ClubMembersId(club.getAccountId(), user.getIdx());
-        MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user, userName, passwordEncoder.encode(accPw), role);
+        MoaClubMembers clubMembers = new MoaClubMembers(clubMembersId, club, user, userName, role);
         clubMembersRepository.save(clubMembers);
 
         user.getClubList().add(clubMembers);

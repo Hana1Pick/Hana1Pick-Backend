@@ -13,6 +13,4 @@ import java.util.UUID;
 @Repository
 public interface MoaClubMembersRepository extends JpaRepository<MoaClubMembers, ClubMembersId> {
 
-    @Query("select cm.accPw from MoaClubMembers cm where cm.club.accountId = :accountId and cm.user.idx = :userIdx")
-    Optional<String> findAccPwByAccountId(@Param("accountId") String accountId, UUID userIdx);
 }

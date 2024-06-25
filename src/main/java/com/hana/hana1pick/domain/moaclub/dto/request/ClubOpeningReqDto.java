@@ -10,7 +10,6 @@ public class ClubOpeningReqDto {
 
     private String accountId;
     private UUID userIdx;
-    private String accPw;
     private String name;
     private Long clubFee;
     private int atDate;
