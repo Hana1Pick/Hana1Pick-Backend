@@ -47,13 +47,14 @@ public class AccountService {
         return result;
     }
 
-    public List<AccountInfoDto> getAccountInfoFromAccountHistory(List<String> accountHistories){
+    public List<AccountInfoDto> getAccountInfoFromAccountHistory(List<Object[]> accountHistories){
         List<AccountInfoDto> result = new ArrayList<>();
 
         accountHistories.stream()
-                .map(inAccId -> {
-                    Accounts account = accountsRepository.findByAccountId(inAccId);
-                    return new AccountInfoDto(inAccId, account.getName());
+                .map(account -> {
+                    String inAccId = (String) account[0];
+                    String inAccName = (String) account[1];
+                    return new AccountInfoDto(inAccId, inAccName);
                 })
                 .forEach(result::add);
 
