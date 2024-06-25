@@ -26,9 +26,8 @@ public class CelublogController {
 
     @Operation(summary="셀럽로그 계좌 개설")
     @PostMapping("/accession")
-    public SuccessResult<AccResDto> accedeCelublog(){
-//        @RequestBody AcceReqDto req
-        AcceReqDto req = AcceReqDto.builder().accPw("1234").outAccId("02-00-0000507").name("김가원").celebrityIdx(Long.parseLong("1")).userIdx(UUID.fromString("123e4567-e89b-12d3-a456-556655440000")).imgSrc("imgimgimg").build();
+    public SuccessResult<AccResDto> accedeCelublog(@RequestBody AcceReqDto req){
+        //AcceReqDto req = AcceReqDto.builder().accPw("1234").outAccId("02-00-0000507").name("김가원").celebrityIdx(Long.parseLong("1")).userIdx(UUID.fromString("123e4567-e89b-12d3-a456-556655440000")).imgSrc("imgimgimg").build();
        return celublogService.accedeCelublog(req);
     }
 

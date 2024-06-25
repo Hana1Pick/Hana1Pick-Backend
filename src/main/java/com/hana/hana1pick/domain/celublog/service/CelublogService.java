@@ -51,7 +51,7 @@ public class CelublogService {
                 .build();
 
         celublogRepository.save(celub);
-        return success(CELUBLOG_CREATED_SUCCESS);
+        return success(CELUBLOG_CREATED_SUCCESS, accNum);
     }
 
     private Deposit getDepositByAccId(String outAccId){
