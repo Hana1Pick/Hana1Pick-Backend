@@ -310,12 +310,10 @@ public class MoaClubService {
     }
 
     private void validateFounder(User user, MoaClub moaClub) {
-        for (MoaClubMembers member : moaClub.getClubMemberList()) {
-            if (member.getRole() == FOUNDER) {
-                if (!member.getUser().equals(user)) {
-                    throw new BaseException(NO_PERMISSION_TO_UPDATE);
-                }
-            }
+        MoaClubMembers member = getClubMemberByUserAndClub(user, moaClub);
+
+        if (member.getRole() != FOUNDER) {
+            throw new BaseException(NO_PERMISSION_TO_UPDATE);
         }
     }
 
