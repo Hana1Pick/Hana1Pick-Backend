@@ -15,4 +15,5 @@ public interface AccountsRepository extends JpaRepository<Accounts, UUID> {
 
   Optional<Accounts> findByUserIdxAndAccountId(@Param("userIdx") UUID userIdx, @Param("accountId") String accountId);
 
+  Optional<Object> findByAccountId(String accountId);
 }
