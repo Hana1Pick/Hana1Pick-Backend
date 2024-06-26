@@ -41,7 +41,15 @@ spring:
       disabled: true
     default-consumes-media-type: application/json;charset=UTF-8
     default-produces-media-type: application/json;charset=UTF-81
+
 app:
   kakao:
-    rest_api_key: ENC(v1UNXkE19irf60ZYfEHMdrw/evbThNcV1f+HTHSn9c9r712Xd/R8DSswhbV8TVtJ)
-    redirect_uri: ENC(Lbb0hqrhUH/szOXxp9SPZTDIDfU4bCR+fQX2azil+0WOwjap0nQxZwBDmIZcr3pTY1NFPtgeTRE=)
+    rest_api_key: ENC(2dRfMOBeXknUrSUVvEcI8IkW+4/p1b62TztLehKIZ8BEdqc/oaA067MLJB1uR3vh)
+    login-redirect: /user/oauth/kakao
+    logout-redirect: /user/logout/kakao
+    url:
+      login: https://kauth.kakao.com/oauth/authorize
+      logout: https://kauth.kakao.com/oauth/logout
+      token: https://kauth.kakao.com/oauth/token
+      profile: https://kapi.kakao.com/v2/user/me
+      unlink: https://kapi.kakao.com/v1/user/unlink
