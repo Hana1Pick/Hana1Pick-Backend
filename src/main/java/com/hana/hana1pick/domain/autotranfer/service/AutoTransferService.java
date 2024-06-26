@@ -52,4 +52,11 @@ public class AutoTransferService {
             autoTransferRepository.delete(autoTransfer);
         }
     }
+
+    public void updateAutoTrsfByInAccId(String inAccId, int atDate, Long amount) {
+        List<AutoTransfer> autoTransferList = autoTransferRepository.findByInAccId(inAccId);
+        for (AutoTransfer autoTransfer : autoTransferList) {
+            autoTransferRepository.save(autoTransfer.updateAutoTransfer(atDate, amount));
+        }
+    }
 }

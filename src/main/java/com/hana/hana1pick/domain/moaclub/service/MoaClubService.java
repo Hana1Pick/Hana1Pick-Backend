@@ -134,6 +134,11 @@ public class MoaClubService {
         // 관리자인지 확인
         validateManager(user, moaClub);
 
+        // 자동이체 수정
+        if (request.getAtDate() != moaClub.getAtDate() || request.getClubFee() != moaClub.getClubFee()) {
+            autoTransferService.updateAutoTrsfByInAccId(moaClub.getAccountId(), request.getAtDate(), request.getClubFee());
+        }
+
         // 모아클럽 수정
         moaClubRepository.save(moaClub.update(request));
 

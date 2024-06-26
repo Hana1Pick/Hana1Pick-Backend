@@ -22,4 +22,8 @@ public class AutoTransferId implements Serializable {
 
     @Column
     private String outAccId;
+
+    public void updateAtDate(int atDate) {
+        this.atDate = atDate;
+    }
 }
