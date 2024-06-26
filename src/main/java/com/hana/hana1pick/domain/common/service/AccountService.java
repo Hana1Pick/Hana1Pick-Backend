@@ -109,7 +109,7 @@ public class AccountService {
             transactionManager.commit(status);
 
             // 2-2. 입출금 로그 생성
-            accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), amount, TransType.valueOf("DEPOSIT"), request.getHashtag());
+            accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), amount, request.getTransType(), request.getHashtag());
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new BaseException(ACCOUNT_CASH_OUT_FAIL);

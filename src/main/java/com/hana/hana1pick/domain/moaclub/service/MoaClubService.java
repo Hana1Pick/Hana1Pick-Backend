@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.hana.hana1pick.domain.acchistory.entity.TransType.AUTO_TRANSFER;
 import static com.hana.hana1pick.domain.common.entity.AccountStatus.*;
 import static com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto.ClubFeeStatus.PAID;
 import static com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto.ClubFeeStatus.UNPAID;
@@ -496,7 +497,7 @@ public class MoaClubService {
         Deposit managerAcc = manager.getDeposit();
 
         // 이체 DTO 생성
-        CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), moaClub.getBalance());
+        CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), moaClub.getBalance(), AUTO_TRANSFER);
 
         // 이체
         accountService.cashOut(transfer);
