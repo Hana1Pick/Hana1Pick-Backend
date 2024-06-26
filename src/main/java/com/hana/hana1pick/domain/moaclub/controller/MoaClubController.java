@@ -67,8 +67,8 @@ public class MoaClubController {
 
     @Operation(summary = "모아클럽 요청 투표")
     @PostMapping("/vote")
-    public SuccessResult voteMoaClubRequest(@RequestBody ClubVoteReqDto request) {
-        return moaClubService.voteMoaClubRequest(request);
+    public SuccessResult voteMoaClubRequest(@RequestParam(name = "type") int type, @RequestBody ClubVoteReqDto request) {
+        return moaClubService.voteMoaClubRequest(type, request);
     }
 
     @Operation(summary = "모아클럽 요청 조회")
