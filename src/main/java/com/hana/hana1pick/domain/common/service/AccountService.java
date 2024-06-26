@@ -2,7 +2,7 @@ package com.hana.hana1pick.domain.common.service;
 
 import com.hana.hana1pick.domain.acchistory.entity.TransType;
 import com.hana.hana1pick.domain.acchistory.repository.AccountHistoryRepository;
-import com.hana.hana1pick.domain.acchistory.service.AccountHistoryService;
+import com.hana.hana1pick.domain.acchistory.service.AccHistoryService;
 import com.hana.hana1pick.domain.celublog.repository.CelublogRepository;
 import com.hana.hana1pick.domain.common.dto.request.AccountForCashOutHisReqDto;
 import com.hana.hana1pick.domain.common.dto.request.AccountForCashOutReqDto;
@@ -40,7 +40,7 @@ public class AccountService {
     private final DepositRepository depositRepository;
     private final CelublogRepository celublogRepository;
     private final MoaClubRepository moaClubRepository;
-    private final AccountHistoryService accountHistoryService;
+    private final AccHistoryService accountHistoryService;
 
     final PlatformTransactionManager transactionManager;
 
