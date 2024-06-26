@@ -60,4 +60,10 @@ public class MoaClubController {
     public SuccessResult leaveMoaClub(@RequestBody ClubMemberLeaveReqDto request) {
         return moaClubService.leaveMoaClub(request);
     }
+
+    @Operation(summary = "모아클럽 관리자 변경 요청")
+    @PostMapping("/manager/request")
+    public SuccessResult requestManagerChange(@RequestBody ClubManagerChangeReqDto request) {
+        return moaClubService.requestManagerChange(request);
+    }
 }
