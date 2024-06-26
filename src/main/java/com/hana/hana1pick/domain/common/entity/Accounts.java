@@ -3,7 +3,7 @@ package com.hana.hana1pick.domain.common.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
-import org.hibernate.annotations.Immutable;
+import org.springframework.data.annotation.Immutable;
 
 import java.util.UUID;
 
@@ -11,10 +11,11 @@ import java.util.UUID;
 @Entity
 @Immutable
 public class Accounts {
-    private UUID userIdx;
-    private String email;
     @Id
     private String accountId;
+    private UUID userIdx;
+    private String email;
+    private String name;
     private String accountType;
     private Integer accountStatus;
 }
