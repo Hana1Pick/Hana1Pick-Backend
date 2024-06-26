@@ -16,7 +16,7 @@ public enum BaseResponseStatus {
     // User
     USER_PW_CHECK_SUCCESS(OK, "사용자 비밀번호 확인 성공"),
 
-    // moaclub
+    // Moaclub
     MOACLUB_CREATED_SUCCESS(CREATED, "모아클럽 개설 성공"),
     MOACLUB_INVITE_SUCCESS(OK, "모아클럽 초대 성공"),
     MOACLUB_JOIN_SUCCESS(OK, "모아클럽 가입 성공"),
@@ -24,6 +24,9 @@ public enum BaseResponseStatus {
     MOACLUB_MEMBER_PW_UPDATE_SUCCESS(OK, "모아클럽 멤버 비밀번호 수정 성공"),
     MOACLUB_FETCH_SUCCESS(OK, "모아클럽 조회 성공"),
 
+    // Celublog
+    CELUBLOG_CREATED_SUCCESS(CREATED, "셀럽로그 개설 성공"),
+  
     // Account
     ACCOUNT_CASH_OUT_LIST_SUCCESS(OK, "계좌 번호 목록 조회 성공"),
     ACCOUNT_CASH_OUT_HISTORY_LIST_SUCCESS(OK, "계좌 번호 목록 검색 성공"),
@@ -39,10 +42,14 @@ public enum BaseResponseStatus {
     // User
     USER_NOT_FOUND(ACCEPTED, "E200", "존재하지 않는 회원입니다."),
 
-    // Deposit
-    DEPOSIT_NOT_FOUND(ACCEPTED, "E300", "존재하지 않는 계좌입니다."),
+    // Account
+    ACCOUNT_NOT_FOUND(ACCEPTED, "E300", "존재하지 않는 계좌입니다."),
     NOT_ACCOUNT_OWNER(ACCEPTED, "E301", "계좌의 소유자가 아닙니다."),
     INVALID_TRANSFER_AMOUNT(ACCEPTED, "E302", "유효하지 않은 금액입니다."),
+    ACCOUNT_INACTIVE(ACCEPTED, "E303", "해지된 계좌입니다."),
+
+    // Account History
+    ACCOUNT_HISTORY_SUCCESS(OK , "계좌 내역 조회 성공"),
 
     // MoaClub
     MOACLUB_NOT_FOUND(ACCEPTED, "E400", "존재하지 않는 모아클럽입니다."),
@@ -51,6 +58,9 @@ public enum BaseResponseStatus {
     INACTIVE_MOACLUB(ACCEPTED, "E403", "해지된 클럽입니다."),
     NO_PERMISSION_TO_UPDATE(ACCEPTED, "E404", "클럽 수정 권한이 없습니다."),
     USER_NOT_CLUB_MEMBER(ACCEPTED, "E405", "클럽 멤버가 아닙니다."),
+  
+    // Celublog
+    CELEBRITY_NOT_FOUND(ACCEPTED, "E500", "존재하지 않는 연예인입니다.")
 
     // Account
     ACCOUNT_STATUS_INVALID(ACCEPTED, "E600", "유효하지 않는 계좌입니다."),
