@@ -56,7 +56,7 @@ public class AccountService {
         List<AccountInfoDto> result = new ArrayList<>();
 
         accounts.stream()
-                .map(a -> new AccountInfoDto(a.getAccountId(), a.getAccountType()))
+                .map(a -> new AccountInfoDto(a.getAccountType(), a.getAccountId(), a.getName()))
                 .forEach(result::add);
 
         return result;
@@ -69,10 +69,20 @@ public class AccountService {
                 .map(account -> {
                     String inAccId = (String) account[0];
                     String inAccName = (String) account[1];
-                    return new AccountInfoDto(inAccId, inAccName);
+                    return new AccountInfoDto(getAccountTypeByAccId(inAccId), inAccId, inAccName);
                 })
                 .forEach(result::add);
 
         return result;
+    }
+    private String getAccountTypeByAccId(String accId) {
+        switch (accId.substring(3, 5)) {
+            case "00":
+                return "deposit";
+            case "01":
+                return "celublog";
+            default: // "02"
+                return "moaclub";
+        }
     }
 }

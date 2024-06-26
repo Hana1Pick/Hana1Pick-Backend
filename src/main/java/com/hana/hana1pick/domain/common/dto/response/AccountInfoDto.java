@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccountInfoDto {
+    private String accountType;
     private String accountId;
-    private String accountInfo;
+    private String name;
 }
