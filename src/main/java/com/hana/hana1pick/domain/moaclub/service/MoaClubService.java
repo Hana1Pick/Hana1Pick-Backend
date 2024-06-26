@@ -8,10 +8,7 @@ import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
-import com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto;
-import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
-import com.hana.hana1pick.domain.moaclub.dto.response.ClubResDto;
-import com.hana.hana1pick.domain.moaclub.dto.response.ManagerChangeReq;
+import com.hana.hana1pick.domain.moaclub.dto.response.*;
 import com.hana.hana1pick.domain.moaclub.entity.*;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubMembersRepository;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubRepository;
@@ -55,6 +52,7 @@ public class MoaClubService {
     private final ChannelTopic managerChangeTopic;
 
     private static final String MANAGER_CHANGE_KEY_PREFIX = "managerChangeRequest:";
+    private static final String WITHDRAW_KEY_PREFIX = "withdrawRequest:";
 
     public SuccessResult<ClubOpeningResDto> openMoaClub(ClubOpeningReqDto request) {
         // 예외처리
@@ -237,6 +235,37 @@ public class MoaClubService {
         }
 
         return success(MOACLUB_REQUEST_FETCH_SUCCESS, changeReq);
+    }
+
+    public SuccessResult requestWithdraw(ClubWithdrawReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+        MoaClubMembers member = getClubMemberByUserAndClub(user, moaClub);
+
+        // 관리자인지 확인
+        validateManager(user, moaClub);
+
+        // 유효한 출금 금액인지 확인
+        if (request.getAmount() > moaClub.getBalance()) {
+            throw new BaseException(INVALID_TRANSFER_AMOUNT);
+        }
+
+        // Redis key 설정
+        String key = WITHDRAW_KEY_PREFIX + request.getAccountId();
+
+        // 변경 요청이 이미 존재하는 경우
+        if (redisTemplate.hasKey(key)) {
+            throw new BaseException(REQUEST_ALREADY_PENDING);
+        }
+
+        WithdrawReq changeReq = new WithdrawReq(
+                moaClub.getAccountId(), member.getUserName(), request.getAmount(), LocalDateTime.now(), new HashMap<>()
+        );
+        redisTemplate.opsForValue().set(key, changeReq, Duration.ofHours(24));
+
+        // 관리자 제외 클럽멤버에게 실시간 알림 발송 - 추후 개발 예정
+
+        return success(MOACLUB_REQUEST_SUCCESS);
     }
 
     private MoaClub createMoaClub(ClubOpeningReqDto request, String accId) {

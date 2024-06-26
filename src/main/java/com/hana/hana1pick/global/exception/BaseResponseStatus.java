@@ -25,7 +25,7 @@ public enum BaseResponseStatus {
     MOACLUB_FETCH_SUCCESS(OK, "모아클럽 조회 성공"),
     MOACLUB_FEE_STATUS_FETCH_SUCCESS(OK, "모아클럽 회비 내역 조회 성공"),
     MOACLUB_MEMBER_LEAVE_SUCCESS(OK, "모아클럽 탈퇴 성공"),
-    MOACLUB_MANAGER_REQUEST_SUCCESS(OK, "모아클럽 요청 성공"),
+    MOACLUB_REQUEST_SUCCESS(OK, "모아클럽 요청 성공"),
     MOACLUB_VOTE_SUCCESS(OK, "모아클럽 투표 성공"),
     MOACLUB_REQUEST_FETCH_SUCCESS(OK, "모아클럽 요청 조회 성공"),
 
