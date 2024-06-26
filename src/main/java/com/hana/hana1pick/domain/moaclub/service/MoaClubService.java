@@ -21,6 +21,7 @@ import com.hana.hana1pick.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +52,7 @@ public class MoaClubService {
     private final AccIdGenerator accIdGenerator;
     private final AccHisRepository accHisRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ChannelTopic managerChangeTopic;
 
     private static final String MANAGER_CHANGE_KEY_PREFIX = "managerChangeRequest:";
 
@@ -191,6 +193,36 @@ public class MoaClubService {
         // 관리자 제외 클럽멤버에게 실시간 알림 발송 - 추후 개발 예정
 
         return success(MOACLUB_MANAGER_REQUEST_SUCCESS);
+    }
+
+    public SuccessResult voteMoaClubRequest(ClubVoteReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+
+        // 관리자가 아닌 클럽 멤버인지 확인
+        MoaClubMembers member = getClubMemberByUserAndClub(user, moaClub);
+        if (member.getRole() == MANAGER) {
+            throw new BaseException(NO_PERMISSION_TO_VOTE);
+        }
+
+        // Redis key 설정
+        String key = MANAGER_CHANGE_KEY_PREFIX + request.getAccountId();
+
+        ManagerChangeReq changeReq = getRequest(key);
+
+        // 요청 없는 경우 예외 처리
+        if (changeReq == null) {
+            throw new BaseException(MOACLUB_REQUEST_NOT_FOUND);
+        }
+
+        // 투표 결과 저장
+        changeReq.getVotes().put(member.getUserName(), request.getAgree());
+        redisTemplate.opsForValue().set(key, changeReq);
+
+        // Redis Pub
+        redisTemplate.convertAndSend(managerChangeTopic.getTopic(), changeReq);
+
+        return success(MOACLUB_VOTE_SUCCESS);
     }
 
     public SuccessResult<ManagerChangeReq> getMoaClubRequest(int type, AccIdReqDto request) {
