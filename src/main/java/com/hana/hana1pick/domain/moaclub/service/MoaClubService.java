@@ -194,56 +194,6 @@ public class MoaClubService {
         return success(MOACLUB_REQUEST_SUCCESS);
     }
 
-    public SuccessResult voteMoaClubRequest(int type, ClubVoteReqDto request) {
-        User user = getUserByIdx(request.getUserIdx());
-        MoaClub moaClub = getClubByAccId(request.getAccountId());
-
-        // 관리자가 아닌 클럽 멤버인지 확인
-        MoaClubMembers member = getClubMemberByUserAndClub(user, moaClub);
-        if (member.getRole() == MANAGER) {
-            throw new BaseException(NO_PERMISSION_TO_VOTE);
-        }
-
-        // Redis key 설정
-        String key = type == 0 ? MANAGER_CHANGE_KEY_PREFIX : WITHDRAW_KEY_PREFIX;
-        key += request.getAccountId();
-
-        VoteResult voteResult = type == 0 ? getRequest(key, ManagerChangeReq.class) : getRequest(key, WithdrawReq.class);
-
-        // 요청 없는 경우 예외 처리
-        if (voteResult == null) {
-            throw new BaseException(MOACLUB_REQUEST_NOT_FOUND);
-        }
-
-        // 투표 결과 저장
-        voteResult.getVotes().put(member.getUserName(), request.getAgree());
-        redisTemplate.opsForValue().set(key, voteResult);
-
-        // Redis Pub
-        if (type == 0) {
-            redisTemplate.convertAndSend(managerChangeTopic.getTopic(), voteResult);
-        } else {
-            redisTemplate.convertAndSend(withdrawTopic.getTopic(), voteResult);
-        }
-
-        return success(MOACLUB_VOTE_SUCCESS);
-    }
-
-    public SuccessResult<VoteResult> getMoaClubRequest(int type, AccIdReqDto request) {
-        // Redis key 설정
-        String key = type == 0 ? MANAGER_CHANGE_KEY_PREFIX : WITHDRAW_KEY_PREFIX;
-        key += request.getAccountId();
-
-        VoteResult voteResult = type == 0 ? getRequest(key, ManagerChangeReq.class) : getRequest(key, WithdrawReq.class);
-
-        // 요청 없는 경우 예외 처리
-        if (voteResult == null) {
-            throw new BaseException(MOACLUB_REQUEST_NOT_FOUND);
-        }
-
-        return success(MOACLUB_REQUEST_FETCH_SUCCESS, voteResult);
-    }
-
     public SuccessResult requestWithdraw(ClubWithdrawReqDto request) {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getAccountId());
@@ -273,6 +223,44 @@ public class MoaClubService {
         // 관리자 제외 클럽멤버에게 실시간 알림 발송 - 추후 개발 예정
 
         return success(MOACLUB_REQUEST_SUCCESS);
+    }
+
+    public SuccessResult<VoteResult> getMoaClubRequest(int type, AccIdReqDto request) {
+        // Redis key 설정
+        String key = getRedisKey(type) + request.getAccountId();
+
+        // 결과 반환
+        VoteResult voteResult = getVoteResult(type, key);
+
+        return success(MOACLUB_REQUEST_FETCH_SUCCESS, voteResult);
+    }
+
+    public SuccessResult voteMoaClubRequest(int type, ClubVoteReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+
+        // 관리자가 아닌 클럽 멤버인지 확인
+        MoaClubMembers member = getClubMemberByUserAndClub(user, moaClub);
+        validateMember(member);
+
+        // Redis key 설정
+        String key = getRedisKey(type) + request.getAccountId();
+
+        // 결과 반환
+        VoteResult voteResult = getVoteResult(type, key);
+
+        // 투표 결과 저장
+        voteResult.getVotes().put(member.getUserName(), request.getAgree());
+        redisTemplate.opsForValue().set(key, voteResult);
+
+        // Redis Pub
+        if (type == 0) {
+            redisTemplate.convertAndSend(managerChangeTopic.getTopic(), voteResult);
+        } else {
+            redisTemplate.convertAndSend(withdrawTopic.getTopic(), voteResult);
+        }
+
+        return success(MOACLUB_VOTE_SUCCESS);
     }
 
     private MoaClub createMoaClub(ClubOpeningReqDto request, String accId) {
@@ -486,6 +474,28 @@ public class MoaClubService {
         if (hasMember) {
             throw new BaseException(MOACLUB_HAS_MEMBER);
         }
+    }
+
+    private void validateMember(MoaClubMembers member) {
+        if (member.getRole() == MANAGER) {
+            throw new BaseException(NO_PERMISSION_TO_VOTE);
+        }
+    }
+
+    private String getRedisKey(int type) {
+        String key = type == 0 ? MANAGER_CHANGE_KEY_PREFIX : WITHDRAW_KEY_PREFIX;
+        return key;
+    }
+
+    private VoteResult getVoteResult(int type, String key) {
+        VoteResult voteResult = type == 0 ? getRequest(key, ManagerChangeReq.class) : getRequest(key, WithdrawReq.class);
+
+        // 요청 없는 경우 예외 처리
+        if (voteResult == null) {
+            throw new BaseException(MOACLUB_REQUEST_NOT_FOUND);
+        }
+
+        return voteResult;
     }
 
     private <T extends VoteResult> T getRequest(String key, Class<T> tClass) {

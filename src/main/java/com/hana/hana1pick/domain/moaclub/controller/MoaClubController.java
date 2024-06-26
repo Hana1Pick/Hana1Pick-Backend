@@ -65,10 +65,10 @@ public class MoaClubController {
         return moaClubService.requestManagerChange(request);
     }
 
-    @Operation(summary = "모아클럽 요청 투표")
-    @PostMapping("/vote")
-    public SuccessResult voteMoaClubRequest(@RequestParam(name = "type") int type, @RequestBody ClubVoteReqDto request) {
-        return moaClubService.voteMoaClubRequest(type, request);
+    @Operation(summary = "모아클럽 출금 요청")
+    @PostMapping("/request-withdraw")
+    public SuccessResult requestWithdraw(@RequestBody ClubWithdrawReqDto request) {
+        return moaClubService.requestWithdraw(request);
     }
 
     @Operation(summary = "모아클럽 요청 조회")
@@ -77,9 +77,9 @@ public class MoaClubController {
         return moaClubService.getMoaClubRequest(type, request);
     }
 
-    @Operation(summary = "모아클럽 출금 요청")
-    @PostMapping("/request-withdraw")
-    public SuccessResult requestWithdraw(@RequestBody ClubWithdrawReqDto request) {
-        return moaClubService.requestWithdraw(request);
+    @Operation(summary = "모아클럽 요청 투표")
+    @PostMapping("/vote")
+    public SuccessResult voteMoaClubRequest(@RequestParam(name = "type") int type, @RequestBody ClubVoteReqDto request) {
+        return moaClubService.voteMoaClubRequest(type, request);
     }
 }

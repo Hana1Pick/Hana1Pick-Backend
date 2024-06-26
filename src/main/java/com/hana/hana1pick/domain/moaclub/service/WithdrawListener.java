@@ -59,16 +59,10 @@ public class WithdrawListener implements MessageListener {
 
                 // 클럽멤버 모두에게 관리자 변경 요청 취소 알림 - 추후 개발 예정
             } else if (request.getVotes().size() == memberCount && !request.getVotes().containsValue(false)) {
-                // 출금 로직
-                MoaClub moaClub = getClubByAccId(request.getAccountId());
-                User manager = getClubMemberByClubAndUserName(moaClub, request.getUserName()).getUser();
-                Deposit managerAcc = manager.getDeposit();
+                // 출금
+                transfer(request);
 
-                // 이체 DTO 생성
-                CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), request.getAmount());
-                accountService.cashOut(transfer);
-
-                // 이체
+                // 투표 삭제
                 redisTemplate.delete(key);
 
                 // 클럽멤버 모두에게 관리자 출금 알림 - 추후 개발 예정
@@ -77,6 +71,16 @@ public class WithdrawListener implements MessageListener {
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }
+    }
+
+    private void transfer(WithdrawReq request) {
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+        User manager = getClubMemberByClubAndUserName(moaClub, request.getUserName()).getUser();
+        Deposit managerAcc = manager.getDeposit();
+
+        // 이체 DTO 생성
+        CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), request.getAmount());
+        accountService.cashOut(transfer);
     }
 
     private int getClubMemberCount(String accountId) {
