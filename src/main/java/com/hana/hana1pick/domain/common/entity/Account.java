@@ -17,6 +17,9 @@ import static com.hana.hana1pick.domain.common.entity.AccountStatus.INACTIVE;
 public class Account {
 
     @Column
+    private String name;
+
+    @Column
     private Long balance;
 
     @CreatedDate
@@ -33,5 +36,10 @@ public class Account {
 
     public void closeAccount() {
         this.status = INACTIVE;
+    }
+
+    public Account cashOut(Long amount){
+        balance += amount;
+        return this;
     }
 }

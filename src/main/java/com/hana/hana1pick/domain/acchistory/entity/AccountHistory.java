@@ -1,15 +1,15 @@
 package com.hana.hana1pick.domain.acchistory.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 public class AccountHistory {
@@ -27,13 +27,16 @@ public class AccountHistory {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private TransType transType;
+    private TransType transType; // 거래 유형 (DEPOSIT, WITHDRAW, AUTO_TRANSFER)
 
     @Column
     private Long transAmount;
 
     @Column
     private String inAccId;
+
+    @Column
+    private String inAccName;
 
     @Column
     private String outAccId;

@@ -308,7 +308,7 @@ public class MoaClubService {
 
     private Deposit getDepositByAccId(String accId) {
         return depositRepository.findById(accId)
-                .orElseThrow(() -> new BaseException(DEPOSIT_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
     }
 
     private String getAccId() {
