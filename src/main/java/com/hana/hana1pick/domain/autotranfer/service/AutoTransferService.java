@@ -45,4 +45,11 @@ public class AutoTransferService {
             accountService.cashOut(transfer);
         }
     }
+
+    public void deleteAutoTrsfByInAccId(String inAccId) {
+        List<AutoTransfer> autoTransferList = autoTransferRepository.findByInAccId(inAccId);
+        for (AutoTransfer autoTransfer : autoTransferList) {
+            autoTransferRepository.delete(autoTransfer);
+        }
+    }
 }
