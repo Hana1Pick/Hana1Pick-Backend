@@ -27,4 +27,11 @@ public class AutoTransfer {
     @JoinColumn(name = "out_acc_id")
     @JsonManagedReference
     private Deposit outAcc;
+
+    public AutoTransfer updateAutoTransfer(int atDate, Long amount) {
+        this.id.updateAtDate(atDate);
+        this.amount = amount;
+
+        return this;
+    }
 }
