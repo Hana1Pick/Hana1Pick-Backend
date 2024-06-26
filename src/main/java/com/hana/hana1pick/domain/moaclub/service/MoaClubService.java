@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.repository.AccHisRepository;
+import com.hana.hana1pick.domain.autotranfer.entity.AutoTransfer;
+import com.hana.hana1pick.domain.autotranfer.entity.AutoTransferId;
+import com.hana.hana1pick.domain.autotranfer.repository.AutoTransferRepository;
 import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.common.service.AccountService;
@@ -51,6 +54,7 @@ public class MoaClubService {
     private final AccIdGenerator accIdGenerator;
     private final AccHisRepository accHisRepository;
     private final AccountService accountService;
+    private final AutoTransferRepository autoTransferRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChannelTopic managerChangeTopic;
     private final ChannelTopic withdrawTopic;
@@ -265,6 +269,13 @@ public class MoaClubService {
         }
 
         return success(MOACLUB_VOTE_SUCCESS);
+    }
+
+    public SuccessResult registerAutoTransfer(ClubAutoTransferReqDto request) {
+        AutoTransfer autoTransfer = createAutoTransfer(request);
+        autoTransferRepository.save(autoTransfer);
+
+        return success(MOACLUB_AUTO_TRANSFER_SET_SUCCESS);
     }
 
     private MoaClub createMoaClub(ClubOpeningReqDto request, String accId) {
@@ -517,5 +528,38 @@ public class MoaClubService {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.registerModule(new JavaTimeModule())
                 .convertValue(redisTemplate.opsForValue().get(key), tClass);
+    }
+
+    private AutoTransfer createAutoTransfer(ClubAutoTransferReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getInAccId());
+
+        // 예외처리
+        autoTransferExceptionHandling(user, moaClub, request.getOutAccId());
+
+        // 자동이체 생성
+        AutoTransferId autoTransferId = AutoTransferId.builder()
+                .atDate(moaClub.getAtDate())
+                .inAccId(request.getInAccId())
+                .outAccId(request.getOutAccId())
+                .build();
+
+        AutoTransfer autoTransfer = AutoTransfer.builder()
+                .id(autoTransferId)
+                .amount(moaClub.getClubFee())
+                .deposit(user.getDeposit())
+                .build();
+
+        return autoTransfer;
+    }
+
+    private void autoTransferExceptionHandling(User user, MoaClub moaClub, String outAccId) {
+        // 클럽멤버인지 확인
+        validateClubMember(user, moaClub);
+
+        // 출금계좌가 본인 계좌인지 확인
+        if (!user.getDeposit().getAccountId().equals(outAccId)) {
+            throw new BaseException(NOT_ACCOUNT_OWNER);
+        }
     }
 }

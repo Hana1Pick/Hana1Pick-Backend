@@ -82,4 +82,10 @@ public class MoaClubController {
     public SuccessResult voteMoaClubRequest(@RequestParam(name = "type") int type, @RequestBody ClubVoteReqDto request) {
         return moaClubService.voteMoaClubRequest(type, request);
     }
+
+    @Operation(summary = "모아클럽 자동이체 설정")
+    @PostMapping("/auto-transfer")
+    public SuccessResult registerAutoTransfer(@RequestBody ClubAutoTransferReqDto request) {
+        return moaClubService.registerAutoTransfer(request);
+    }
 }
