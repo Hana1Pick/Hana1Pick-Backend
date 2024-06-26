@@ -9,10 +9,8 @@ import com.hana.hana1pick.domain.moaclub.dto.request.*;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubResDto;
-import com.hana.hana1pick.domain.moaclub.entity.ClubMembersId;
-import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
-import com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole;
-import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
+import com.hana.hana1pick.domain.moaclub.dto.response.ManagerChangeReq;
+import com.hana.hana1pick.domain.moaclub.entity.*;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubMembersRepository;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubRepository;
 import com.hana.hana1pick.domain.user.entity.User;
@@ -20,9 +18,12 @@ import com.hana.hana1pick.domain.user.repository.UserRepository;
 import com.hana.hana1pick.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,9 @@ public class MoaClubService {
     private final DepositRepository depositRepository;
     private final AccIdGenerator accIdGenerator;
     private final AccHisRepository accHisRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private static final String MANAGER_CHANGE_KEY_PREFIX = "managerChangeRequest:";
 
     public SuccessResult<ClubOpeningResDto> openMoaClub(ClubOpeningReqDto request) {
         // 예외처리
@@ -156,6 +160,35 @@ public class MoaClubService {
         }
 
         return success(MOACLUB_MEMBER_LEAVE_SUCCESS);
+    }
+
+    public SuccessResult requestManagerChange(ClubManagerChangeReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+        User candidate = getUserByIdx(request.getCandidateIdx());
+
+        // 관리자인지 확인
+        validateManager(user, moaClub);
+
+        // 후보 관리자가 클럽멤버인지 확인
+        MoaClubMembers memberUser = getClubMemberByUserAndClub(user, moaClub);
+        MoaClubMembers memberCandidate = getClubMemberByUserAndClub(candidate, moaClub);
+
+        // Redis key 설정
+        String key = MANAGER_CHANGE_KEY_PREFIX + request.getAccountId();
+
+        // 변경 요청이 이미 존재하는 경우
+        if (redisTemplate.hasKey(key)) {
+            throw new BaseException(REQUEST_ALREADY_PENDING);
+        }
+
+        ManagerChangeReq changeReq = new ManagerChangeReq(
+                moaClub.getAccountId(), memberUser.getUserName(), memberCandidate.getUserName(), LocalDateTime.now(), new HashMap<>());
+        redisTemplate.opsForValue().set(key, changeReq, Duration.ofHours(24));
+
+        // 관리자 제외 클럽멤버에게 실시간 알림 발송 - 추후 개발 예정
+
+        return success(MOACLUB_MANAGER_REQUEST_SUCCESS);
     }
 
     private MoaClub createMoaClub(ClubOpeningReqDto request, String accId) {
@@ -313,7 +346,7 @@ public class MoaClubService {
         MoaClubMembers member = getClubMemberByUserAndClub(user, moaClub);
 
         if (member.getRole() != MANAGER) {
-            throw new BaseException(NO_PERMISSION_TO_UPDATE);
+            throw new BaseException(NO_PERMISSION_TO_MANAGE);
         }
     }
 
