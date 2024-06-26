@@ -548,7 +548,7 @@ public class MoaClubService {
         AutoTransfer autoTransfer = AutoTransfer.builder()
                 .id(autoTransferId)
                 .amount(moaClub.getClubFee())
-                .deposit(user.getDeposit())
+                .outAcc(user.getDeposit())
                 .build();
 
         return autoTransfer;

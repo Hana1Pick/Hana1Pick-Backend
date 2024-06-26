@@ -26,5 +26,5 @@ public class AutoTransfer {
     @MapsId("outAccId")
     @JoinColumn(name = "out_acc_id")
     @JsonManagedReference
-    private Deposit deposit;
+    private Deposit outAcc;
 }

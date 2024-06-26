@@ -11,6 +11,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @AllArgsConstructor
 @Builder
+@Getter
 public class AutoTransferId implements Serializable {
 
     @Column
