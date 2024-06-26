@@ -1,11 +1,12 @@
-package com.hana.hana1pick.domain.moaclub.repository;
+package com.hana.hana1pick.domain.celublog.repository;
 
+import com.hana.hana1pick.domain.celublog.entity.Celublog;
 import com.hana.hana1pick.domain.common.entity.Account;
-import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MoaClubRepository extends JpaRepository<MoaClub, String> {
+public interface CelublogRepository extends JpaRepository<Celublog, String> {
     Account findByAccountId(String accId);
 }

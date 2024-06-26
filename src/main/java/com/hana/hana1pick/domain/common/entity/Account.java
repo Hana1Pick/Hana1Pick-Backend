@@ -15,6 +15,9 @@ import java.time.LocalDate;
 public class Account {
 
     @Column
+    private String name;
+
+    @Column
     private Long balance;
 
     @Column
@@ -27,5 +30,10 @@ public class Account {
     public Account(Long balance, AccountStatus status) {
         this.balance = balance;
         this.status = status;
+    }
+
+    public Account cashOut(Long amount){
+        balance += amount;
+        return this;
     }
 }

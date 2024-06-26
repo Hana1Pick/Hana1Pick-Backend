@@ -104,7 +104,7 @@ public class AccHistoryService {
   }
 
   private Accounts getAccByAccId(String accountId) {
-    return accountsRepository.findByAccountId(accountId)
+    return accountsRepository.findOptionalByAccountId(accountId)
             .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
   }
 
@@ -123,7 +123,7 @@ public class AccHistoryService {
 
   private void validateAccount(String accountId) {
     // 계좌가 존재하는지 확인
-    Accounts account = accountsRepository.findByAccountId(accountId)
+    Accounts account = accountsRepository.findOptionalByAccountId(accountId)
             .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
 
     // 해지된 계좌인지 확인
