@@ -41,7 +41,6 @@ public class ManagerChangeListener implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         try {
             String pubMessage = redisTemplate.getStringSerializer().deserialize(message.getBody());
-
             ManagerChangeReq request = objectMapper.readValue(pubMessage, ManagerChangeReq.class);
 
             // Redis key 설정
@@ -55,13 +54,9 @@ public class ManagerChangeListener implements MessageListener {
                 // 클럽멤버 모두에게 관리자 변경 요청 취소 알림 - 추후 개발 예정
             } else if (request.getVotes().size() == memberCount && !request.getVotes().containsValue(false)) {
                 // 관리자 변경
-                MoaClub moaClub = getClubByAccId(request.getAccountId());
-                MoaClubMembers memberUser = getClubMemberByClubAndUserName(moaClub, request.getUserName());
-                MoaClubMembers memberCandidate = getClubMemberByClubAndUserName(moaClub, request.getCandidateName());
+                changeManager(request);
 
-                clubMembersRepository.save(memberUser.updateUserRole(MEMBER));
-                clubMembersRepository.save(memberCandidate.updateUserRole(MANAGER));
-
+                // 투표 삭제
                 redisTemplate.delete(key);
 
                 // 클럽멤버 모두에게 관리자 변경 알림 - 추후 개발 예정
@@ -70,6 +65,15 @@ public class ManagerChangeListener implements MessageListener {
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }
+    }
+
+    private void changeManager(ManagerChangeReq request) {
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+        MoaClubMembers memberUser = getClubMemberByClubAndUserName(moaClub, request.getUserName());
+        MoaClubMembers memberCandidate = getClubMemberByClubAndUserName(moaClub, request.getCandidateName());
+
+        clubMembersRepository.save(memberUser.updateUserRole(MEMBER));
+        clubMembersRepository.save(memberCandidate.updateUserRole(MANAGER));
     }
 
     private MoaClub getClubByAccId(String accId) {
