@@ -1,5 +1,7 @@
 package com.hana.hana1pick.domain.moaclub.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.repository.AccHisRepository;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
@@ -189,6 +191,20 @@ public class MoaClubService {
         // 관리자 제외 클럽멤버에게 실시간 알림 발송 - 추후 개발 예정
 
         return success(MOACLUB_MANAGER_REQUEST_SUCCESS);
+    }
+
+    public SuccessResult<ManagerChangeReq> getMoaClubRequest(int type, AccIdReqDto request) {
+        // Redis key 설정
+        String key = MANAGER_CHANGE_KEY_PREFIX + request.getAccountId();
+
+        ManagerChangeReq changeReq = getRequest(key);
+
+        // 요청 없는 경우 예외 처리
+        if (changeReq == null) {
+            throw new BaseException(MOACLUB_REQUEST_NOT_FOUND);
+        }
+
+        return success(MOACLUB_REQUEST_FETCH_SUCCESS, changeReq);
     }
 
     private MoaClub createMoaClub(ClubOpeningReqDto request, String accId) {
@@ -402,5 +418,11 @@ public class MoaClubService {
         if (hasMember) {
             throw new BaseException(MOACLUB_HAS_MEMBER);
         }
+    }
+
+    private ManagerChangeReq getRequest(String key) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.registerModule(new JavaTimeModule())
+                .convertValue(redisTemplate.opsForValue().get(key), ManagerChangeReq.class);
     }
 }
