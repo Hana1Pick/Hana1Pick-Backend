@@ -38,7 +38,7 @@ public class UserController {
   }
 
   @RequestMapping("/oauth/kakao")
-  public BaseResponse.SuccessResult<UserInfoResDto> kakaoLogin(@RequestParam("code") String code, HttpSession httpSession) throws Exception {
+  public BaseResponse.SuccessResult<UserInfoResDto> kakaoLogin(@RequestParam("code") String code, HttpSession httpSession) {
     String accessToken = kakaoService.getAccessToken(code); // 2. 발급 받은 인가 코드를 통해 AccessToken 반환 받기
     UserInfoResDto userInfo = kakaoService.getUserInfo(accessToken); // 3. AccessToken을 통해 userInfo 추출 하기
     log.info("프사와 이메일을 가져왔어용");
