@@ -40,7 +40,8 @@ public class MoaClubMembers {
         this.userName = userName;
     }
 
-    public void updateUserRole(MoaClubMemberRole role) {
+    public MoaClubMembers updateUserRole(MoaClubMemberRole role) {
         this.role = role;
+        return this;
     }
 }
