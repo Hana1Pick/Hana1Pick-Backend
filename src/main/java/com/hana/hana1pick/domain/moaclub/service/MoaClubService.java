@@ -190,7 +190,7 @@ public class MoaClubService {
 
         // 관리자 제외 클럽멤버에게 실시간 알림 발송 - 추후 개발 예정
 
-        return success(MOACLUB_MANAGER_REQUEST_SUCCESS);
+        return success(MOACLUB_REQUEST_SUCCESS);
     }
 
     public SuccessResult voteMoaClubRequest(ClubVoteReqDto request) {
@@ -206,7 +206,7 @@ public class MoaClubService {
         // Redis key 설정
         String key = MANAGER_CHANGE_KEY_PREFIX + request.getAccountId();
 
-        ManagerChangeReq changeReq = getRequest(key);
+        VoteResult changeReq = getRequest(key, ManagerChangeReq.class);
 
         // 요청 없는 경우 예외 처리
         if (changeReq == null) {
@@ -223,18 +223,19 @@ public class MoaClubService {
         return success(MOACLUB_VOTE_SUCCESS);
     }
 
-    public SuccessResult<ManagerChangeReq> getMoaClubRequest(int type, AccIdReqDto request) {
+    public SuccessResult<VoteResult> getMoaClubRequest(int type, AccIdReqDto request) {
         // Redis key 설정
-        String key = MANAGER_CHANGE_KEY_PREFIX + request.getAccountId();
+        String key = type == 0 ? MANAGER_CHANGE_KEY_PREFIX : WITHDRAW_KEY_PREFIX;
+        key += request.getAccountId();
 
-        ManagerChangeReq changeReq = getRequest(key);
+        VoteResult voteResult = type == 0 ? getRequest(key, ManagerChangeReq.class) : getRequest(key, WithdrawReq.class);
 
         // 요청 없는 경우 예외 처리
-        if (changeReq == null) {
+        if (voteResult == null) {
             throw new BaseException(MOACLUB_REQUEST_NOT_FOUND);
         }
 
-        return success(MOACLUB_REQUEST_FETCH_SUCCESS, changeReq);
+        return success(MOACLUB_REQUEST_FETCH_SUCCESS, voteResult);
     }
 
     public SuccessResult requestWithdraw(ClubWithdrawReqDto request) {
@@ -481,9 +482,9 @@ public class MoaClubService {
         }
     }
 
-    private ManagerChangeReq getRequest(String key) {
+    private <T extends VoteResult> T getRequest(String key, Class<T> tClass) {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.registerModule(new JavaTimeModule())
-                .convertValue(redisTemplate.opsForValue().get(key), ManagerChangeReq.class);
+                .convertValue(redisTemplate.opsForValue().get(key), tClass);
     }
 }

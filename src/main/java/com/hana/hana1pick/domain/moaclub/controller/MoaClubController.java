@@ -60,7 +60,7 @@ public class MoaClubController {
     }
 
     @Operation(summary = "모아클럽 관리자 변경 요청")
-    @PostMapping("/manager/request")
+    @PostMapping("/request-manager")
     public SuccessResult requestManagerChange(@RequestBody ClubManagerChangeReqDto request) {
         return moaClubService.requestManagerChange(request);
     }
@@ -73,7 +73,7 @@ public class MoaClubController {
 
     @Operation(summary = "모아클럽 요청 조회")
     @PostMapping("/vote-result")
-    public SuccessResult<ManagerChangeReq> getMoaClubRequest(@RequestParam(name = "type") int type, @RequestBody AccIdReqDto request) {
+    public SuccessResult<VoteResult> getMoaClubRequest(@RequestParam(name = "type") int type, @RequestBody AccIdReqDto request) {
         return moaClubService.getMoaClubRequest(type, request);
     }
 
