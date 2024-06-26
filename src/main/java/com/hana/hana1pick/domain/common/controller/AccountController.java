@@ -1,6 +1,7 @@
  package com.hana.hana1pick.domain.common.controller;
 
 import com.hana.hana1pick.domain.common.dto.request.AccountForCashOutHisReqDto;
+import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
 import com.hana.hana1pick.domain.common.dto.response.AccountForCashOutHisResDto;
 import com.hana.hana1pick.domain.common.dto.response.AccountForCashOutResDto;
 import com.hana.hana1pick.domain.common.service.AccountService;
@@ -33,5 +34,11 @@ public class AccountController {
     public BaseResponse.SuccessResult<AccountForCashOutHisResDto> getAccountHistoryForCashOut(@RequestParam String outAccId, @RequestParam String query) {
         AccountForCashOutHisReqDto request = new AccountForCashOutHisReqDto(outAccId, query);
         return accountService.getAccountHistoryForCashOut(request);
+    }
+
+    @Operation(summary = "계좌 이체")
+    @PostMapping("/cash-out")
+    public BaseResponse.SuccessResult cashOut(@RequestBody CashOutReqDto request) {
+        return accountService.cashOut(request);
     }
 }

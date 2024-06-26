@@ -13,4 +13,6 @@ import java.util.UUID;
 public interface AccountsRepository extends JpaRepository<Accounts, UUID> {
     @Query(value = "SELECT * FROM accounts WHERE user_idx = :userIdx AND account_id != :outAccId", nativeQuery = true)
     List<Accounts> findByUserIdxAndNotOutAccId(@Param("userIdx") UUID userIdx, @Param("outAccId") String outAccId);
+
+    Accounts findByAccountId(String accId);
 }

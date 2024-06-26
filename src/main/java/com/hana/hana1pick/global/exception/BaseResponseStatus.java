@@ -27,6 +27,7 @@ public enum BaseResponseStatus {
     // Account
     ACCOUNT_CASH_OUT_LIST_SUCCESS(OK, "계좌 번호 목록 조회 성공"),
     ACCOUNT_CASH_OUT_HISTORY_LIST_SUCCESS(OK, "계좌 번호 목록 검색 성공"),
+    ACCOUNT_CASH_OUT_SUCCESS(OK, "계좌이체 성공"),
 
     /**
      * 202 : Request 오류
@@ -49,8 +50,11 @@ public enum BaseResponseStatus {
     USER_ALREADY_JOINED(ACCEPTED, "E402", "이미 가입된 클럽입니다."),
     INACTIVE_MOACLUB(ACCEPTED, "E403", "해지된 클럽입니다."),
     NO_PERMISSION_TO_UPDATE(ACCEPTED, "E404", "클럽 수정 권한이 없습니다."),
-    USER_NOT_CLUB_MEMBER(ACCEPTED, "E405", "클럽 멤버가 아닙니다.")
-    ;
+    USER_NOT_CLUB_MEMBER(ACCEPTED, "E405", "클럽 멤버가 아닙니다."),
+
+    // Account
+    ACCOUNT_STATUS_INVALID(ACCEPTED, "E600", "유효하지 않는 계좌입니다."),
+    ACCOUNT_CASH_OUT_FAIL(ACCEPTED, "E601", "계좌이체를 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private String errorCode;
