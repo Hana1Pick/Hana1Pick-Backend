@@ -14,4 +14,7 @@ public interface AutoTransferRepository extends JpaRepository<AutoTransfer, Auto
 
     @Query("select a from AutoTransfer a where a.id.atDate = :atDate")
     List<AutoTransfer> findByAtDate(@Param("atDate") int atDate);
+
+    @Query("select a from AutoTransfer a where a.id.inAccId = :inAccId")
+    List<AutoTransfer> findByInAccId(@Param("inAccId") String inAccId);
 }

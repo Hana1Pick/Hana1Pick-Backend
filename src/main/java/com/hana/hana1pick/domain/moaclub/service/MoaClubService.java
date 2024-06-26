@@ -7,6 +7,7 @@ import com.hana.hana1pick.domain.acchistory.repository.AccHisRepository;
 import com.hana.hana1pick.domain.autotranfer.entity.AutoTransfer;
 import com.hana.hana1pick.domain.autotranfer.entity.AutoTransferId;
 import com.hana.hana1pick.domain.autotranfer.repository.AutoTransferRepository;
+import com.hana.hana1pick.domain.autotranfer.service.AutoTransferService;
 import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.common.service.AccountService;
@@ -56,6 +57,7 @@ public class MoaClubService {
     private final AccHisRepository accHisRepository;
     private final AccountService accountService;
     private final AutoTransferRepository autoTransferRepository;
+    private final AutoTransferService autoTransferService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChannelTopic managerChangeTopic;
     private final ChannelTopic withdrawTopic;
@@ -164,6 +166,8 @@ public class MoaClubService {
 
             // 관리자 입출금 통장으로 전액 입금
             fullTransfer(moaClub, clubMember);
+            // 클럽에 연결된 모든 자동이체 삭제
+            deleteAutoTransfer(moaClub);
             // 관리자 탈퇴 및 모아클럽 해지
             clubMember.updateUserRole(NONMEMBER);
             moaClub.closeAccount();
@@ -562,5 +566,9 @@ public class MoaClubService {
         if (!user.getDeposit().getAccountId().equals(outAccId)) {
             throw new BaseException(NOT_ACCOUNT_OWNER);
         }
+    }
+
+    private void deleteAutoTransfer(MoaClub moaClub) {
+        autoTransferService.deleteAutoTrsfByInAccId(moaClub.getAccountId());
     }
 }
