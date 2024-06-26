@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.repository.AccHisRepository;
+import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
+import com.hana.hana1pick.domain.common.service.AccountService;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
@@ -48,6 +50,7 @@ public class MoaClubService {
     private final DepositRepository depositRepository;
     private final AccIdGenerator accIdGenerator;
     private final AccHisRepository accHisRepository;
+    private final AccountService accountService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChannelTopic managerChangeTopic;
     private final ChannelTopic withdrawTopic;
@@ -154,8 +157,9 @@ public class MoaClubService {
             // 클럽 멤버가 남아있는지 확인
             checkRemainingMembers(moaClub);
 
-            // 관리자 입출금 통장으로 전액 입금 후 모아클럽 해지
-            // 입금 - 추후 개발 예정
+            // 관리자 입출금 통장으로 전액 입금
+            fullTransfer(moaClub, clubMember);
+            // 관리자 탈퇴 및 모아클럽 해지
             clubMember.updateUserRole(NONMEMBER);
             moaClub.closeAccount();
         } else {
@@ -474,6 +478,17 @@ public class MoaClubService {
         if (hasMember) {
             throw new BaseException(MOACLUB_HAS_MEMBER);
         }
+    }
+
+    private void fullTransfer(MoaClub moaClub, MoaClubMembers clubMember) {
+        User manager = clubMember.getUser();
+        Deposit managerAcc = manager.getDeposit();
+
+        // 이체 DTO 생성
+        CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), moaClub.getBalance());
+
+        // 이체
+        accountService.cashOut(transfer);
     }
 
     private void validateMember(MoaClubMembers member) {
