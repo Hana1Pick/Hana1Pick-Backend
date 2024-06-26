@@ -11,11 +11,10 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ManagerChangeReq implements VoteResult, Serializable {
-
+public class WithdrawReq implements VoteResult, Serializable {
     private String accountId;
     private String userName;
-    private String candidateName;
+    private Long amount;
     private LocalDateTime requestTime;
     private Map<String, Boolean> votes;
 }
