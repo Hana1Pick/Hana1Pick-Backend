@@ -119,7 +119,7 @@ public class AccountService {
     }
 
     public void handleAccStatus(String accId){
-        if(accountsRepository.findByAccountId(accId).getAccountStatus() == 1){
+        if(accountsRepository.findAccountsByAccountId(accId).getAccountStatus() == 1){
             throw new BaseException(ACCOUNT_STATUS_INVALID);
         };
     }
