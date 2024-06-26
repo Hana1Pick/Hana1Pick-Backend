@@ -6,9 +6,7 @@ import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -20,6 +18,8 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Builder
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class User {
 
@@ -74,4 +74,19 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
     private final List<MoaClubMembers> clubList = new ArrayList<>();
+
+    // 이메일과 프로필만 설정하는 생성자 추가
+    public User(String email, String profile) {
+        this.email = email;
+        this.profile = profile;
+    }
+    // 이메일 업데이트 메서드
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
+    // 프로필 사진 업데이트 메서드
+    public void updateProfile(String profile) {
+        this.profile = profile;
+    }
 }
