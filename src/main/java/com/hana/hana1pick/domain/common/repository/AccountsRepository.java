@@ -8,11 +8,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 
 @Repository
-public interface AccountsRepository extends JpaRepository<Accounts, UUID> {
-    @Query(value = "SELECT * FROM accounts WHERE user_idx = :userIdx AND account_id != :outAccId", nativeQuery = true)
-    List<Accounts> findByUserIdxAndNotOutAccId(@Param("userIdx") UUID userIdx, @Param("outAccId") String outAccId);
+public interface AccountsRepository extends JpaRepository<Accounts, String> {
+  @Query(value = "SELECT * FROM accounts WHERE user_idx = :userIdx AND account_id != :outAccId", nativeQuery = true)
+  List<Accounts> findByUserIdxAndNotOutAccId(@Param("userIdx") UUID userIdx, @Param("outAccId") String outAccId);
 
-    Accounts findByAccountId(String accId);
+  Accounts findAccountsByAccountId(String accountId);
+  
+  Optional<Accounts> findOptionalByAccountId(String accountId);
 }
