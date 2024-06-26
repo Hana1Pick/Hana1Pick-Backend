@@ -19,6 +19,7 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.hana.hana1pick.domain.acchistory.entity.TransType.AUTO_TRANSFER;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole.MEMBER;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.MOACLUB_MEMBER_NOT_FOUND;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.MOACLUB_NOT_FOUND;
@@ -79,7 +80,7 @@ public class WithdrawListener implements MessageListener {
         Deposit managerAcc = manager.getDeposit();
 
         // 이체 DTO 생성
-        CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), request.getAmount());
+        CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), request.getAmount(), AUTO_TRANSFER);
         accountService.cashOut(transfer);
     }
 
