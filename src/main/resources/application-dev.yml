@@ -41,3 +41,7 @@ spring:
       disabled: true
     default-consumes-media-type: application/json;charset=UTF-8
     default-produces-media-type: application/json;charset=UTF-81
+app:
+  kakao:
+    rest_api_key: ENC(v1UNXkE19irf60ZYfEHMdrw/evbThNcV1f+HTHSn9c9r712Xd/R8DSswhbV8TVtJ)
+    redirect_uri: ENC(Lbb0hqrhUH/szOXxp9SPZTDIDfU4bCR+fQX2azil+0WOwjap0nQxZwBDmIZcr3pTY1NFPtgeTRE=)
