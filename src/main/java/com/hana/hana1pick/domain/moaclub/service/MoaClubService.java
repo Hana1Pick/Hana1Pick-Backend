@@ -50,6 +50,7 @@ public class MoaClubService {
     private final AccHisRepository accHisRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChannelTopic managerChangeTopic;
+    private final ChannelTopic withdrawTopic;
 
     private static final String MANAGER_CHANGE_KEY_PREFIX = "managerChangeRequest:";
     private static final String WITHDRAW_KEY_PREFIX = "withdrawRequest:";
@@ -193,7 +194,7 @@ public class MoaClubService {
         return success(MOACLUB_REQUEST_SUCCESS);
     }
 
-    public SuccessResult voteMoaClubRequest(ClubVoteReqDto request) {
+    public SuccessResult voteMoaClubRequest(int type, ClubVoteReqDto request) {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getAccountId());
 
@@ -204,21 +205,26 @@ public class MoaClubService {
         }
 
         // Redis key 설정
-        String key = MANAGER_CHANGE_KEY_PREFIX + request.getAccountId();
+        String key = type == 0 ? MANAGER_CHANGE_KEY_PREFIX : WITHDRAW_KEY_PREFIX;
+        key += request.getAccountId();
 
-        VoteResult changeReq = getRequest(key, ManagerChangeReq.class);
+        VoteResult voteResult = type == 0 ? getRequest(key, ManagerChangeReq.class) : getRequest(key, WithdrawReq.class);
 
         // 요청 없는 경우 예외 처리
-        if (changeReq == null) {
+        if (voteResult == null) {
             throw new BaseException(MOACLUB_REQUEST_NOT_FOUND);
         }
 
         // 투표 결과 저장
-        changeReq.getVotes().put(member.getUserName(), request.getAgree());
-        redisTemplate.opsForValue().set(key, changeReq);
+        voteResult.getVotes().put(member.getUserName(), request.getAgree());
+        redisTemplate.opsForValue().set(key, voteResult);
 
         // Redis Pub
-        redisTemplate.convertAndSend(managerChangeTopic.getTopic(), changeReq);
+        if (type == 0) {
+            redisTemplate.convertAndSend(managerChangeTopic.getTopic(), voteResult);
+        } else {
+            redisTemplate.convertAndSend(withdrawTopic.getTopic(), voteResult);
+        }
 
         return success(MOACLUB_VOTE_SUCCESS);
     }
