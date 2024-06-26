@@ -2,10 +2,15 @@ package com.hana.hana1pick.domain.moaclub.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
+import com.hana.hana1pick.domain.common.service.AccountService;
+import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.moaclub.dto.response.WithdrawReq;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
+import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubMembersRepository;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubRepository;
+import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +20,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole.MEMBER;
+import static com.hana.hana1pick.global.exception.BaseResponseStatus.MOACLUB_MEMBER_NOT_FOUND;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.MOACLUB_NOT_FOUND;
 
 @Service
@@ -26,6 +32,7 @@ public class WithdrawListener implements MessageListener {
     private final ObjectMapper objectMapper;
     private final MoaClubRepository moaClubRepository;
     private final MoaClubMembersRepository clubMembersRepository;
+    private final AccountService accountService;
 
     private static final String WITHDRAW_KEY_PREFIX = "withdrawRequest:";
 
@@ -52,10 +59,16 @@ public class WithdrawListener implements MessageListener {
 
                 // 클럽멤버 모두에게 관리자 변경 요청 취소 알림 - 추후 개발 예정
             } else if (request.getVotes().size() == memberCount && !request.getVotes().containsValue(false)) {
-                // 출금
+                // 출금 로직
                 MoaClub moaClub = getClubByAccId(request.getAccountId());
+                User manager = getClubMemberByClubAndUserName(moaClub, request.getUserName()).getUser();
+                Deposit managerAcc = manager.getDeposit();
 
+                // 이체 DTO 생성
+                CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), request.getAmount());
+                accountService.cashOut(transfer);
 
+                // 이체
                 redisTemplate.delete(key);
 
                 // 클럽멤버 모두에게 관리자 출금 알림 - 추후 개발 예정
@@ -73,5 +86,10 @@ public class WithdrawListener implements MessageListener {
     private MoaClub getClubByAccId(String accId) {
         return moaClubRepository.findById(accId)
                 .orElseThrow(() -> new BaseException(MOACLUB_NOT_FOUND));
+    }
+
+    private MoaClubMembers getClubMemberByClubAndUserName(MoaClub moaClub, String userName) {
+        return clubMembersRepository.findByClubAndUserName(moaClub, userName)
+                .orElseThrow(() -> new BaseException(MOACLUB_MEMBER_NOT_FOUND));
     }
 }
