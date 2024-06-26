@@ -4,6 +4,7 @@ import com.hana.hana1pick.domain.moaclub.dto.request.*;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
 import com.hana.hana1pick.domain.moaclub.dto.response.ClubResDto;
+import com.hana.hana1pick.domain.moaclub.dto.response.ManagerChangeReq;
 import com.hana.hana1pick.domain.moaclub.service.MoaClubService;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,5 +66,11 @@ public class MoaClubController {
     @PostMapping("/manager/request")
     public SuccessResult requestManagerChange(@RequestBody ClubManagerChangeReqDto request) {
         return moaClubService.requestManagerChange(request);
+    }
+
+    @Operation(summary = "모아클럽 요청 조회")
+    @PostMapping("/vote-result")
+    public SuccessResult<ManagerChangeReq> getMoaClubRequest(@RequestParam(name = "type") int type, @RequestBody AccIdReqDto request) {
+        return moaClubService.getMoaClubRequest(type, request);
     }
 }

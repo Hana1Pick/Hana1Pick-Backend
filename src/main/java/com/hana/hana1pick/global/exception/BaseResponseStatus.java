@@ -26,6 +26,7 @@ public enum BaseResponseStatus {
     MOACLUB_FEE_STATUS_FETCH_SUCCESS(OK, "모아클럽 회비 내역 조회 성공"),
     MOACLUB_MEMBER_LEAVE_SUCCESS(OK, "모아클럽 탈퇴 성공"),
     MOACLUB_MANAGER_REQUEST_SUCCESS(OK, "모아클럽 요청 성공"),
+    MOACLUB_REQUEST_FETCH_SUCCESS(OK, "모아클럽 요청 조회 성공"),
 
     /**
      * 202 : Request 오류
@@ -51,7 +52,8 @@ public enum BaseResponseStatus {
     USER_NOT_CLUB_MEMBER(ACCEPTED, "E405", "클럽 멤버가 아닙니다."),
     MOACLUB_MEMBER_NOT_FOUND(ACCEPTED, "E406", "존재하지 않는 클럽 멤버입니다."),
     MOACLUB_HAS_MEMBER(ACCEPTED, "E407", "클럽에 아직 멤버가 존재합니다"),
-    REQUEST_ALREADY_PENDING(ACCEPTED, "E408", "이미 대기 중인 요청이 존재합니다")
+    REQUEST_ALREADY_PENDING(ACCEPTED, "E408", "이미 대기 중인 요청이 존재합니다"),
+    MOACLUB_REQUEST_NOT_FOUND(ACCEPTED, "E409", "존재하지 않는 요청입니다.")
     ;
 
     private final HttpStatus httpStatus;
