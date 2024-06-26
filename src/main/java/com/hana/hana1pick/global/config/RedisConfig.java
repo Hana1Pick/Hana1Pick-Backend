@@ -3,6 +3,7 @@ package com.hana.hana1pick.global.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hana.hana1pick.domain.moaclub.service.ManagerChangeListener;
+import com.hana.hana1pick.domain.moaclub.service.WithdrawListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,21 +59,34 @@ public class RedisConfig {
 
     @Bean
     public RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
-                                                   MessageListenerAdapter listenerAdapter,
-                                                   ChannelTopic channelTopic) {
+                                                   MessageListenerAdapter managerChangeListenerAdapter,
+                                                   MessageListenerAdapter withdrawListenerAdapter,
+                                                   ChannelTopic managerChangeTopic,
+                                                   ChannelTopic withdrawTopic) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapter, channelTopic);
+        container.addMessageListener(managerChangeListenerAdapter, managerChangeTopic);
+        container.addMessageListener(withdrawListenerAdapter, withdrawTopic);
         return container;
     }
 
     @Bean
-    public MessageListenerAdapter listenerAdapter(ManagerChangeListener listener) {
+    public MessageListenerAdapter managerChangeListenerAdapter(ManagerChangeListener listener) {
+        return new MessageListenerAdapter(listener, "onMessage");
+    }
+
+    @Bean
+    public MessageListenerAdapter withdrawListenerAdapter(WithdrawListener listener) {
         return new MessageListenerAdapter(listener, "onMessage");
     }
 
     @Bean
     public ChannelTopic managerChangeTopic() {
         return new ChannelTopic("managerChange");
+    }
+
+    @Bean
+    public ChannelTopic withdrawTopic() {
+        return new ChannelTopic("withdraw");
     }
 }
