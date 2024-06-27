@@ -31,7 +31,6 @@ import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 public class AccHistoryService {
 
   private final AccHistoryRepository accHistoryRepository;
-  private final UserRepository userRepository;
   private final AccountsRepository accountsRepository;
 
   // 계좌 내역 조회
@@ -41,13 +40,10 @@ public class AccHistoryService {
 
     // 2. 예외처리
     validateAccount(accountId);
-    log.info("Request accountId: {}", accountId);
 
     // 3. 거래 내역 조회 및 반환 값 생성
     List<AccHistoryResDto> accountHistories = findByAccountId(accountId);
 
-    // 응답 데이터 로그 출력
-    log.info("[getAccountHistory] accHisList: {}", accountHistories);
 
     return success(ACCOUNT_HISTORY_SUCCESS, accountHistories);
   }
