@@ -28,7 +28,7 @@ public class AutoTransferService {
 
     public void autoTransfer() {
         // 자동이체 DB Table에서 출금일이 오늘 날짜인 모든 데이터를 조회
-        int today = Integer.parseInt(LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
+        int today = LocalDate.now().getDayOfMonth();
         List<AutoTransfer> autoTransferList = autoTransferRepository.findByAtDate(today);
 
         for (AutoTransfer autoTransfer : autoTransferList) {
