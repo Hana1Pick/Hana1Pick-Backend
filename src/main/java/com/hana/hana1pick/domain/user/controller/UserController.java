@@ -56,11 +56,6 @@ public class UserController {
       user = userService.updateUserProfile(userId, userInfo.getEmail(), userInfo.getProfile());
     }
 
-    // 세션에 userIdx, name, password 저장
-    httpSession.setAttribute("userIdx", user.getIdx());
-    httpSession.setAttribute("name", user.getName());
-    httpSession.setAttribute("password", user.getPassword());
-
     return BaseResponse.success(LOGIN_SUCCESS, userInfo);
   }
 }
