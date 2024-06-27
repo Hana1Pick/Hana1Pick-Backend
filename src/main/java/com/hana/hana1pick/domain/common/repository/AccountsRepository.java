@@ -19,4 +19,7 @@ public interface AccountsRepository extends JpaRepository<Accounts, String> {
   // 사용자 id로 전체 계좌 조회
   List<Accounts> findByUserIdx(UUID userIdx);
 
+  @Query(value = "select a from Accounts a where a.userIdx = :userIdx and a.accountType = :type")
+  List<Accounts> findByUserIdxAndType(@Param("userIdx") UUID userIdx, @Param("type") String type);
+
 }
