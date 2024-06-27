@@ -3,7 +3,7 @@ package com.hana.hana1pick.domain.moaclub.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
-import com.hana.hana1pick.domain.acchistory.repository.AccHisRepository;
+import com.hana.hana1pick.domain.acchistory.repository.AccHistoryRepository;
 import com.hana.hana1pick.domain.autotranfer.entity.AutoTransfer;
 import com.hana.hana1pick.domain.autotranfer.entity.AutoTransferId;
 import com.hana.hana1pick.domain.autotranfer.repository.AutoTransferRepository;
@@ -54,7 +54,7 @@ public class MoaClubService {
     private final UserRepository userRepository;
     private final DepositRepository depositRepository;
     private final AccIdGenerator accIdGenerator;
-    private final AccHisRepository accHisRepository;
+    private final AccHistoryRepository accHisRepository;
     private final AccountService accountService;
     private final AutoTransferRepository autoTransferRepository;
     private final AutoTransferService autoTransferService;

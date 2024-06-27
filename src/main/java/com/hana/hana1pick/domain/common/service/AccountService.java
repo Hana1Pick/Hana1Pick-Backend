@@ -1,6 +1,6 @@
 package com.hana.hana1pick.domain.common.service;
 
-import com.hana.hana1pick.domain.acchistory.repository.AccountHistoryRepository;
+import com.hana.hana1pick.domain.acchistory.repository.AccHistoryRepository;
 import com.hana.hana1pick.domain.acchistory.service.AccHistoryService;
 import com.hana.hana1pick.domain.celublog.repository.CelublogRepository;
 import com.hana.hana1pick.domain.common.dto.request.AccountForCashOutHisReqDto;
@@ -36,7 +36,7 @@ import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 @Slf4j
 public class AccountService {
     private final AccountsRepository accountsRepository;
-    private final AccountHistoryRepository accountHistoryRepository;
+    private final AccHistoryRepository accountHistoryRepository;
     private final DepositRepository depositRepository;
     private final CelublogRepository celublogRepository;
     private final MoaClubRepository moaClubRepository;
