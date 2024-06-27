@@ -15,4 +15,7 @@ public interface AccHistoryRepository extends JpaRepository<AccountHistory, Long
           "OR (ah.outAccId = :accountId) " +
           "ORDER BY ah.transDate DESC")
   List<AccountHistory> findByAccCode(@Param("accountId") String accountId);
+
+  @Query(value="SELECT * FROM account_history WHERE in_acc_id=:accountId OR out_acc_id= :accountId ORDER BY trans_date desc",  nativeQuery = true)
+  List<AccountHistory> findByAccountId(@Param("accountId") String accountId);
 }
