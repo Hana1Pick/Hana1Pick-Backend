@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.hana.hana1pick.global.exception.BaseResponse.success;
-import static com.hana.hana1pick.global.exception.BaseResponseStatus.USER_NOT_FOUND;
-import static com.hana.hana1pick.global.exception.BaseResponseStatus.USER_PW_CHECK_SUCCESS;
+import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 
 @Service
 @Transactional
@@ -67,8 +66,7 @@ public class UserService {
 
     // email과 profile만 업데이트하는 메서드
     public User updateUserProfile(UUID userId, String email, String profile) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+        User user = getUserByIdx(userId);
         user.updateEmail(email);
         user.updateProfile(profile);
 
@@ -84,20 +82,32 @@ public class UserService {
 
     // 사용자의 전체 계좌 목록을 조회
     public List<AccountResDto> getAllAccountsByUserId(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+        User user = getUserByIdx(userId);
 
         List<Accounts> accounts = accountsRepository.findByUserIdx(user.getIdx());
+        List<AccountResDto> result = getAccountResDtoList(accounts);
+
+        return result;
+    }
+
+    public SuccessResult<List<AccountResDto>> getAccountsByType(UUID userIdx, String type) {
+        List<Accounts> accountList = accountsRepository.findByUserIdxAndType(userIdx, type);
+        List<AccountResDto> result = getAccountResDtoList(accountList);
+
+        return success(ACCOUNT_LIST_SUCCESS, result);
+    }
+
+    private User getUserByIdx(UUID userIdx) {
+        return userRepository.findById(userIdx)
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+    }
+
+    private List<AccountResDto> getAccountResDtoList(List<Accounts> accountList) {
         List<AccountResDto> result = new ArrayList<>();
 
-        accounts.stream().forEach(item -> {
-            result.add(AccountResDto.builder()
-                    .accountId(item.getAccountId())
-                    .name(item.getName())
-                    .accountType(item.getAccountType())
-                    .balance(item.getAccountBalance())
-                    .build());
-        });
+        for (Accounts account : accountList) {
+            result.add(AccountResDto.from(account));
+        }
 
         return result;
     }
