@@ -15,4 +15,8 @@ public interface AccountsRepository extends JpaRepository<Accounts, String> {
   List<Accounts> findByUserIdxAndNotOutAccId(@Param("userIdx") UUID userIdx, @Param("outAccId") String outAccId);
 
   Accounts findAccountsByAccountId(String accountId);
+
+  // 사용자 id로 전체 계좌 조회
+  List<Accounts> findByUserIdx(UUID userIdx);
+
 }
