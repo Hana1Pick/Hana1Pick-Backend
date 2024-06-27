@@ -4,7 +4,6 @@ import com.hana.hana1pick.domain.moaclub.entity.Currency;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
-import com.hana.hana1pick.domain.user.entity.User;
 import lombok.*;
 
 import java.util.List;
