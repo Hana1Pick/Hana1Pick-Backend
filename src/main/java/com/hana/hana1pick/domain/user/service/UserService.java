@@ -5,6 +5,7 @@ import com.hana.hana1pick.domain.user.dto.response.PwCheckResDto;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.entity.UserTrsfLimit;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
+import com.hana.hana1pick.domain.user.repository.UserTrsfLimitRepository;
 import com.hana.hana1pick.global.exception.BaseException;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class UserService {
 
   private final UserRepository userRepository;
   private final BCryptPasswordEncoder passwordEncoder;
+  private final UserTrsfLimitRepository userTrsfLimitRepository;
 
   public SuccessResult<PwCheckResDto> checkPw(PwCheckReqDto request) {
     String userPwCheck = userRepository.findPasswordByUserIdx(request.getUserIdx())
@@ -42,8 +44,19 @@ public class UserService {
 
   // 이메일과 프로필만으로 사용자 저장
   public User saveUserWithEmailAndProfile(String email, String profile) {
-    User user = new User(email, profile);
-    return userRepository.save(user);
+    User user = User.builder()
+            .email(email)
+            .profile(profile)
+            .build();
+    user = userRepository.save(user);
+
+    // UserTrsfLimit 생성
+    UserTrsfLimit userTrsfLimit = UserTrsfLimit.builder()
+            .user(user)
+            .build();
+    userTrsfLimitRepository.save(userTrsfLimit);
+
+    return user;
   }
 
   // email과 profile만 업데이트하는 메서드
@@ -52,13 +65,6 @@ public class UserService {
             .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
     user.updateEmail(email);
     user.updateProfile(profile);
-
-    // UserTrsfLimit 생성
-    UserTrsfLimit userTrsfLimit = UserTrsfLimit.builder()
-            .user(user)
-            .build();
-
-//    trsfLimitRepository.save(userTrsfLimit);
 
     return userRepository.save(user);
   }
