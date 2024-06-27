@@ -6,9 +6,7 @@ import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -21,6 +19,8 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @EntityListeners(AuditingEntityListener.class)
+@Builder
+@AllArgsConstructor
 public class User {
 
     @Id
