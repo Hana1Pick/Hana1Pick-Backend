@@ -1,5 +1,6 @@
 package com.hana.hana1pick.domain.common.dto.response;
 
+import com.hana.hana1pick.domain.common.entity.Accounts;
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -11,4 +12,13 @@ public class AccountResDto {
     private String name; // 계좌 이름
     private String accountType; // 계좌 타입
     private Long balance; // 잔액
+
+    public static AccountResDto from(Accounts account) {
+        return AccountResDto.builder()
+                .accountId(account.getAccountId())
+                .name(account.getName())
+                .accountType(account.getAccountType())
+                .balance(account.getAccountBalance())
+                .build();
+    }
 }

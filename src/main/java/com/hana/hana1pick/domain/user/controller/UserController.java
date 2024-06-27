@@ -7,6 +7,7 @@ import com.hana.hana1pick.domain.user.dto.response.UserInfoResDto;
 import com.hana.hana1pick.domain.user.service.KakaoService;
 import com.hana.hana1pick.domain.user.service.UserService;
 import com.hana.hana1pick.global.exception.BaseResponse;
+import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class UserController {
 
     @Operation(summary = "비밀번호 확인")
     @PostMapping("/password-check")
-    public BaseResponse.SuccessResult<PwCheckResDto> checkAccPw(@RequestBody PwCheckReqDto request) {
+    public SuccessResult<PwCheckResDto> checkAccPw(@RequestBody PwCheckReqDto request) {
         return userService.checkPw(request);
     }
 
@@ -42,7 +43,7 @@ public class UserController {
 
     @Operation(summary = "카카오 로그인 후 사용자 정보 가져오기")
     @RequestMapping("/oauth/kakao")
-    public BaseResponse.SuccessResult<UserInfoResDto> kakaoLogin(@RequestParam("code") String code) {
+    public SuccessResult<UserInfoResDto> kakaoLogin(@RequestParam("code") String code) {
         String accessToken = kakaoService.getAccessToken(code); // 2. 발급 받은 인가 코드를 통해 AccessToken 반환 받기
         UserInfoResDto userInfo = kakaoService.getUserInfo(accessToken); // 3. AccessToken을 통해 userInfo 추출 하기
         log.info("프사와 이메일을 가져왔어용");
@@ -64,9 +65,15 @@ public class UserController {
 
     @Operation(summary = "사용자의 전체 계좌 목록 조회")
     @GetMapping("/accounts/list")
-    public BaseResponse.SuccessResult<List<AccountResDto>> getAllAccountsByUserId(@RequestParam("userIdx") UUID userIdx) {
+    public SuccessResult<List<AccountResDto>> getAllAccountsByUserId(@RequestParam("userIdx") UUID userIdx) {
         List<AccountResDto> accounts = userService.getAllAccountsByUserId(userIdx);
         // 메시지 변경
         return success(ACCOUNT_LIST_SUCCESS, accounts);
+    }
+
+    @Operation(summary = "사용자 계좌 목록 타입별 조회")
+    @GetMapping("/account-list")
+    public SuccessResult<List<AccountResDto>> getAccountsByType(@RequestParam("userIdx") UUID userIdx, @RequestParam("type") String type) {
+        return userService.getAccountsByType(userIdx, type);
     }
 }
