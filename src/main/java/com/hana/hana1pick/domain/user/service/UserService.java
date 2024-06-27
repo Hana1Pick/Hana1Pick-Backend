@@ -3,6 +3,7 @@ package com.hana.hana1pick.domain.user.service;
 import com.hana.hana1pick.domain.user.dto.request.PwCheckReqDto;
 import com.hana.hana1pick.domain.user.dto.response.PwCheckResDto;
 import com.hana.hana1pick.domain.user.entity.User;
+import com.hana.hana1pick.domain.user.entity.UserTrsfLimit;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
 import com.hana.hana1pick.global.exception.BaseException;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
@@ -51,6 +52,14 @@ public class UserService {
             .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
     user.updateEmail(email);
     user.updateProfile(profile);
+
+    // UserTrsfLimit 생성
+    UserTrsfLimit userTrsfLimit = UserTrsfLimit.builder()
+            .user(user)
+            .build();
+
+//    trsfLimitRepository.save(userTrsfLimit);
+
     return userRepository.save(user);
   }
 
