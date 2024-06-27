@@ -36,11 +36,13 @@ public class UserController {
     return userService.checkPw(request);
   }
 
+  @Operation(summary = "카카오 로그인")
   @GetMapping("/login")
   public String login() { // 로그인 페이지: 1. 인가 코드 받기
     return kakaoService.getLoginRedirectUrl();
   }
 
+  @Operation(summary = "카카오 로그인 후 사용자 정보 가져오기")
   @RequestMapping("/oauth/kakao")
   public BaseResponse.SuccessResult<UserInfoResDto> kakaoLogin(@RequestParam("code") String code, HttpSession httpSession) {
     String accessToken = kakaoService.getAccessToken(code); // 2. 발급 받은 인가 코드를 통해 AccessToken 반환 받기
