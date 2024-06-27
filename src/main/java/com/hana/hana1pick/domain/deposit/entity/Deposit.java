@@ -28,7 +28,7 @@ public class Deposit extends Account {
     @JoinColumn(name = "user_idx")
     private User user;
 
-    @OneToMany(mappedBy = "deposit")
+    @OneToMany(mappedBy = "outAcc")
     @JsonManagedReference
     private List<AutoTransfer> autoTransferList = new ArrayList<>();
 

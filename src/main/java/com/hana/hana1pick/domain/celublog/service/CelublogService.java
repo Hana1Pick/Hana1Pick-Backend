@@ -2,7 +2,6 @@ package com.hana.hana1pick.domain.celublog.service;
 
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.repository.AccHistoryRepository;
-import com.hana.hana1pick.domain.acchistory.repository.AccountHistoryRepository;
 import com.hana.hana1pick.domain.celebrity.entity.Celebrity;
 import com.hana.hana1pick.domain.celebrity.repository.CelebrityRepository;
 import com.hana.hana1pick.domain.celublog.dto.request.AcceReqDto;
@@ -10,9 +9,7 @@ import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto.AccReport;
 import com.hana.hana1pick.domain.celublog.dto.response.AccListResDto;
 import com.hana.hana1pick.domain.celublog.entity.Celublog;
-import com.hana.hana1pick.domain.celublog.entity.Rules;
 import com.hana.hana1pick.domain.celublog.repository.CelublogRepository;
-import com.hana.hana1pick.domain.celublog.repository.RulesRepository;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
@@ -25,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
