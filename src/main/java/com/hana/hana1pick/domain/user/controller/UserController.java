@@ -63,9 +63,9 @@ public class UserController {
     }
 
     @Operation(summary = "사용자의 전체 계좌 목록 조회")
-    @PostMapping("/accounts/list")
-    public BaseResponse.SuccessResult<List<AccountResDto>> getAllAccountsByUserId(@RequestParam("userId") UUID userId) {
-        List<AccountResDto> accounts = userService.getAllAccountsByUserId(userId);
+    @GetMapping("/accounts/list")
+    public BaseResponse.SuccessResult<List<AccountResDto>> getAllAccountsByUserId(@RequestParam("userIdx") UUID userIdx) {
+        List<AccountResDto> accounts = userService.getAllAccountsByUserId(userIdx);
         // 메시지 변경
         return success(ACCOUNT_LIST_SUCCESS, accounts);
     }
