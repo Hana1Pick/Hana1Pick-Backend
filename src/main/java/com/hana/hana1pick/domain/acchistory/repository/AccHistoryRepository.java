@@ -10,6 +10,10 @@ import java.util.List;
 
 @Repository
 public interface AccHistoryRepository extends JpaRepository<AccountHistory, Long> {
+
+  @Query(value="SELECT * FROM account_history WHERE in_acc_id=:accountId OR out_acc_id= :accountId ORDER BY trans_date desc",  nativeQuery = true)
+  List<AccountHistory> findByAccountId(@Param("accountId") String accountId);
+
     @Query("SELECT ah FROM AccountHistory ah " +
             "WHERE (ah.inAccId = :accountId) " +
             "OR (ah.outAccId = :accountId) " +
@@ -31,4 +35,5 @@ public interface AccHistoryRepository extends JpaRepository<AccountHistory, Long
 
     @Query("SELECT DISTINCT ah.inAccId, ah.inAccName FROM AccountHistory ah WHERE ah.outAccId = :outAccId AND (ah.inAccId LIKE %:query% OR ah.inAccName LIKE %:query%) ORDER BY ah.transDate DESC")
     List<Object[]> findDistinctInAccIdAndNameByOutAccIdAndQueryOrderByTransDateDesc(String outAccId, String query);
+
 }

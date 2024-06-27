@@ -34,6 +34,8 @@ public enum BaseResponseStatus {
 
     // Celublog
     CELUBLOG_CREATED_SUCCESS(CREATED, "셀럽로그 개설 성공"),
+    CELUBLOG_ACCOUNT_LIST_SUCCESS(OK, "셀럽로그 계좌 목록 조회 성공"),
+    CELUBLOG_ACCOUNT_DETAIL_SUCCESS(OK, "셀럽로그 계좌 상세 조회 성공"),
   
     // Account
     ACCOUNT_CASH_OUT_LIST_SUCCESS(OK, "계좌 번호 목록 조회 성공"),
