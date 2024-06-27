@@ -15,6 +15,7 @@ public enum BaseResponseStatus {
      */
     // User
     USER_PW_CHECK_SUCCESS(OK, "사용자 비밀번호 확인 성공"),
+    LOGIN_SUCCESS(OK, "카카오 로그인 성공"),
 
     // MoaClub
     MOACLUB_CREATED_SUCCESS(CREATED, "모아클럽 개설 성공"),
