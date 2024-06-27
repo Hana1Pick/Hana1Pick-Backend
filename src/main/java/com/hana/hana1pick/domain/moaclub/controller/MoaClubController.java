@@ -1,13 +1,14 @@
 package com.hana.hana1pick.domain.moaclub.controller;
 
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
-import com.hana.hana1pick.domain.moaclub.dto.response.ClubOpeningResDto;
-import com.hana.hana1pick.domain.moaclub.dto.response.ClubResDto;
+import com.hana.hana1pick.domain.moaclub.dto.response.*;
 import com.hana.hana1pick.domain.moaclub.service.MoaClubService;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,5 +45,47 @@ public class MoaClubController {
     @PutMapping
     public SuccessResult updateMoaClub(@RequestBody ClubUpdateReqDto request) {
         return moaClubService.updateMoaClub(request);
+    }
+
+    @Operation(summary = "모아클럽 입금현황 조회")
+    @PostMapping("/fee")
+    public SuccessResult<List<ClubFeeStatusResDto>> getMoaClubFeeStatus(@RequestBody ClubFeeStatusReqDto request) {
+        return moaClubService.getMoaClubFeeStatus(request);
+    }
+
+    @Operation(summary = "모아클럽 탈퇴")
+    @DeleteMapping
+    public SuccessResult leaveMoaClub(@RequestBody ClubMemberLeaveReqDto request) {
+        return moaClubService.leaveMoaClub(request);
+    }
+
+    @Operation(summary = "모아클럽 관리자 변경 요청")
+    @PostMapping("/request-manager")
+    public SuccessResult requestManagerChange(@RequestBody ClubManagerChangeReqDto request) {
+        return moaClubService.requestManagerChange(request);
+    }
+
+    @Operation(summary = "모아클럽 출금 요청")
+    @PostMapping("/request-withdraw")
+    public SuccessResult requestWithdraw(@RequestBody ClubWithdrawReqDto request) {
+        return moaClubService.requestWithdraw(request);
+    }
+
+    @Operation(summary = "모아클럽 요청 조회")
+    @PostMapping("/vote-result")
+    public SuccessResult<VoteResult> getMoaClubRequest(@RequestParam(name = "type") int type, @RequestBody AccIdReqDto request) {
+        return moaClubService.getMoaClubRequest(type, request);
+    }
+
+    @Operation(summary = "모아클럽 요청 투표")
+    @PostMapping("/vote")
+    public SuccessResult voteMoaClubRequest(@RequestParam(name = "type") int type, @RequestBody ClubVoteReqDto request) {
+        return moaClubService.voteMoaClubRequest(type, request);
+    }
+
+    @Operation(summary = "모아클럽 자동이체 설정")
+    @PostMapping("/auto-transfer")
+    public SuccessResult registerAutoTransfer(@RequestBody ClubAutoTransferReqDto request) {
+        return moaClubService.registerAutoTransfer(request);
     }
 }

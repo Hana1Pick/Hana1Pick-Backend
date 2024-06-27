@@ -39,4 +39,9 @@ public class MoaClubMembers {
     public void updateUserName(String userName) {
         this.userName = userName;
     }
+
+    public MoaClubMembers updateUserRole(MoaClubMemberRole role) {
+        this.role = role;
+        return this;
+    }
 }

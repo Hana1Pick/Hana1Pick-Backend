@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.Optional;
 
 @Repository
 public interface AccountsRepository extends JpaRepository<Accounts, String> {
@@ -16,6 +15,4 @@ public interface AccountsRepository extends JpaRepository<Accounts, String> {
   List<Accounts> findByUserIdxAndNotOutAccId(@Param("userIdx") UUID userIdx, @Param("outAccId") String outAccId);
 
   Accounts findAccountsByAccountId(String accountId);
-  
-  Optional<Accounts> findOptionalByAccountId(String accountId);
 }

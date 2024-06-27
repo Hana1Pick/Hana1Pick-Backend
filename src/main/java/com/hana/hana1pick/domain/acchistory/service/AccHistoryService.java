@@ -3,7 +3,9 @@ package com.hana.hana1pick.domain.acchistory.service;
 import com.hana.hana1pick.domain.acchistory.dto.request.AccHistoryReqDto;
 import com.hana.hana1pick.domain.acchistory.dto.response.AccHistoryResDto;
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
+import com.hana.hana1pick.domain.acchistory.entity.TransType;
 import com.hana.hana1pick.domain.acchistory.repository.AccHistoryRepository;
+import com.hana.hana1pick.domain.common.dto.response.AccountHistoryInfoDto;
 import com.hana.hana1pick.domain.common.entity.AccountStatus;
 import com.hana.hana1pick.domain.common.entity.Accounts;
 import com.hana.hana1pick.domain.common.repository.AccountsRepository;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -70,8 +73,7 @@ public class AccHistoryService {
       target = String.format("규칙: %s, 해시태그: %s", memo, hashtags);
     } else {
       // target 계좌의 사용자 이름 가져오기
-      User targetUser = getUserByIdx(targetAccount.getUserIdx());
-      target = targetUser.getName();
+      target = targetAccount.getName();
     }
 
     // 이체 내역(입금/출금)
@@ -98,13 +100,8 @@ public class AccHistoryService {
             .build();
   }
 
-  private User getUserByIdx(UUID userIdx) {
-    return userRepository.findById(userIdx)
-            .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
-  }
-
   private Accounts getAccByAccId(String accountId) {
-    return accountsRepository.findOptionalByAccountId(accountId)
+    return accountsRepository.findById(accountId)
             .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
   }
 
@@ -123,13 +120,31 @@ public class AccHistoryService {
 
   private void validateAccount(String accountId) {
     // 계좌가 존재하는지 확인
-    Accounts account = accountsRepository.findOptionalByAccountId(accountId)
-            .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
+    Accounts account = getAccByAccId(accountId);
 
     // 해지된 계좌인지 확인
     AccountStatus status = AccountStatus.fromCode(account.getAccountStatus());
     if (status == AccountStatus.INACTIVE) {
       throw new BaseException(ACCOUNT_INACTIVE);
     }
+  }
+
+  public void createAccountHistory(AccountHistoryInfoDto outAcc, AccountHistoryInfoDto inAcc, String memo, Long amount, TransType transType, String hashtag) {
+    AccountHistory accountHistory = AccountHistory.builder()
+            .memo(memo)
+            .transDate(LocalDateTime.now())
+            .transType(transType)
+            .transAmount(amount)
+            .inAccId(inAcc.getAccountId())
+            .inAccName(inAcc.getName())
+            .outAccId(outAcc.getAccountId())
+            .beforeInBal(inAcc.getBalance()-amount)
+            .afterInBal(inAcc.getBalance())
+            .beforeOutBal(outAcc.getBalance()+amount)
+            .afterOutBal(outAcc.getBalance())
+            .hashtag(hashtag)
+            .build();
+
+    accHistoryRepository.save(accountHistory);
   }
 }
