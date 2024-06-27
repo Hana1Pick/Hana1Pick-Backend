@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AutoTransferRepository extends JpaRepository<AutoTransfer, AutoTransferId> {
@@ -17,4 +18,7 @@ public interface AutoTransferRepository extends JpaRepository<AutoTransfer, Auto
 
     @Query("select a from AutoTransfer a where a.id.inAccId = :inAccId")
     List<AutoTransfer> findByInAccId(@Param("inAccId") String inAccId);
+
+    @Query("select a from AutoTransfer a where a.id.inAccId = :inAccId and a.id.outAccId = :outAccId")
+    Optional<AutoTransfer> findByInAccIdAndOutAccId(@Param("inAccId") String inAccId, @Param("outAccId") String outAccId);
 }
