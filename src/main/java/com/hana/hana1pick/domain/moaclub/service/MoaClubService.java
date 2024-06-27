@@ -288,6 +288,16 @@ public class MoaClubService {
         return success(MOACLUB_AUTO_TRANSFER_SET_SUCCESS);
     }
 
+    public SuccessResult deleteAutoTransfer(ClubAutoTransferReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getInAccId());
+
+        validateClubMember(user, moaClub);
+
+        autoTransferService.deleteAutoTrsfByInAccIdAndOutAccId(request.getInAccId(), request.getOutAccId());
+        return success(AUTO_TRANSFER_DELETE_SUCCESS);
+    }
+
     private MoaClub createMoaClub(ClubOpeningReqDto request, String accId) {
         return MoaClub.builder()
                 .balance(0L)
