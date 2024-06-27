@@ -1,5 +1,6 @@
 package com.hana.hana1pick.domain.user.controller;
 
+import com.hana.hana1pick.domain.common.dto.response.AccountResDto;
 import com.hana.hana1pick.domain.user.dto.response.PwCheckResDto;
 import com.hana.hana1pick.domain.user.dto.request.PwCheckReqDto;
 import com.hana.hana1pick.domain.user.dto.response.UserInfoResDto;
@@ -13,8 +14,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
+import static com.hana.hana1pick.global.exception.BaseResponse.success;
+import static com.hana.hana1pick.global.exception.BaseResponseStatus.ACCOUNT_LIST_SUCCESS;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.LOGIN_SUCCESS;
 
 @RestController
@@ -56,6 +60,14 @@ public class UserController {
       user = userService.updateUserProfile(userId, userInfo.getEmail(), userInfo.getProfile());
     }
 
-    return BaseResponse.success(LOGIN_SUCCESS, userInfo);
+    return success(LOGIN_SUCCESS, userInfo);
+  }
+
+  @Operation(summary = "사용자의 전체 계좌 목록 조회")
+  @PostMapping("/accounts/list")
+  public BaseResponse.SuccessResult<List<AccountResDto> > getAllAccountsByUserId(@RequestParam("userId") UUID userId) {
+    List<AccountResDto>  accounts = userService.getAllAccountsByUserId(userId);
+    // 메시지 변경
+    return success(ACCOUNT_LIST_SUCCESS, accounts);
   }
 }
