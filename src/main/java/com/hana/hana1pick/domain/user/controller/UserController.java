@@ -27,49 +27,49 @@ import static com.hana.hana1pick.global.exception.BaseResponseStatus.LOGIN_SUCCE
 @Slf4j
 public class UserController {
 
-  private final UserService userService;
-  private final KakaoService kakaoService;
+    private final UserService userService;
+    private final KakaoService kakaoService;
 
-  @Operation(summary = "비밀번호 확인")
-  @PostMapping("/password-check")
-  public BaseResponse.SuccessResult<PwCheckResDto> checkAccPw(@RequestBody PwCheckReqDto request) {
-    return userService.checkPw(request);
-  }
-
-  @Operation(summary = "카카오 로그인")
-  @GetMapping("/login")
-  public String login() { // 로그인 페이지: 1. 인가 코드 받기
-    return kakaoService.getLoginRedirectUrl();
-  }
-
-  @Operation(summary = "카카오 로그인 후 사용자 정보 가져오기")
-  @RequestMapping("/oauth/kakao")
-  public BaseResponse.SuccessResult<UserInfoResDto> kakaoLogin(@RequestParam("code") String code, HttpSession httpSession) {
-    String accessToken = kakaoService.getAccessToken(code); // 2. 발급 받은 인가 코드를 통해 AccessToken 반환 받기
-    UserInfoResDto userInfo = kakaoService.getUserInfo(accessToken); // 3. AccessToken을 통해 userInfo 추출 하기
-    log.info("프사와 이메일을 가져왔어용");
-    log.info("프사: " + userInfo.getProfile());
-    log.info("이메일: " + userInfo.getEmail());
-
-    // 4. DB에 회원 정보 저장하기
-    // 만약 회원 정보가 이미 존재한다면, 로그인 처리만 하기
-    // 만약 회원 정보가 존재하지 않는다면, 회원 정보 저장 후 로그인 처리하기
-    User user;
-    if (!userService.findByEmail(userInfo.getEmail())) {
-      user = userService.saveUserWithEmailAndProfile(userInfo.getEmail(), userInfo.getProfile());
-    } else {
-      UUID userId = userService.findUserIdByEmail(userInfo.getEmail());
-      user = userService.updateUserProfile(userId, userInfo.getEmail(), userInfo.getProfile());
+    @Operation(summary = "비밀번호 확인")
+    @PostMapping("/password-check")
+    public BaseResponse.SuccessResult<PwCheckResDto> checkAccPw(@RequestBody PwCheckReqDto request) {
+        return userService.checkPw(request);
     }
 
-    return success(LOGIN_SUCCESS, userInfo);
-  }
+    @Operation(summary = "카카오 로그인")
+    @GetMapping("/login")
+    public String login() { // 로그인 페이지: 1. 인가 코드 받기
+        return kakaoService.getLoginRedirectUrl();
+    }
 
-  @Operation(summary = "사용자의 전체 계좌 목록 조회")
-  @PostMapping("/accounts/list")
-  public BaseResponse.SuccessResult<List<AccountResDto> > getAllAccountsByUserId(@RequestParam("userId") UUID userId) {
-    List<AccountResDto>  accounts = userService.getAllAccountsByUserId(userId);
-    // 메시지 변경
-    return success(ACCOUNT_LIST_SUCCESS, accounts);
-  }
+    @Operation(summary = "카카오 로그인 후 사용자 정보 가져오기")
+    @RequestMapping("/oauth/kakao")
+    public BaseResponse.SuccessResult<UserInfoResDto> kakaoLogin(@RequestParam("code") String code, HttpSession httpSession) {
+        String accessToken = kakaoService.getAccessToken(code); // 2. 발급 받은 인가 코드를 통해 AccessToken 반환 받기
+        UserInfoResDto userInfo = kakaoService.getUserInfo(accessToken); // 3. AccessToken을 통해 userInfo 추출 하기
+        log.info("프사와 이메일을 가져왔어용");
+        log.info("프사: " + userInfo.getProfile());
+        log.info("이메일: " + userInfo.getEmail());
+
+        // 4. DB에 회원 정보 저장하기
+        // 만약 회원 정보가 이미 존재한다면, 로그인 처리만 하기
+        // 만약 회원 정보가 존재하지 않는다면, 회원 정보 저장 후 로그인 처리하기
+        User user;
+        if (!userService.findByEmail(userInfo.getEmail())) {
+            user = userService.saveUserWithEmailAndProfile(userInfo.getEmail(), userInfo.getProfile());
+        } else {
+            UUID userId = userService.findUserIdByEmail(userInfo.getEmail());
+            user = userService.updateUserProfile(userId, userInfo.getEmail(), userInfo.getProfile());
+        }
+
+        return success(LOGIN_SUCCESS, userInfo);
+    }
+
+    @Operation(summary = "사용자의 전체 계좌 목록 조회")
+    @PostMapping("/accounts/list")
+    public BaseResponse.SuccessResult<List<AccountResDto>> getAllAccountsByUserId(@RequestParam("userId") UUID userId) {
+        List<AccountResDto> accounts = userService.getAllAccountsByUserId(userId);
+        // 메시지 변경
+        return success(ACCOUNT_LIST_SUCCESS, accounts);
+    }
 }
