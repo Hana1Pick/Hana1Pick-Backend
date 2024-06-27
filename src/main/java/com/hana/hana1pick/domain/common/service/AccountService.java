@@ -1,8 +1,7 @@
 package com.hana.hana1pick.domain.common.service;
 
-import com.hana.hana1pick.domain.acchistory.entity.TransType;
-import com.hana.hana1pick.domain.acchistory.repository.AccountHistoryRepository;
-import com.hana.hana1pick.domain.acchistory.service.AccountHistoryService;
+import com.hana.hana1pick.domain.acchistory.repository.AccHistoryRepository;
+import com.hana.hana1pick.domain.acchistory.service.AccHistoryService;
 import com.hana.hana1pick.domain.celublog.repository.CelublogRepository;
 import com.hana.hana1pick.domain.common.dto.request.AccountForCashOutHisReqDto;
 import com.hana.hana1pick.domain.common.dto.request.AccountForCashOutReqDto;
@@ -13,6 +12,7 @@ import com.hana.hana1pick.domain.common.entity.Accounts;
 import com.hana.hana1pick.domain.common.repository.AccountsRepository;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubRepository;
+import com.hana.hana1pick.domain.user.service.UserTrsfLimitService;
 import com.hana.hana1pick.global.exception.BaseException;
 import com.hana.hana1pick.global.exception.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +36,12 @@ import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 @Slf4j
 public class AccountService {
     private final AccountsRepository accountsRepository;
-    private final AccountHistoryRepository accountHistoryRepository;
+    private final AccHistoryRepository accountHistoryRepository;
     private final DepositRepository depositRepository;
     private final CelublogRepository celublogRepository;
     private final MoaClubRepository moaClubRepository;
-    private final AccountHistoryService accountHistoryService;
+    private final AccHistoryService accountHistoryService;
+    private final UserTrsfLimitService userTrsfLimitService;
 
     final PlatformTransactionManager transactionManager;
 
@@ -109,7 +110,9 @@ public class AccountService {
             transactionManager.commit(status);
 
             // 2-2. 입출금 로그 생성
-            accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), amount, TransType.valueOf("DEPOSIT"), request.getHashtag());
+            accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), amount, request.getTransType(), request.getHashtag());
+            // 2-3. 사용자 누적 금액 수정
+
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new BaseException(ACCOUNT_CASH_OUT_FAIL);
