@@ -88,4 +88,10 @@ public class MoaClubController {
     public SuccessResult registerAutoTransfer(@RequestBody ClubAutoTransferReqDto request) {
         return moaClubService.registerAutoTransfer(request);
     }
+
+    @Operation(summary = "모아클럽 자동이체 삭제")
+    @DeleteMapping("/auto-transfer")
+    public SuccessResult deleteAutoTransfer(@RequestBody ClubAutoTransferReqDto request) {
+        return moaClubService.deleteAutoTransfer(request);
+    }
 }

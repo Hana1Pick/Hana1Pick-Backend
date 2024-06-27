@@ -37,6 +37,7 @@ public enum BaseResponseStatus {
     ACCOUNT_CASH_OUT_LIST_SUCCESS(OK, "계좌 번호 목록 조회 성공"),
     ACCOUNT_CASH_OUT_HISTORY_LIST_SUCCESS(OK, "계좌 번호 목록 검색 성공"),
     ACCOUNT_CASH_OUT_SUCCESS(OK, "계좌이체 성공"),
+    AUTO_TRANSFER_DELETE_SUCCESS(OK, "자동이체 삭제 성공"),
 
     /**
      * 202 : Request 오류
@@ -79,9 +80,11 @@ public enum BaseResponseStatus {
 
     // Account
     ACCOUNT_STATUS_INVALID(ACCEPTED, "E600", "유효하지 않는 계좌입니다."),
-    ACCOUNT_CASH_OUT_FAIL(ACCEPTED, "E601", "계좌이체를 실패했습니다.");
+    ACCOUNT_CASH_OUT_FAIL(ACCEPTED, "E601", "계좌이체를 실패했습니다."),
 
-
+    // AutoTransfer
+    AUTO_TRANSFER_NOT_FOUND(ACCEPTED, "E700", "자동이체를 찾을 수 없습니다")
+    ;
     private final HttpStatus httpStatus;
     private String errorCode;
     private final String message;

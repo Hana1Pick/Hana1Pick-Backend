@@ -5,6 +5,7 @@ import com.hana.hana1pick.domain.autotranfer.repository.AutoTransferRepository;
 import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
 import com.hana.hana1pick.domain.common.entity.Account;
 import com.hana.hana1pick.domain.common.service.AccountService;
+import com.hana.hana1pick.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import static com.hana.hana1pick.domain.acchistory.entity.TransType.AUTO_TRANSFER;
 import static com.hana.hana1pick.domain.common.entity.AccountStatus.INACTIVE;
+import static com.hana.hana1pick.global.exception.BaseResponseStatus.AUTO_TRANSFER_NOT_FOUND;
 
 @Service
 @Transactional
@@ -28,7 +30,7 @@ public class AutoTransferService {
 
     public void autoTransfer() {
         // 자동이체 DB Table에서 출금일이 오늘 날짜인 모든 데이터를 조회
-        int today = Integer.parseInt(LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
+        int today = LocalDate.now().getDayOfMonth();
         List<AutoTransfer> autoTransferList = autoTransferRepository.findByAtDate(today);
 
         for (AutoTransfer autoTransfer : autoTransferList) {
@@ -51,6 +53,12 @@ public class AutoTransferService {
         for (AutoTransfer autoTransfer : autoTransferList) {
             autoTransferRepository.delete(autoTransfer);
         }
+    }
+
+    public void deleteAutoTrsfByInAccIdAndOutAccId(String inAccId, String outAccId) {
+        AutoTransfer autoTransfer = autoTransferRepository.findByInAccIdAndOutAccId(inAccId, outAccId)
+                        .orElseThrow(() -> new BaseException(AUTO_TRANSFER_NOT_FOUND));
+        autoTransferRepository.delete(autoTransfer);
     }
 
     public void updateAutoTrsfByInAccId(String inAccId, int atDate, Long amount) {
