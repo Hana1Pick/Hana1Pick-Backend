@@ -53,4 +53,10 @@ public class CelublogController {
     public SuccessResult celubAddIn(@RequestBody AccInReqDto req){
         return celublogService.celubAddIn(req);
     }
+
+    @Operation(summary = "셀럽로그 연예인 조회")
+    @PostMapping("/list")
+    public SuccessResult celubList(@RequestParam UUID userIdx){
+        return celublogService.celubList(userIdx);
+    }
 }
