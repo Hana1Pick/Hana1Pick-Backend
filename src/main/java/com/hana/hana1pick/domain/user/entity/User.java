@@ -37,30 +37,24 @@ public class User {
     private String email;
 
     @Column
-    @NotNull
     private String name;
 
     @Column
-    @NotNull
     private UserNation nation;
 
     @Column
-    @NotNull
     private LocalDate birth;
 
     @Column
-    @NotNull
     private String phone;
 
     @Column
-    @NotNull
     private String address;
 
     @Column
     private String profile;
 
     @Column
-    @NotNull
     private String password;
 
     @OneToOne(mappedBy = "user")

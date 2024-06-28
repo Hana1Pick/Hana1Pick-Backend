@@ -59,7 +59,7 @@ public class UserService {
                 .email(email)
                 .profile(profile)
                 .build();
-        user = userRepository.save(user);
+        userRepository.save(user);
 
         // UserTrsfLimit 생성
         UserTrsfLimit userTrsfLimit = UserTrsfLimit.builder()
