@@ -10,6 +10,7 @@ import com.hana.hana1pick.domain.celublog.dto.request.AddRuleReqDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto.AccReport;
 import com.hana.hana1pick.domain.celublog.dto.response.AccListResDto;
+import com.hana.hana1pick.domain.celublog.dto.response.CelubListDto;
 import com.hana.hana1pick.domain.celublog.entity.Celublog;
 import com.hana.hana1pick.domain.celublog.entity.Rules;
 import com.hana.hana1pick.domain.celublog.repository.CelublogRepository;
@@ -23,6 +24,7 @@ import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
 import com.hana.hana1pick.global.exception.BaseException;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,19 @@ public class CelublogService {
     private final AccHistoryRepository accountHistoryRepository;
     private final RulesRepository rulesRepository;
     private final AccountService accountService;
+
+    //생성 가능한 연예인 리스트
+    public SuccessResult celubList(UUID userIdx){
+        // 개설하지 않은 연예인 리스트
+        List<Long> celubIdxList = celublogRepository.findClubNumByUserIdx(userIdx);
+        List<CelubListDto> celubList = new ArrayList<>();
+        for(Long idx:celubIdxList){
+            Optional<Celebrity> celub = celebrityRepository.findById(idx);
+            CelubListDto dto = CelubListDto.of(celub.get().getType(), idx, celub.get().getName(), celub.get().getThumbnail());
+            celubList.add(dto);
+        }
+        return success(CELUBLOG_CELUBLIST_SUCCESS, celubList);
+    }
 
     //룰에 따른 입금
     public SuccessResult celubAddIn(AccInReqDto req){
@@ -104,7 +119,7 @@ public class CelublogService {
         List<AccListResDto> resList = new ArrayList<>();
         for(int i=0; i<celublogList.size(); i++){
             Celublog tmp = celublogList.get(i);
-            AccListResDto dto = new AccListResDto(tmp.getName(), tmp.getAccountId());
+            AccListResDto dto = new AccListResDto(tmp.getName(), tmp.getAccountId() , tmp.getBalance(), tmp.getImgSrc());
             resList.add(dto);
         }
         return success(CELUBLOG_ACCOUNT_LIST_SUCCESS, resList);

@@ -13,4 +13,6 @@ import java.util.ArrayList;
 public class AccListResDto {
     private String name;
     private String account_id;
+    private long balance;
+    private String imgSrc;
 }
