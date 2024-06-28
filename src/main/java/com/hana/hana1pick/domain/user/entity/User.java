@@ -3,7 +3,10 @@ package com.hana.hana1pick.domain.user.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.celublog.entity.Celublog;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
+import com.hana.hana1pick.domain.moaclub.dto.request.ClubUpdateReqDto;
+import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
+import com.hana.hana1pick.domain.user.dto.request.UserUpdateReqDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -88,5 +91,16 @@ public class User {
     // 프로필 사진 업데이트 메서드
     public void updateProfile(String profile) {
         this.profile = profile;
+    }
+
+    public User updateUserInfo(UserUpdateReqDto request, String encodedPassword) {
+        this.name = request.getName();
+        this.birth = request.getBirth();
+        this.nation = request.getNation();
+        this.phone = request.getPhone();
+        this.address = request.getAddress();
+        this.password = encodedPassword; // 암호화된 비밀번호를 설정
+
+        return this;
     }
 }
