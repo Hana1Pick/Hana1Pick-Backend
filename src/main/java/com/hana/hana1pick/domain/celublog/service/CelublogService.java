@@ -4,21 +4,31 @@ import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.repository.AccHistoryRepository;
 import com.hana.hana1pick.domain.celebrity.entity.Celebrity;
 import com.hana.hana1pick.domain.celebrity.repository.CelebrityRepository;
+import com.hana.hana1pick.domain.celublog.dto.request.AccInReqDto;
 import com.hana.hana1pick.domain.celublog.dto.request.AcceReqDto;
+import com.hana.hana1pick.domain.celublog.dto.request.AddRuleReqDto;
+import com.hana.hana1pick.domain.celublog.dto.request.SearchReqDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto.AccReport;
 import com.hana.hana1pick.domain.celublog.dto.response.AccListResDto;
+import com.hana.hana1pick.domain.celublog.dto.response.CelubListDto;
 import com.hana.hana1pick.domain.celublog.entity.Celublog;
+import com.hana.hana1pick.domain.celublog.entity.Rules;
 import com.hana.hana1pick.domain.celublog.repository.CelublogRepository;
+import com.hana.hana1pick.domain.celublog.repository.RulesRepository;
+import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
+import com.hana.hana1pick.domain.common.service.AccountService;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
 import com.hana.hana1pick.global.exception.BaseException;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +36,10 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import static com.hana.hana1pick.domain.acchistory.entity.TransType.DEPOSIT;
 import static com.hana.hana1pick.global.exception.BaseResponse.success;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 
@@ -42,6 +54,62 @@ public class CelublogService {
     private final AccIdGenerator accIdGenerator;
     private final CelebrityRepository celebrityRepository;
     private final AccHistoryRepository accountHistoryRepository;
+    private final RulesRepository rulesRepository;
+    private final AccountService accountService;
+
+    //연예인 검색
+    public SuccessResult celubSearchList(SearchReqDto req) {
+        List<Celebrity> celebrityList = celebrityRepository.findByKeyword(req.getUserIdx(), req.getType(), req.getName());
+
+        List<CelubListDto> celubList = new ArrayList<>();
+        celebrityList.forEach(item->{
+            CelubListDto dto = CelubListDto.of(item.getType(), item.getIdx(), item.getName(), item.getThumbnail());
+            celubList.add(dto);
+        });
+
+        return success(CELUBLOG_SEARCH_CELUBLIST_SUCCESS, celubList);
+    }
+
+    //생성 가능한 연예인 리스트
+    public SuccessResult celubList(UUID userIdx){
+        // 개설하지 않은 연예인 리스트
+        List<Long> celubIdxList = celublogRepository.findClubNumByUserIdx(userIdx);
+        List<CelubListDto> celubList = new ArrayList<>();
+        for(Long idx:celubIdxList){
+            Optional<Celebrity> celub = celebrityRepository.findById(idx);
+            CelubListDto dto = CelubListDto.of(celub.get().getType(), idx, celub.get().getName(), celub.get().getThumbnail());
+            celubList.add(dto);
+        }
+        return success(CELUBLOG_CELUBLIST_SUCCESS, celubList);
+    }
+
+    //룰에 따른 입금
+    public SuccessResult celubAddIn(AccInReqDto req){
+        //셀럽로그 계좌번호로 출금 계좌번호 찾아오기
+        Celublog celub = celublogRepository.findByAccountId(req.getAccountId());
+        Deposit tmpAccount = celub.getOutAcc();
+        //출금 계좌번호
+        String out_account = tmpAccount.getAccountId();
+
+        //Dto setting
+        CashOutReqDto dto = CashOutReqDto.builder().inAccId(req.getAccountId()).outAccId(out_account).memo(req.getMemo()).hashtag(req.getHashtag()).amount(req.getAmount()).transType(DEPOSIT).build();
+        accountService.cashOut(dto);
+
+        return success(CELUBLOG_ACCOUNT_IN_SUCCESS);
+    }
+
+    //사용자가 입력한 규칙 추가
+    public SuccessResult celubAddRules(AddRuleReqDto dto){
+        Celublog celublog = celublogRepository.findById(dto.getAccountId())
+                .orElseThrow(() -> new BaseException(CELEBRITY_NOT_FOUND_ACCOUNT));
+                dto.getRuleList().forEach(rule->{
+                Rules rules = Rules.builder().ruleName(rule.getRuleName()).ruleMoney(rule.getRuleMoney()).celublog(celublog).build();
+                rulesRepository.save(rules);
+            });
+            Celublog ruleList = celublogRepository.findByAccountId(dto.getAccountId());
+        return success(CELUBLOG_ADD_RULES_SUCCESS, ruleList.getRuleList());
+    }
+
     //선택한 계좌 상세 내용 조회
     public SuccessResult celubAccDetail(String accountId){
         //accountInfo, ruleInfoList celub에 담겨옴
@@ -66,7 +134,7 @@ public class CelublogService {
         List<AccListResDto> resList = new ArrayList<>();
         for(int i=0; i<celublogList.size(); i++){
             Celublog tmp = celublogList.get(i);
-            AccListResDto dto = new AccListResDto(tmp.getName(), tmp.getAccountId());
+            AccListResDto dto = new AccListResDto(tmp.getName(), tmp.getAccountId() , tmp.getBalance(), tmp.getImgSrc());
             resList.add(dto);
         }
         return success(CELUBLOG_ACCOUNT_LIST_SUCCESS, resList);

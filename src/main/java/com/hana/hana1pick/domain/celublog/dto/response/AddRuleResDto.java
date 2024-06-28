@@ -5,14 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class AccListResDto {
-    private String name;
-    private String account_id;
-    private long balance;
-    private String imgSrc;
+public class AddRuleResDto {
+    private List<Rule> ruleList;
+    public class Rule{
+        private String ruleName;
+        private long ruleMoney;
+    }
 }
