@@ -77,6 +77,7 @@ public class UserController {
     @PostMapping("/update")
     public BaseResponse.SuccessResult updateUserInfo(@RequestBody UserUpdateReqDto request) {
         return userService.updateUserInfo(request);
+    }
 
     @Operation(summary = "사용자 계좌 목록 타입별 조회")
     @GetMapping("/account-list")
