@@ -3,8 +3,12 @@ package com.hana.hana1pick.domain.user.service;
 import com.hana.hana1pick.domain.common.dto.response.AccountResDto;
 import com.hana.hana1pick.domain.common.entity.Accounts;
 import com.hana.hana1pick.domain.common.repository.AccountsRepository;
+import com.hana.hana1pick.domain.moaclub.dto.request.ClubUpdateReqDto;
+import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
 import com.hana.hana1pick.domain.user.dto.request.PwCheckReqDto;
+import com.hana.hana1pick.domain.user.dto.request.UserUpdateReqDto;
 import com.hana.hana1pick.domain.user.dto.response.PwCheckResDto;
+import com.hana.hana1pick.domain.user.dto.response.UserCreateResDto;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.entity.UserTrsfLimit;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
@@ -13,6 +17,7 @@ import com.hana.hana1pick.global.exception.BaseException;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.hana.hana1pick.global.exception.BaseResponse.success;
-import static com.hana.hana1pick.global.exception.BaseResponseStatus.USER_NOT_FOUND;
-import static com.hana.hana1pick.global.exception.BaseResponseStatus.USER_PW_CHECK_SUCCESS;
+import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 
 @Service
 @Transactional
@@ -35,6 +39,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserTrsfLimitRepository userTrsfLimitRepository;
     private final AccountsRepository accountsRepository;
+
 
     public SuccessResult<PwCheckResDto> checkPw(PwCheckReqDto request) {
         String userPwCheck = userRepository.findPasswordByUserIdx(request.getUserIdx())
@@ -100,5 +105,22 @@ public class UserService {
         });
 
         return result;
+    }
+
+    //사용자 정보 수정
+    public SuccessResult updateUserInfo(UserUpdateReqDto request) {
+
+        User user = userRepository.findUserInfoByEmail(request.getEmail());
+
+        // 비밀번호 암호화 처리
+        String encodedPassword = null;
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            encodedPassword = passwordEncoder.encode(request.getPassword());
+        }
+
+        user.updateUserInfo(request, encodedPassword);
+        userRepository.save(user);
+
+        return success(USER_UPDATE_SUCCESS);
     }
 }

@@ -1,8 +1,11 @@
 package com.hana.hana1pick.domain.user.controller;
 
 import com.hana.hana1pick.domain.common.dto.response.AccountResDto;
+import com.hana.hana1pick.domain.moaclub.dto.request.ClubUpdateReqDto;
 import com.hana.hana1pick.domain.user.dto.request.PwCheckReqDto;
+import com.hana.hana1pick.domain.user.dto.request.UserUpdateReqDto;
 import com.hana.hana1pick.domain.user.dto.response.PwCheckResDto;
+import com.hana.hana1pick.domain.user.dto.response.UserCreateResDto;
 import com.hana.hana1pick.domain.user.dto.response.UserInfoResDto;
 import com.hana.hana1pick.domain.user.service.KakaoService;
 import com.hana.hana1pick.domain.user.service.UserService;
@@ -16,8 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.hana.hana1pick.global.exception.BaseResponse.success;
-import static com.hana.hana1pick.global.exception.BaseResponseStatus.ACCOUNT_LIST_SUCCESS;
-import static com.hana.hana1pick.global.exception.BaseResponseStatus.LOGIN_SUCCESS;
+import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -68,5 +70,11 @@ public class UserController {
         List<AccountResDto> accounts = userService.getAllAccountsByUserId(userIdx);
         // 메시지 변경
         return success(ACCOUNT_LIST_SUCCESS, accounts);
+    }
+
+    @Operation(summary = "사용자 정보 수정")
+    @PostMapping("/update")
+    public BaseResponse.SuccessResult updateUserInfo(@RequestBody UserUpdateReqDto request) {
+        return userService.updateUserInfo(request);
     }
 }
