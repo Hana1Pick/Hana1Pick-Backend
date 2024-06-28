@@ -10,6 +10,7 @@ import com.hana.hana1pick.domain.user.dto.response.UserInfoResDto;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.service.KakaoService;
 import com.hana.hana1pick.domain.user.service.UserService;
+import com.hana.hana1pick.global.exception.BaseResponse;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
