@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @Operation(summary = "사용자 정보 수정")
-    @PostMapping("/update")
+    @PutMapping("/update")
     public BaseResponse.SuccessResult updateUserInfo(@RequestBody UserUpdateReqDto request) {
         return userService.updateUserInfo(request);
     }
