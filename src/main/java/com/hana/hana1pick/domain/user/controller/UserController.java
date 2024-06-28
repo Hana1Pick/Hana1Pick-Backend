@@ -7,9 +7,9 @@ import com.hana.hana1pick.domain.user.dto.request.UserUpdateReqDto;
 import com.hana.hana1pick.domain.user.dto.response.PwCheckResDto;
 import com.hana.hana1pick.domain.user.dto.response.UserCreateResDto;
 import com.hana.hana1pick.domain.user.dto.response.UserInfoResDto;
+import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.service.KakaoService;
 import com.hana.hana1pick.domain.user.service.UserService;
-import com.hana.hana1pick.global.exception.BaseResponse;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +39,11 @@ public class UserController {
 
     @Operation(summary = "카카오 로그인")
     @GetMapping("/login")
-    public String login() { // 로그인 페이지: 1. 인가 코드 받기
-        return kakaoService.getLoginRedirectUrl();
-    }
+    public SuccessResult<UserInfoResDto> login(@RequestParam("accessToken") String accessToken) {
+        // 1. AccessToken을 통해 userInfo 추출 하기
+        // 2. DB 속 회원 정보 유무 확인 : 유 - 정보 뽑아서 리턴 / 무 - 회원 가입 후 리턴
+        log.info(accessToken);
 
-    @Operation(summary = "카카오 로그인 후 사용자 정보 가져오기")
-    @RequestMapping("/oauth/kakao")
-    public SuccessResult<UserInfoResDto> kakaoLogin(@RequestParam("code") String code) {
-        String accessToken = kakaoService.getAccessToken(code); // 2. 발급 받은 인가 코드를 통해 AccessToken 반환 받기
         UserInfoResDto userInfo = kakaoService.getUserInfo(accessToken); // 3. AccessToken을 통해 userInfo 추출 하기
         log.info("프사와 이메일을 가져왔어용");
         log.info("프사: " + userInfo.getProfile());
@@ -55,14 +52,16 @@ public class UserController {
         // 4. DB에 회원 정보 저장하기
         // 만약 회원 정보가 이미 존재한다면, 로그인 처리만 하기
         // 만약 회원 정보가 존재하지 않는다면, 회원 정보 저장 후 로그인 처리하기
-        if (!userService.findByEmail(userInfo.getEmail())) {
-            userService.saveUserWithEmailAndProfile(userInfo.getEmail(), userInfo.getProfile());
-        } else {
-            UUID userId = userService.findUserIdByEmail(userInfo.getEmail());
-            userService.updateUserProfile(userId, userInfo.getEmail(), userInfo.getProfile());
-        }
+        User user = userService.findUserByEmail(userInfo.getEmail());
 
-        return success(LOGIN_SUCCESS, userInfo);
+        if (user == null) {
+            userService.saveUserWithEmailAndProfile(userInfo.getEmail(), userInfo.getProfile());
+            return success(JOIN_SUCCESS, userInfo);
+        } else {
+            userInfo.setUserIdx(user.getIdx());
+            userInfo.setName(user.getName());
+            return success(LOGIN_SUCCESS, userInfo);
+        }
     }
 
     @Operation(summary = "사용자의 전체 계좌 목록 조회")

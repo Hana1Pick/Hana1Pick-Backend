@@ -16,6 +16,7 @@ public enum BaseResponseStatus {
     // User
     USER_PW_CHECK_SUCCESS(OK, "사용자 비밀번호 확인 성공"),
     LOGIN_SUCCESS(OK, "카카오 로그인 성공"),
+    JOIN_SUCCESS(CREATED, "카카오 회원가입 성공"),
     ACCOUNT_LIST_SUCCESS(OK, "계좌 목록 조회 성공"),
     USER_UPDATE_SUCCESS(OK, "사용자 정보 수정 성공"),
 

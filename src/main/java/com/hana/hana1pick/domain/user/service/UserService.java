@@ -49,9 +49,9 @@ public class UserService {
         return success(USER_PW_CHECK_SUCCESS, new PwCheckResDto(isPwValid));
     }
 
-    public Boolean findByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
+//    public Boolean findByEmail(String email) {
+//        return userRepository.existsByEmail(email);
+//    }
 
     // 이메일과 프로필만으로 사용자 저장
     public User saveUserWithEmailAndProfile(String email, String profile) {
@@ -80,10 +80,18 @@ public class UserService {
     }
 
     // 사용자 ID를 이메일로 찾는 메서드 추가
-    public UUID findUserIdByEmail(String email) {
+//    public UUID findUserIdByEmail(String email) {
+//        User user = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+//        return user.getIdx();
+//    }
+
+    public User findUserByEmail(String email) {
+        // TODO: 예외 수정 필요 -> null 반환
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
-        return user.getIdx();
+//                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+                .orElse(null);
+        return user;
     }
 
     // 사용자의 전체 계좌 목록을 조회
