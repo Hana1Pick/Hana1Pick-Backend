@@ -3,6 +3,7 @@ package com.hana.hana1pick.domain.celublog.controller;
 import com.hana.hana1pick.domain.celublog.dto.request.AccInReqDto;
 import com.hana.hana1pick.domain.celublog.dto.request.AcceReqDto;
 import com.hana.hana1pick.domain.celublog.dto.request.AddRuleReqDto;
+import com.hana.hana1pick.domain.celublog.dto.request.SearchReqDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccListResDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccResDto;
@@ -59,4 +60,11 @@ public class CelublogController {
     public SuccessResult celubList(@RequestParam UUID userIdx){
         return celublogService.celubList(userIdx);
     }
+
+    @Operation(summary = "셀럽로그 연예인 검색")
+    @PostMapping("/list/search")
+    public SuccessResult celubSearchList(@RequestBody SearchReqDto req){
+        return celublogService.celubSearchList(req);
+    }
+
 }
