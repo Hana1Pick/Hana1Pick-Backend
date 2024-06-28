@@ -1,11 +1,9 @@
 package com.hana.hana1pick.domain.user.controller;
 
 import com.hana.hana1pick.domain.common.dto.response.AccountResDto;
-import com.hana.hana1pick.domain.moaclub.dto.request.ClubUpdateReqDto;
 import com.hana.hana1pick.domain.user.dto.request.PwCheckReqDto;
 import com.hana.hana1pick.domain.user.dto.request.UserUpdateReqDto;
 import com.hana.hana1pick.domain.user.dto.response.PwCheckResDto;
-import com.hana.hana1pick.domain.user.dto.response.UserCreateResDto;
 import com.hana.hana1pick.domain.user.dto.response.UserInfoResDto;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.service.KakaoService;
