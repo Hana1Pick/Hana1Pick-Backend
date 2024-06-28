@@ -7,6 +7,7 @@ import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
+import com.hana.hana1pick.global.exception.BaseException;
 import com.hana.hana1pick.global.exception.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.hana.hana1pick.domain.common.entity.AccountStatus.ACTIVE;
 import static com.hana.hana1pick.global.exception.BaseResponse.success;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.DEPOSIT_CREATED_SUCCESS;
+import static com.hana.hana1pick.global.exception.BaseResponseStatus.USER_NOT_FOUND;
 
 
 @Service
@@ -32,7 +34,7 @@ public class DepositService {
     public BaseResponse.SuccessResult<DepositCreateResDto> createDeposit(DepositCreateReqDto request) {
         // email로 User 엔티티를 조회
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user Email"));
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
 
         String accId = getAccId();
 

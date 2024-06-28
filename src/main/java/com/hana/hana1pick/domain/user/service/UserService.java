@@ -129,8 +129,8 @@ public class UserService {
     //사용자 정보 수정
     public SuccessResult updateUserInfo(UserUpdateReqDto request) {
 
-        User user = userRepository.findUserInfoByEmail(request.getEmail());
-
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
 
         userRepository.save(user);
 
