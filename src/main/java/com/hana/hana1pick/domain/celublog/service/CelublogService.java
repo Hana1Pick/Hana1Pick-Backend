@@ -7,6 +7,7 @@ import com.hana.hana1pick.domain.celebrity.repository.CelebrityRepository;
 import com.hana.hana1pick.domain.celublog.dto.request.AccInReqDto;
 import com.hana.hana1pick.domain.celublog.dto.request.AcceReqDto;
 import com.hana.hana1pick.domain.celublog.dto.request.AddRuleReqDto;
+import com.hana.hana1pick.domain.celublog.dto.request.SearchReqDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto.AccReport;
 import com.hana.hana1pick.domain.celublog.dto.response.AccListResDto;
@@ -27,6 +28,7 @@ import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +56,19 @@ public class CelublogService {
     private final AccHistoryRepository accountHistoryRepository;
     private final RulesRepository rulesRepository;
     private final AccountService accountService;
+
+    //연예인 검색
+    public SuccessResult celubSearchList(SearchReqDto req) {
+        List<Celebrity> celebrityList = celebrityRepository.findByKeyword(req.getUserIdx(), req.getType(), req.getName());
+
+        List<CelubListDto> celubList = new ArrayList<>();
+        celebrityList.forEach(item->{
+            CelubListDto dto = CelubListDto.of(item.getType(), item.getIdx(), item.getName(), item.getThumbnail());
+            celubList.add(dto);
+        });
+
+        return success(CELUBLOG_SEARCH_CELUBLIST_SUCCESS, celubList);
+    }
 
     //생성 가능한 연예인 리스트
     public SuccessResult celubList(UUID userIdx){

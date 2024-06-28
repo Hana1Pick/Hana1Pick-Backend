@@ -39,6 +39,7 @@ public enum BaseResponseStatus {
     CELUBLOG_ADD_RULES_SUCCESS(CREATED, "셀럽로그 규칙 추가 성공"),
     CELUBLOG_ACCOUNT_IN_SUCCESS(OK, "셀럽로그 입금 성공"),
     CELUBLOG_CELUBLIST_SUCCESS(OK, "셀럽로그 연예인 조회 성공"),
+    CELUBLOG_SEARCH_CELUBLIST_SUCCESS(OK, "셀럽로그 연예인 검색 성공"),
   
     // Account
     ACCOUNT_CASH_OUT_LIST_SUCCESS(OK, "계좌 번호 목록 조회 성공"),
