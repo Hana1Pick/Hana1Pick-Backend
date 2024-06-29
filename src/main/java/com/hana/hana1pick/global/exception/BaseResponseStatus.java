@@ -52,6 +52,10 @@ public enum BaseResponseStatus {
     ACCOUNT_CASH_OUT_SUCCESS(OK, "계좌이체 성공"),
     AUTO_TRANSFER_DELETE_SUCCESS(OK, "자동이체 삭제 성공"),
 
+    // Account History
+    ACCOUNT_HISTORY_SUCCESS(OK , "계좌 내역 조회 성공"),
+    ACCOUNT_HISTORY_FOR_QR_SUCCESS(OK, "QR 속 계좌번호에 대한 거래내역 조회 성공"),
+
     /**
      * 202 : Request 오류
      */
@@ -71,9 +75,6 @@ public enum BaseResponseStatus {
     // Account
     ACCOUNT_NOT_FOUND(ACCEPTED, "E300", "존재하지 않는 계좌입니다."),
     ACCOUNT_INACTIVE(ACCEPTED, "E303", "해지된 계좌입니다."),
-
-    // Account History
-    ACCOUNT_HISTORY_SUCCESS(OK , "계좌 내역 조회 성공"),
 
     // MoaClub
     MOACLUB_NOT_FOUND(ACCEPTED, "E400", "존재하지 않는 모아클럽입니다."),
