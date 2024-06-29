@@ -93,6 +93,7 @@ public class AccountService {
     }
 
     public BaseResponse.SuccessResult cashOut(CashOutReqDto request){
+        UUID userIdx = request.getUserIdx();
         String outAccId = request.getOutAccId();
         String inAccId = request.getInAccId();
         Long amount = request.getAmount();
@@ -101,17 +102,21 @@ public class AccountService {
         handleAccStatus(outAccId);
         handleAccStatus(inAccId);
 
-        // 2. 입출금 및 입출금 로그 생성
+        // 2. 출금 계좌 소유자의 회원 이체한도 초과 확인
+        if(userTrsfLimitService.checkTrsfLimit(userIdx, amount)){
+            throw new BaseException(USER_TRSF_LIMIT_OVER);
+        };
+
+        // 3. 입출금 및 입출금 로그 생성
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
         try {
-            // 2-1. 입출금
+            // 3-1. 입출금
             AccountHistoryInfoDto outAcc = handleAccBalance(outAccId, -amount);
             AccountHistoryInfoDto inAcc = handleAccBalance(inAccId, +amount);
             transactionManager.commit(status);
 
-            // 2-2. 입출금 로그 생성
+            // 3-2. 입출금 로그 생성
             accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), amount, request.getTransType(), request.getHashtag());
-            // 2-3. 사용자 누적 금액 수정
 
         } catch (Exception e) {
             transactionManager.rollback(status);
