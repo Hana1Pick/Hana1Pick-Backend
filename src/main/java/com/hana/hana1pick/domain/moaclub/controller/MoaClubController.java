@@ -23,10 +23,10 @@ public class MoaClubController {
         return moaClubService.openMoaClub(request);
     }
 
-    @Operation(summary = "모아클럽 초대")
-    @PostMapping("/invitations")
-    public SuccessResult inviteMoaClub(@RequestBody ClubInvitationReqDto request) {
-        return moaClubService.inviteMoaClub(request);
+    @Operation(summary = "모아클럽 가입 정보")
+    @GetMapping("/admission-info")
+    public SuccessResult<ClubInfoResDto> getMoaClubInfo(@RequestParam("accountId") String accountId) {
+        return moaClubService.getMoaClubInfo(accountId);
     }
 
     @Operation(summary = "모아클럽 가입")
