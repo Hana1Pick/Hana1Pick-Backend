@@ -118,6 +118,10 @@ public class AccountService {
             // 3-2. 입출금 로그 생성
             accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), amount, request.getTransType(), request.getHashtag());
 
+            // 3-3. 사용자 누적 금액 수정
+            if (!getAccountTypeByAccId(outAccId).equals("moaclub")) {
+                userTrsfLimitService.accumulate(request.getUserIdx(), amount);
+            }
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new BaseException(ACCOUNT_CASH_OUT_FAIL);
