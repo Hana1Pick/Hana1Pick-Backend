@@ -27,7 +27,7 @@ public class AccHistoryController {
 
   @Operation(summary = "QR 속 이체받을 계좌의 최근 3개월간 거래내역 조회")
   @GetMapping("/qr/history")
-  public BaseResponse.SuccessResult<AccHistoryForQrResDto> getAccHisForQr(@RequestParam String accId) {
-    return accHistoryService.getAccountHistoryForQr(accId);
+  public BaseResponse.SuccessResult<AccHistoryForQrResDto> getAccHisForQr(@RequestParam String accountId) {
+    return accHistoryService.getAccountHistoryForQr(accountId);
   }
 }
