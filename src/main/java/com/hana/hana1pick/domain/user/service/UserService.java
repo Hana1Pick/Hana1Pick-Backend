@@ -3,12 +3,10 @@ package com.hana.hana1pick.domain.user.service;
 import com.hana.hana1pick.domain.common.dto.response.AccountResDto;
 import com.hana.hana1pick.domain.common.entity.Accounts;
 import com.hana.hana1pick.domain.common.repository.AccountsRepository;
-import com.hana.hana1pick.domain.moaclub.dto.request.ClubUpdateReqDto;
-import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
+import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.user.dto.request.PwCheckReqDto;
 import com.hana.hana1pick.domain.user.dto.request.UserUpdateReqDto;
 import com.hana.hana1pick.domain.user.dto.response.PwCheckResDto;
-import com.hana.hana1pick.domain.user.dto.response.UserCreateResDto;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.entity.UserTrsfLimit;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
@@ -39,6 +37,8 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserTrsfLimitRepository userTrsfLimitRepository;
     private final AccountsRepository accountsRepository;
+    private final DepositRepository depositRepository;
+
 
 
     public SuccessResult<PwCheckResDto> checkPw(PwCheckReqDto request) {
@@ -129,7 +129,10 @@ public class UserService {
     //사용자 정보 수정
     public SuccessResult updateUserInfo(UserUpdateReqDto request) {
 
-        User user = userRepository.findUserInfoByEmail(request.getEmail());
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+
+        userRepository.save(user);
 
         // 비밀번호 암호화 처리
         String encodedPassword = null;

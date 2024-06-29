@@ -34,6 +34,13 @@ public class Account {
         this.status = status;
     }
 
+    public Account(Long balance, AccountStatus status, String name, LocalDate createDate) {
+        this.balance = balance;
+        this.status = status;
+        this.name = name;
+        this.createDate = createDate;
+    }
+
     public void closeAccount() {
         this.status = INACTIVE;
     }
