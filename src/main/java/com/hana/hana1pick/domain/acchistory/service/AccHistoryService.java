@@ -1,6 +1,7 @@
 package com.hana.hana1pick.domain.acchistory.service;
 
 import com.hana.hana1pick.domain.acchistory.dto.request.AccHistoryReqDto;
+import com.hana.hana1pick.domain.acchistory.dto.response.AccHistoryForQrResDto;
 import com.hana.hana1pick.domain.acchistory.dto.response.AccHistoryResDto;
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.entity.TransType;
@@ -9,8 +10,6 @@ import com.hana.hana1pick.domain.common.dto.response.AccountHistoryInfoDto;
 import com.hana.hana1pick.domain.common.entity.AccountStatus;
 import com.hana.hana1pick.domain.common.entity.Accounts;
 import com.hana.hana1pick.domain.common.repository.AccountsRepository;
-import com.hana.hana1pick.domain.user.entity.User;
-import com.hana.hana1pick.domain.user.repository.UserRepository;
 import com.hana.hana1pick.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
@@ -32,6 +30,19 @@ public class AccHistoryService {
 
   private final AccHistoryRepository accHistoryRepository;
   private final AccountsRepository accountsRepository;
+
+  public SuccessResult<AccHistoryForQrResDto> getAccountHistoryForQr(String accountId) {
+    // 1. 예외 처리
+    validateAccount(accountId);
+
+    // 2. 요청이 들어온 시각을 기준으로 3개월 전의 날짜 계산
+    LocalDateTime startDate = LocalDateTime.now().minusMonths(3);
+    
+    // 3. DB에서 데이터 추출
+    List<AccountHistory> result = accHistoryRepository.findRecentHistoryForAccount(startDate, accountId);
+
+    return success(ACCOUNT_HISTORY_FOR_QR_SUCCESS, new AccHistoryForQrResDto(result.size()));
+  }
 
   // 계좌 내역 조회
   public SuccessResult<List<AccHistoryResDto>> getAccountHistory(AccHistoryReqDto request) {

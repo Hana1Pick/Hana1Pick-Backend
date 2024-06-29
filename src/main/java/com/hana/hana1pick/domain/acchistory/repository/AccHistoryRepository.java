@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -36,4 +37,8 @@ public interface AccHistoryRepository extends JpaRepository<AccountHistory, Long
     @Query("SELECT DISTINCT ah.inAccId, ah.inAccName FROM AccountHistory ah WHERE ah.outAccId = :outAccId AND (ah.inAccId LIKE %:query% OR ah.inAccName LIKE %:query%) ORDER BY ah.transDate DESC")
     List<Object[]> findDistinctInAccIdAndNameByOutAccIdAndQueryOrderByTransDateDesc(String outAccId, String query);
 
+  @Query("SELECT ah FROM AccountHistory ah " +
+          "WHERE ah.transDate >= :startDate " +
+          "AND (ah.inAccId = :accountId OR ah.outAccId = :accountId)")
+    List<AccountHistory> findRecentHistoryForAccount(LocalDateTime startDate, String accountId);
 }
