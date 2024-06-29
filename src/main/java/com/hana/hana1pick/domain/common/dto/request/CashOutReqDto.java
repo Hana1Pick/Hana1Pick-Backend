@@ -3,11 +3,14 @@ package com.hana.hana1pick.domain.common.dto.request;
 import com.hana.hana1pick.domain.acchistory.entity.TransType;
 import lombok.*;
 
+import java.util.UUID;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 @Builder
 public class CashOutReqDto {
+    private UUID userIdx;
     private String outAccId;
     private String inAccId;
     private String memo;

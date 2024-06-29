@@ -71,6 +71,7 @@ public enum BaseResponseStatus {
     // User
     USER_NOT_FOUND(ACCEPTED, "E200", "존재하지 않는 회원입니다."),
     USER_TRSF_LIMIT_NOT_FOUND(ACCEPTED, "E201", "회원 이체한도를 조회할 수 없습니다"),
+    USER_TRSF_LIMIT_OVER(ACCEPTED,"E202", "회원 이체한도를 초과했습니다."),
 
     // Account
     ACCOUNT_NOT_FOUND(ACCEPTED, "E300", "존재하지 않는 계좌입니다."),
