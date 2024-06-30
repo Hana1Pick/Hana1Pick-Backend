@@ -6,6 +6,7 @@ import com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,6 +21,7 @@ public class ClubResDto {
     private Long clubFee;
     private int atDate;
     private Currency currency;
+    private LocalDate createDate;
     private List<MoaClubMember> memberList;
 
     public static ClubResDto of(MoaClub moaClub, List<MoaClubMember> memberList) {
@@ -30,6 +32,7 @@ public class ClubResDto {
                 .clubFee(moaClub.getClubFee())
                 .atDate(moaClub.getAtDate())
                 .currency(moaClub.getCurrency())
+                .createDate(moaClub.getCreateDate())
                 .memberList(memberList)
                 .build();
     }
