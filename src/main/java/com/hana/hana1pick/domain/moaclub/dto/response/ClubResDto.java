@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class ClubResDto {
 
+    private String name;
     private String accountId;
     private Long balance;
     private Long clubFee;
@@ -23,6 +24,7 @@ public class ClubResDto {
 
     public static ClubResDto of(MoaClub moaClub, List<MoaClubMember> memberList) {
         return ClubResDto.builder()
+                .name(moaClub.getName())
                 .accountId(moaClub.getAccountId())
                 .balance(moaClub.getBalance())
                 .clubFee(moaClub.getClubFee())
