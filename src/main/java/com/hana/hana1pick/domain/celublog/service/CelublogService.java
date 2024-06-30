@@ -116,7 +116,7 @@ public class CelublogService {
         Celublog celub = celublogRepository.findByAccountId(accountId);
         LocalDateTime today = LocalDateTime.now();
         long duration = ChronoUnit.DAYS.between(celub.getCreateDate(), today);
-        AccDetailResDto.AccInfo accInfo = new AccDetailResDto.AccInfo(celub.getBalance(), celub.getName(), celub.getImgSrc(), celub.getOutAcc(), celub.getCelebrity(), duration);
+        AccDetailResDto.AccInfo accInfo = new AccDetailResDto.AccInfo(celub.getAccountId(), celub.getBalance(), celub.getName(), celub.getImgSrc(), celub.getOutAcc(), celub.getCelebrity(), duration);
         //계좌 거래 내역
         List<AccountHistory> history = accountHistoryRepository.findByAccountId(accountId);
         List<AccReport> accountReportList = new ArrayList<>();
