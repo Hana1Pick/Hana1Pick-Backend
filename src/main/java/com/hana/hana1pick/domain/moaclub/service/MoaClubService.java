@@ -117,6 +117,16 @@ public class MoaClubService {
         return success(MOACLUB_FETCH_SUCCESS, ClubResDto.of(moaClub, clubMemberList));
     }
 
+    public SuccessResult<ClubManagerCheckResDto> checkMoaClubManager(AccIdReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+        MoaClubMembers member = getClubMemberByUserAndClub(user, moaClub);
+
+        boolean check = (member.getRole() == MANAGER);
+
+        return success(MOACLUB_MANAGER_CHECK_SUCCESS, new ClubManagerCheckResDto(check));
+    }
+
     public SuccessResult updateMoaClub(ClubUpdateReqDto request) {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getAccountId());
