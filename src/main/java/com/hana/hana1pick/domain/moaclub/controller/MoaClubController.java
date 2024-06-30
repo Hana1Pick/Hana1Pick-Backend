@@ -41,6 +41,12 @@ public class MoaClubController {
         return moaClubService.getMoaClub(request);
     }
 
+    @Operation(summary = "모아클럽 관리자 조회")
+    @PostMapping("/manager-check")
+    public SuccessResult<ClubManagerCheckResDto> checkMoaClubManager(@RequestBody AccIdReqDto request) {
+        return moaClubService.checkMoaClubManager(request);
+    }
+
     @Operation(summary = "모아클럽 수정")
     @PutMapping
     public SuccessResult updateMoaClub(@RequestBody ClubUpdateReqDto request) {
