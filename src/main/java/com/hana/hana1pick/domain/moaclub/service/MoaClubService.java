@@ -447,9 +447,9 @@ public class MoaClubService {
 
         if (!accHisList.isEmpty()) {
             Long totalAmount = accHisList.stream().mapToLong(AccountHistory::getTransAmount).sum();
-            return new ClubFeeStatusResDto(member.getUserName(), totalAmount, PAID);
+            return new ClubFeeStatusResDto(member.getUserName(), user.getProfile(), totalAmount, PAID);
         } else {
-            return new ClubFeeStatusResDto(member.getUserName(), 0L, UNPAID);
+            return new ClubFeeStatusResDto(member.getUserName(), user.getProfile(),0L, UNPAID);
         }
     }
 
