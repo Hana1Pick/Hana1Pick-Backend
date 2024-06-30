@@ -25,7 +25,6 @@ public class AccDetailResDto {
     @AllArgsConstructor
     @Getter
     public static class AccInfo {
-        private String accountId;
         private long balance;
         private String name;
         private String imgSrc;
@@ -33,8 +32,7 @@ public class AccDetailResDto {
         private long celebrityIdx;
         private long duration;
 
-        public AccInfo(String accountId, Long balance, String name, String imgSrc, Deposit outAcc, Celebrity celebrity, Long duration) {
-            this.accountId = accountId;
+        public AccInfo(Long balance, String name, String imgSrc, Deposit outAcc, Celebrity celebrity, Long duration) {
             this.balance = balance;
             this.name = name;
             this.imgSrc = imgSrc;

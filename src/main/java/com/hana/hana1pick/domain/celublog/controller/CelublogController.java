@@ -1,6 +1,5 @@
 package com.hana.hana1pick.domain.celublog.controller;
 
-import com.hana.hana1pick.domain.celebrity.entity.CelubType;
 import com.hana.hana1pick.domain.celublog.dto.request.AccInReqDto;
 import com.hana.hana1pick.domain.celublog.dto.request.AcceReqDto;
 import com.hana.hana1pick.domain.celublog.dto.request.AddRuleReqDto;
@@ -57,15 +56,14 @@ public class CelublogController {
     }
 
     @Operation(summary = "셀럽로그 연예인 조회")
-    @GetMapping("/list")
+    @PostMapping("/list")
     public SuccessResult celubList(@RequestParam UUID userIdx){
         return celublogService.celubList(userIdx);
     }
 
     @Operation(summary = "셀럽로그 연예인 검색")
-    @GetMapping("/list/search")
-    public SuccessResult celubSearchList(@RequestParam("userIdx") UUID userIdx, @RequestParam("type") CelubType type, @RequestParam("name") String name){
-        SearchReqDto req = new SearchReqDto(userIdx, type, name);
+    @PostMapping("/list/search")
+    public SuccessResult celubSearchList(@RequestBody SearchReqDto req){
         return celublogService.celubSearchList(req);
     }
 
