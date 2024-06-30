@@ -53,3 +53,7 @@ app:
       token: https://kauth.kakao.com/oauth/token
       profile: https://kapi.kakao.com/v2/user/me
       unlink: https://kapi.kakao.com/v1/user/unlink
+
+jasypt:
+  encryptor:
+    password: ${JASYPT_ENCRYPTOR_PW}
