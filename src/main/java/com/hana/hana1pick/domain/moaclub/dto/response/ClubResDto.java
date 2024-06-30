@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -42,11 +43,12 @@ public class ClubResDto {
     @AllArgsConstructor
     public static class MoaClubMember {
         private String userName;
+        private UUID userIdx;
         private String profile;
         private MoaClubMemberRole role;
 
         public static MoaClubMember from(MoaClubMembers moaClubMembers) {
-            return new MoaClubMember(moaClubMembers.getUserName(), moaClubMembers.getUser().getProfile(), moaClubMembers.getRole());
+            return new MoaClubMember(moaClubMembers.getUserName(), moaClubMembers.getUser().getIdx(), moaClubMembers.getUser().getProfile(), moaClubMembers.getRole());
         }
     }
 }
