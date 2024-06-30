@@ -8,13 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class ClubFeeStatusResDto {
-    private String name;
-    private String profile;
-    private Long amount;
-    private ClubFeeStatus status;
+public class ClubInfoResDto {
 
-    public enum ClubFeeStatus {
-        PAID, UNPAID;
-    }
+    private String managerName;
+    private String moaclubName;
 }
