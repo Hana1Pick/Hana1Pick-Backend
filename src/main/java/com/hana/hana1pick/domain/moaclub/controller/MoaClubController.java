@@ -23,10 +23,10 @@ public class MoaClubController {
         return moaClubService.openMoaClub(request);
     }
 
-    @Operation(summary = "모아클럽 초대")
-    @PostMapping("/invitations")
-    public SuccessResult inviteMoaClub(@RequestBody ClubInvitationReqDto request) {
-        return moaClubService.inviteMoaClub(request);
+    @Operation(summary = "모아클럽 가입 정보")
+    @GetMapping("/admission-info")
+    public SuccessResult<ClubInfoResDto> getMoaClubInfo(@RequestParam("accountId") String accountId) {
+        return moaClubService.getMoaClubInfo(accountId);
     }
 
     @Operation(summary = "모아클럽 가입")
@@ -39,6 +39,12 @@ public class MoaClubController {
     @PostMapping("/info")
     public SuccessResult<ClubResDto> getMoaClub(@RequestBody AccIdReqDto request) {
         return moaClubService.getMoaClub(request);
+    }
+
+    @Operation(summary = "모아클럽 관리자 조회")
+    @PostMapping("/manager-check")
+    public SuccessResult<ClubManagerCheckResDto> checkMoaClubManager(@RequestBody AccIdReqDto request) {
+        return moaClubService.checkMoaClubManager(request);
     }
 
     @Operation(summary = "모아클럽 수정")
