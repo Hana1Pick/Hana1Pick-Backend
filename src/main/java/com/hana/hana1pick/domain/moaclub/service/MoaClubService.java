@@ -38,8 +38,6 @@ import static com.hana.hana1pick.domain.common.entity.AccountStatus.*;
 import static com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto.ClubFeeStatus.PAID;
 import static com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto.ClubFeeStatus.UNPAID;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole.*;
-import static com.hana.hana1pick.domain.moaclub.entity.MoaClubStatus.JOINED;
-import static com.hana.hana1pick.domain.moaclub.entity.MoaClubStatus.PENDING;
 import static com.hana.hana1pick.global.exception.BaseResponse.*;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 
@@ -83,16 +81,11 @@ public class MoaClubService {
         return success(MOACLUB_CREATED_SUCCESS, new ClubOpeningResDto(accId));
     }
 
-    public SuccessResult inviteMoaClub(ClubInvitationReqDto request) {
-        MoaClub club = getClubByAccId(request.getAccountId());
+    public SuccessResult<ClubInfoResDto> getMoaClubInfo(String accountId) {
+        MoaClub moaClub = getClubByAccId(accountId);
+        String managerName = getFounderName(moaClub.getClubMemberList());
 
-        // 동명이인 처리
-        List<String> uniqueNameList = assignUniqueNames(request.getInviteeList());
-
-        // 초대 멤버 저장
-        club.invite(uniqueNameList);
-
-        return success(MOACLUB_INVITE_SUCCESS);
+        return success(MOACLUB_FETCH_SUCCESS, new ClubInfoResDto(managerName, moaClub.getName()));
     }
 
     public SuccessResult joinMoaClub(AccIdReqDto request) {
@@ -108,9 +101,6 @@ public class MoaClubService {
         // 모아클럽 참여
         createClubMembers(user, moaClub, uniqueName, MEMBER);
 
-        // 초대 목록 상태 변경
-        updateInviteeList(user, moaClub);
-
         return success(MOACLUB_JOIN_SUCCESS);
     }
 
@@ -125,6 +115,16 @@ public class MoaClubService {
         List<ClubResDto.MoaClubMember> clubMemberList = getClubMemberList(moaClub);
 
         return success(MOACLUB_FETCH_SUCCESS, ClubResDto.of(moaClub, clubMemberList));
+    }
+
+    public SuccessResult<ClubManagerCheckResDto> checkMoaClubManager(AccIdReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+        MoaClub moaClub = getClubByAccId(request.getAccountId());
+        MoaClubMembers member = getClubMemberByUserAndClub(user, moaClub);
+
+        boolean check = (member.getRole() == MANAGER);
+
+        return success(MOACLUB_MANAGER_CHECK_SUCCESS, new ClubManagerCheckResDto(check));
     }
 
     public SuccessResult updateMoaClub(ClubUpdateReqDto request) {
@@ -359,28 +359,6 @@ public class MoaClubService {
                 .orElseThrow(() -> new BaseException(MOACLUB_NOT_FOUND));
     }
 
-    private List<String> assignUniqueNames(List<String> inviteeList) {
-        List<String> uniqueNameList = new ArrayList<>();
-
-        Map<String, Integer> frequencyMap = new HashMap<>();
-        for (String name : inviteeList) {
-            frequencyMap.put(name, frequencyMap.getOrDefault(name, 0) + 1);
-        }
-
-        Map<String, Integer> countMap = new HashMap<>();
-        for (String name : inviteeList) {
-            int count = countMap.getOrDefault(name, 0) + 1;
-            countMap.put(name, count);
-            if (frequencyMap.get(name) > 1) {
-                uniqueNameList.add(name + count);
-            } else {
-                uniqueNameList.add(name);
-            }
-        }
-
-        return uniqueNameList;
-    }
-
     private String generateUniqueName(String name, MoaClub moaClub) {
         long count = moaClub.getClubMemberList().stream()
                 .filter(member -> member.getUser().getName().equals(name))
@@ -420,33 +398,12 @@ public class MoaClubService {
             throw new BaseException(INACTIVE_MOACLUB);
         }
 
-        // 초대받은 사용자인지 확인
-        boolean hasPermission = false;
-
-        for (String name : moaClub.getInviteeList().keySet()) {
-            if (name.startsWith(user.getName())) {
-                hasPermission = true;
-                break;
-            }
-        }
-
-        if (!hasPermission) {
-            throw new BaseException(NO_PERMISSION_TO_ACCESS_MOACLUB);
-        }
-
         // 이미 가입한 클럽인지 확인
         for (MoaClubMembers clubMembers : user.getClubList()) {
             if (clubMembers.getClub().equals(moaClub)) {
                 throw new BaseException(USER_ALREADY_JOINED);
             }
         }
-    }
-
-    private void updateInviteeList(User user, MoaClub moaClub) {
-        moaClub.getInviteeList().entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith(user.getName()) && entry.getValue() == PENDING)
-                .findFirst()
-                .ifPresent(entry -> moaClub.getInviteeList().put(entry.getKey(), JOINED));
     }
 
     private void validateManager(User user, MoaClub moaClub) {
@@ -490,9 +447,9 @@ public class MoaClubService {
 
         if (!accHisList.isEmpty()) {
             Long totalAmount = accHisList.stream().mapToLong(AccountHistory::getTransAmount).sum();
-            return new ClubFeeStatusResDto(member.getUserName(), totalAmount, PAID);
+            return new ClubFeeStatusResDto(member.getUserName(), user.getProfile(), totalAmount, PAID);
         } else {
-            return new ClubFeeStatusResDto(member.getUserName(), 0L, UNPAID);
+            return new ClubFeeStatusResDto(member.getUserName(), user.getProfile(),0L, UNPAID);
         }
     }
 
