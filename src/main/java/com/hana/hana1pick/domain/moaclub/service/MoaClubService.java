@@ -440,11 +440,14 @@ public class MoaClubService {
         User user = member.getUser();
         Deposit deposit = user.getDeposit();
 
+        boolean isFx = !moaClub.getCurrency().equals(KRW);
+
         List<AccountHistory> accHisList = accHisRepository.findClubFeeHistory(
                 deposit.getAccountId(),
                 moaClub.getAccountId(),
                 request.getCheckDate().getYear(),
-                request.getCheckDate().getMonthValue()
+                request.getCheckDate().getMonthValue(),
+                isFx
         );
 
         if (!accHisList.isEmpty()) {
