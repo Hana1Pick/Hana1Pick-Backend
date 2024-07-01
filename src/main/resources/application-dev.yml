@@ -27,7 +27,7 @@ spring:
     redis:
       host: localhost
       port: 6379
-      password: ENC(sKNJHs6GxopYsPXKdf7UCg==)
+      password: ENC(JbWzprsu7/RcP/v4H4AH7w==)
 
   springdoc:
     swagger-ui:
