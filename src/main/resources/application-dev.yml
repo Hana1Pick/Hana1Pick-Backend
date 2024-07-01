@@ -25,7 +25,7 @@ spring:
         default_batch_fetch_size: 1000
   data:
     redis:
-      host: 218.234.61.96
+      host: 3.38.2.169
       port: 6379
       password: aaaa
 
