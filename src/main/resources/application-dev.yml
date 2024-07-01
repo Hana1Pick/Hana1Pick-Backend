@@ -25,9 +25,9 @@ spring:
         default_batch_fetch_size: 1000
   data:
     redis:
-      host: ENC(P+ODx+jkWmkjHxezr9kXOZJUW1YajrTf)
+      host: 218.234.61.96
       port: 6379
-      password: ENC(JbWzprsu7/RcP/v4H4AH7w==)
+      password: aaaa
 
   springdoc:
     swagger-ui:
