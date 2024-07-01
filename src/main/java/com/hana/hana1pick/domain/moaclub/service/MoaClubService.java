@@ -114,7 +114,7 @@ public class MoaClubService {
         validateClubMember(user, moaClub);
 
         // 클럽 회원 정보 저장
-        List<ClubResDto.MoaClubMember> clubMemberList = getClubMemberList(moaClub);
+        List<ClubResDto.MoaClubMember> clubMemberList = getClubMemberListExceptNonmember(moaClub);
 
         return success(MOACLUB_FETCH_SUCCESS, ClubResDto.of(moaClub, clubMemberList));
     }
@@ -283,6 +283,18 @@ public class MoaClubService {
         return success(MOACLUB_VOTE_SUCCESS);
     }
 
+    public SuccessResult<List<ClubResDto.MoaClubMember>> getMoaClubMemberList(String accountId) {
+        MoaClub moaClub = getClubByAccId(accountId);
+        List<MoaClubMembers> memberList = moaClub.getClubMemberList();
+
+        List<ClubResDto.MoaClubMember> result = new ArrayList<>();
+        for (MoaClubMembers member : memberList) {
+            result.add(ClubResDto.MoaClubMember.from(member));
+        }
+
+        return success(MOACLUB_MEMBER_FETCH_SUCCESS, result);
+    }
+
     public SuccessResult registerAutoTransfer(ClubAutoTransferReqDto request) {
         AutoTransfer autoTransfer = createAutoTransfer(request);
         autoTransferRepository.save(autoTransfer);
@@ -429,7 +441,7 @@ public class MoaClubService {
         }
     }
 
-    private List<ClubResDto.MoaClubMember> getClubMemberList(MoaClub moaClub) {
+    private List<ClubResDto.MoaClubMember> getClubMemberListExceptNonmember(MoaClub moaClub) {
         return moaClub.getClubMemberList().stream()
                 .filter(member -> member.getRole() != NONMEMBER)
                 .map(member -> ClubResDto.MoaClubMember.from(member))
