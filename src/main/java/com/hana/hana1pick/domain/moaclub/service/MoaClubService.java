@@ -16,6 +16,7 @@ import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
 import com.hana.hana1pick.domain.moaclub.dto.response.*;
 import com.hana.hana1pick.domain.moaclub.entity.*;
+import com.hana.hana1pick.domain.moaclub.entity.Currency;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubMembersRepository;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubRepository;
 import com.hana.hana1pick.domain.user.entity.User;
@@ -37,6 +38,7 @@ import static com.hana.hana1pick.domain.acchistory.entity.TransType.AUTO_TRANSFE
 import static com.hana.hana1pick.domain.common.entity.AccountStatus.*;
 import static com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto.ClubFeeStatus.PAID;
 import static com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto.ClubFeeStatus.UNPAID;
+import static com.hana.hana1pick.domain.moaclub.entity.Currency.KRW;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole.*;
 import static com.hana.hana1pick.global.exception.BaseResponse.*;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
@@ -438,11 +440,14 @@ public class MoaClubService {
         User user = member.getUser();
         Deposit deposit = user.getDeposit();
 
+        boolean isFx = !moaClub.getCurrency().equals(KRW);
+
         List<AccountHistory> accHisList = accHisRepository.findClubFeeHistory(
                 deposit.getAccountId(),
                 moaClub.getAccountId(),
                 request.getCheckDate().getYear(),
-                request.getCheckDate().getMonthValue()
+                request.getCheckDate().getMonthValue(),
+                isFx
         );
 
         if (!accHisList.isEmpty()) {
@@ -473,7 +478,8 @@ public class MoaClubService {
         Deposit managerAcc = manager.getDeposit();
 
         // 이체 DTO 생성
-        CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), moaClub.getBalance(), AUTO_TRANSFER);
+        boolean isFx = !moaClub.getCurrency().equals(KRW);
+        CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), moaClub.getBalance(), AUTO_TRANSFER, moaClub.getCurrency());
 
         // 이체
         accountService.cashOut(transfer);
