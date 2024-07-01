@@ -80,7 +80,7 @@ public class WithdrawListener implements MessageListener {
         Deposit managerAcc = manager.getDeposit();
 
         // 이체 DTO 생성
-        CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), request.getAmount(), AUTO_TRANSFER);
+        CashOutReqDto transfer = CashOutReqDto.of(moaClub.getAccountId(), managerAcc.getAccountId(), request.getAmount(), AUTO_TRANSFER, moaClub.getCurrency());
         accountService.cashOut(transfer);
     }
 
