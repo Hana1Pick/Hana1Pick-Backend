@@ -38,6 +38,7 @@ public enum BaseResponseStatus {
     MOACLUB_AUTO_TRANSFER_SET_SUCCESS(CREATED, "모아클럽 자동이체 설정 성공"),
     MOACLUB_MANAGER_CHECK_SUCCESS(OK, "모아클럽 관리자 확인 성공"),
     MOACLUB_MEMBER_FETCH_SUCCESS(OK, "모아클럽 멤버 리스트 조회 성공"),
+    MOACLUB_AUTO_TRANSFER_FETCH_SUCCESS(OK, "모아클럽 자동이체 조회 성공"),
 
     // Celublog
     CELUBLOG_CREATED_SUCCESS(CREATED, "셀럽로그 개설 성공"),

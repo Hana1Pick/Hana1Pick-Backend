@@ -302,6 +302,15 @@ public class MoaClubService {
         return success(MOACLUB_AUTO_TRANSFER_SET_SUCCESS);
     }
 
+    public SuccessResult<ClubAutoTransferResDto> getAutoTransfer(AccIdReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+
+        AutoTransfer autoTransfer = autoTransferRepository.findByInAccIdAndOutAccId(request.getAccountId(), user.getDeposit().getAccountId())
+                .orElseThrow(() -> new BaseException(AUTO_TRANSFER_NOT_FOUND));
+
+        return success(MOACLUB_AUTO_TRANSFER_FETCH_SUCCESS, ClubAutoTransferResDto.from(autoTransfer));
+    }
+
     public SuccessResult deleteAutoTransfer(ClubAutoTransferReqDto request) {
         User user = getUserByIdx(request.getUserIdx());
         MoaClub moaClub = getClubByAccId(request.getInAccId());
