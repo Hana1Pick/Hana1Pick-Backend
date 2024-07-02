@@ -16,7 +16,6 @@ import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
 import com.hana.hana1pick.domain.moaclub.dto.response.*;
 import com.hana.hana1pick.domain.moaclub.entity.*;
-import com.hana.hana1pick.domain.moaclub.entity.Currency;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubMembersRepository;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubRepository;
 import com.hana.hana1pick.domain.user.entity.User;
@@ -552,6 +551,7 @@ public class MoaClubService {
                 .id(autoTransferId)
                 .amount(moaClub.getClubFee())
                 .outAcc(user.getDeposit())
+                .currency(moaClub.getCurrency())
                 .build();
 
         return autoTransfer;
