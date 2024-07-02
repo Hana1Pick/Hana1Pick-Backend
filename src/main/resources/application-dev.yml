@@ -53,7 +53,10 @@ app:
       token: https://kauth.kakao.com/oauth/token
       profile: https://kapi.kakao.com/v2/user/me
       unlink: https://kapi.kakao.com/v1/user/unlink
+  ocr:
+    secretKey: ENC(gEgWONfXNB7212GGHw6GbQygH4GN2KXK4yFwzDUOmGerpT1mvDTU1vlPoJPB8IXytYIK7y1NuxU=)
+    apiURL: ENC(Loa6jfaSecrRNQbrZLFcLYtE1uxFBHYrycEKs86q2EYs1UhKQEI5/3FPIMG/Wnh7SvHqpM54XT+8avY3ObeYGVgeeDXD96e5PLYh9CskG2aloDpUtbWLYUh8hN7M/P38ZdFD/JgFYBFdpbBK4lNXMYOUqs9Nl3R63Q3Pv97KUmoEvHbSofAOkQ==)
 
 jasypt:
   encryptor:
-    password: gkskdnjsvlr2@
+    password: ${JASYPT_ENCRYPTOR_PW}
