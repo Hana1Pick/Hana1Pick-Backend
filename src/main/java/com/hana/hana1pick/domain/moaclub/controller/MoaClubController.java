@@ -96,9 +96,15 @@ public class MoaClubController {
     }
 
     @Operation(summary = "모아클럽 자동이체 설정")
-    @PostMapping("/auto-transfer")
+    @PostMapping("/auto-transfer/setting")
     public SuccessResult registerAutoTransfer(@RequestBody ClubAutoTransferReqDto request) {
         return moaClubService.registerAutoTransfer(request);
+    }
+
+    @Operation(summary = "모아클럽 자동이체 조회")
+    @PostMapping("/auto-transfer")
+    public SuccessResult<ClubAutoTransferResDto> getAutoTransfer(@RequestBody AccIdReqDto request) {
+        return moaClubService.getAutoTransfer(request);
     }
 
     @Operation(summary = "모아클럽 자동이체 삭제")
