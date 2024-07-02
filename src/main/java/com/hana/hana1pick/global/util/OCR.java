@@ -1,10 +1,12 @@
 package com.hana.hana1pick.global.util;
 
+import jakarta.annotation.PostConstruct;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -18,15 +20,31 @@ import java.util.UUID;
 public class OCR {
     private static final Logger log = LoggerFactory.getLogger(OCR.class);
 
+    @Value("${app.ocr.apiURL}")
+    private String apiURL;
+
+    @Value("${app.ocr.secretKey}")
+    private String secretKey;
+
+    private static String staticApiURL;
+    private static String staticSecretKey;
+
+    @PostConstruct
+    private void init() {
+        log.info("Initializing OCR service with API URL: {}", apiURL);
+        log.info("Initializing OCR service with Secret Key: {}", secretKey);
+
+        staticApiURL = this.apiURL;
+        staticSecretKey = this.secretKey;
+    }
+
     public static JSONObject getResult(String imgname){
         JSONObject obj = null;
 
-        String apiURL = "https://gojlwur9ps.apigw.ntruss.com/custom/v1/30129/64f62576b704728ff60dc9f59800d4c5aa4a8a73ca3a8283ed157492e59a6c7a/infer";
-        String secretKey = "empIc3hqWWp0eHdUb2NyUlJnRFpHQVBWTGhDYWxmeWI=";
         String imageFile = imgname;
 
         try {
-            URL url = new URL(apiURL);
+            URL url = new URL(staticApiURL);
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
             con.setUseCaches(false);
             con.setDoInput(true);
@@ -35,7 +53,7 @@ public class OCR {
             con.setRequestMethod("POST");
             String boundary = "----" + UUID.randomUUID().toString().replaceAll("-", "");
             con.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-            con.setRequestProperty("X-OCR-SECRET", secretKey);
+            con.setRequestProperty("X-OCR-SECRET", staticSecretKey);
 
             JSONObject json = new JSONObject();
             json.put("version", "V2");
