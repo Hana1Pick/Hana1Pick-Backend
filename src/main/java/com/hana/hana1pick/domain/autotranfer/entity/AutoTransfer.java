@@ -6,7 +6,10 @@ import com.hana.hana1pick.domain.moaclub.entity.Currency;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,6 +28,10 @@ public class AutoTransfer {
 
     @Column
     private Currency currency;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDate createDate;
 
     @ManyToOne
     @MapsId("outAccId")
