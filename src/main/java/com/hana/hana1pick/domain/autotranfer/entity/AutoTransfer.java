@@ -2,6 +2,7 @@ package com.hana.hana1pick.domain.autotranfer.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
+import com.hana.hana1pick.domain.moaclub.entity.Currency;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -21,6 +22,9 @@ public class AutoTransfer {
     @Column
     @NotNull
     private Long amount;
+
+    @Column
+    private Currency currency;
 
     @ManyToOne
     @MapsId("outAccId")

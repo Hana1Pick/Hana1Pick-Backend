@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ClubFeeStatusResDto {
     private String name;
+    private String profile;
     private Long amount;
     private ClubFeeStatus status;
 
