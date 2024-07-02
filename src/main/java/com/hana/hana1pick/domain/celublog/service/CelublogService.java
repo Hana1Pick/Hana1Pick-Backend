@@ -4,10 +4,7 @@ import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.repository.AccHistoryRepository;
 import com.hana.hana1pick.domain.celebrity.entity.Celebrity;
 import com.hana.hana1pick.domain.celebrity.repository.CelebrityRepository;
-import com.hana.hana1pick.domain.celublog.dto.request.AccInReqDto;
-import com.hana.hana1pick.domain.celublog.dto.request.AcceReqDto;
-import com.hana.hana1pick.domain.celublog.dto.request.AddRuleReqDto;
-import com.hana.hana1pick.domain.celublog.dto.request.SearchReqDto;
+import com.hana.hana1pick.domain.celublog.dto.request.*;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto.AccReport;
 import com.hana.hana1pick.domain.celublog.dto.response.AccListResDto;
@@ -23,6 +20,7 @@ import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
+import com.hana.hana1pick.global.config.S3Service;
 import com.hana.hana1pick.global.exception.BaseException;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import lombok.Builder;
@@ -56,7 +54,22 @@ public class CelublogService {
     private final AccHistoryRepository accountHistoryRepository;
     private final RulesRepository rulesRepository;
     private final AccountService accountService;
+    private final S3Service s3Service;
 
+    //셀럽로그 배경, 이름 변경
+    public SuccessResult celubModifyInfo(AlterationReqDto req){
+        Celublog celub = getCelubByAccId(req.getAccountId());
+
+        if(celub.equals(null)) new BaseException(CELEBRITY_NOT_FOUND_ACCOUNT);
+        if(req.getField().equals("name")){
+            celublogRepository.updateName(req.getAccountId(), req.getName());
+        }else if(req.getField().equals("imgSrc")){
+            String saveUrl = s3Service.uploadPng(req.getSrcImg(),"celubBgImg");
+            celublogRepository.updateImgSrc(req.getAccountId(), saveUrl);
+        }
+        //else rule
+        return success(CELUBLOG_MODIFY_CELUBLIST_SUCCESS);
+    }
     //연예인 검색
     public SuccessResult celubSearchList(SearchReqDto req) {
         List<Celebrity> celebrityList = celebrityRepository.findByKeyword(req.getUserIdx(), req.getType(), req.getName());
@@ -90,7 +103,6 @@ public class CelublogService {
         Deposit tmpAccount = celub.getOutAcc();
         //출금 계좌번호
         String out_account = tmpAccount.getAccountId();
-
         //Dto setting
         CashOutReqDto dto = CashOutReqDto.builder().inAccId(req.getAccountId()).outAccId(out_account).memo(req.getMemo()).hashtag(req.getHashtag()).amount(req.getAmount()).transType(DEPOSIT).build();
         accountService.cashOut(dto);
@@ -165,6 +177,9 @@ public class CelublogService {
 
     private Deposit getDepositByAccId(String outAccId){
         return depositRepository.findById(outAccId).orElseThrow(()->new BaseException(DEPOSIT_NOT_FOUND));
+    }
+    private Celublog getCelubByAccId(String accId) {
+        return celublogRepository.findByAccountId(accId);
     }
     private User getUserByIdx(UUID userIdx) {
         return getUser(userIdx);

@@ -1,10 +1,7 @@
 package com.hana.hana1pick.domain.celublog.controller;
 
 import com.hana.hana1pick.domain.celebrity.entity.CelubType;
-import com.hana.hana1pick.domain.celublog.dto.request.AccInReqDto;
-import com.hana.hana1pick.domain.celublog.dto.request.AcceReqDto;
-import com.hana.hana1pick.domain.celublog.dto.request.AddRuleReqDto;
-import com.hana.hana1pick.domain.celublog.dto.request.SearchReqDto;
+import com.hana.hana1pick.domain.celublog.dto.request.*;
 import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccListResDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccResDto;
@@ -16,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -68,6 +66,14 @@ public class CelublogController {
         SearchReqDto req = new SearchReqDto(userIdx, type, name);
 
         return celublogService.celubSearchList(req);
+    }
+
+    @Operation(summary = "셀럽로그 배경, 이름 변경")
+    @PostMapping("/alteration")
+    public SuccessResult celubModifyInfo(@RequestParam String accountId, @RequestParam String field,
+                                         @RequestParam MultipartFile srcImg, @RequestParam String name){
+        AlterationReqDto req = new AlterationReqDto(accountId, field, srcImg, name);
+        return celublogService.celubModifyInfo(req);
     }
 
 }
