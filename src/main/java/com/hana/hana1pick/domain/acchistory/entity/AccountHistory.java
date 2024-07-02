@@ -55,4 +55,7 @@ public class AccountHistory {
 
     @Column
     private String hashtag;
+
+    @Column
+    private boolean isFx;
 }
