@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 
 
-
+@Component
 public class OCR {
     private static final Logger log = LoggerFactory.getLogger(OCR.class);
 
@@ -31,9 +32,6 @@ public class OCR {
 
     @PostConstruct
     private void init() {
-        log.info("Initializing OCR service with API URL: {}", apiURL);
-        log.info("Initializing OCR service with Secret Key: {}", secretKey);
-
         staticApiURL = this.apiURL;
         staticSecretKey = this.secretKey;
     }
