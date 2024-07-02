@@ -5,6 +5,7 @@ import com.hana.hana1pick.domain.autotranfer.repository.AutoTransferRepository;
 import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
 import com.hana.hana1pick.domain.common.entity.Account;
 import com.hana.hana1pick.domain.common.service.AccountService;
+import com.hana.hana1pick.domain.moaclub.entity.Currency;
 import com.hana.hana1pick.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,8 @@ public class AutoTransferService {
                     autoTransfer.getId().getOutAccId(),
                     autoTransfer.getId().getInAccId(),
                     autoTransfer.getAmount(),
-                    AUTO_TRANSFER
+                    AUTO_TRANSFER,
+                    autoTransfer.getCurrency()
             );
 
             accountService.cashOut(transfer);

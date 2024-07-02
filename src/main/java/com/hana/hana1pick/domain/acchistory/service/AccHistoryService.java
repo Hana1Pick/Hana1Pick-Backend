@@ -1,6 +1,7 @@
 package com.hana.hana1pick.domain.acchistory.service;
 
 import com.hana.hana1pick.domain.acchistory.dto.request.AccHistoryReqDto;
+import com.hana.hana1pick.domain.acchistory.dto.response.AccHistoryForQrResDto;
 import com.hana.hana1pick.domain.acchistory.dto.response.AccHistoryResDto;
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.entity.TransType;
@@ -9,8 +10,8 @@ import com.hana.hana1pick.domain.common.dto.response.AccountHistoryInfoDto;
 import com.hana.hana1pick.domain.common.entity.AccountStatus;
 import com.hana.hana1pick.domain.common.entity.Accounts;
 import com.hana.hana1pick.domain.common.repository.AccountsRepository;
-import com.hana.hana1pick.domain.user.entity.User;
-import com.hana.hana1pick.domain.user.repository.UserRepository;
+import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
+import com.hana.hana1pick.domain.moaclub.repository.MoaClubRepository;
 import com.hana.hana1pick.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +19,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.hana.hana1pick.domain.moaclub.entity.Currency.KRW;
 import static com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import static com.hana.hana1pick.global.exception.BaseResponse.success;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
@@ -32,6 +33,20 @@ public class AccHistoryService {
 
   private final AccHistoryRepository accHistoryRepository;
   private final AccountsRepository accountsRepository;
+  private final MoaClubRepository moaClubRepository;
+
+  public SuccessResult<AccHistoryForQrResDto> getAccountHistoryForQr(String accountId) {
+    // 1. 예외 처리
+    validateAccount(accountId);
+
+    // 2. 요청이 들어온 시각을 기준으로 3개월 전의 날짜 계산
+    LocalDateTime startDate = LocalDateTime.now().minusMonths(3);
+    
+    // 3. DB에서 데이터 추출
+    List<AccountHistory> result = accHistoryRepository.findRecentHistoryForAccount(startDate, accountId);
+
+    return success(ACCOUNT_HISTORY_FOR_QR_SUCCESS, new AccHistoryForQrResDto(result.size()));
+  }
 
   // 계좌 내역 조회
   public SuccessResult<List<AccHistoryResDto>> getAccountHistory(AccHistoryReqDto request) {
@@ -41,8 +56,19 @@ public class AccHistoryService {
     // 2. 예외처리
     validateAccount(accountId);
 
+    // 외화 거래인지 확인
+    boolean isFx = false;
+    if (accountId.substring(3, 5).equals("02")) {
+        MoaClub moaClub = moaClubRepository.findById(accountId)
+                .orElseThrow(() -> new BaseException(MOACLUB_NOT_FOUND));
+
+        if (moaClub.getCurrency() != KRW) {
+            isFx = true;
+        }
+    }
+
     // 3. 거래 내역 조회 및 반환 값 생성
-    List<AccHistoryResDto> accountHistories = findByAccountId(accountId);
+    List<AccHistoryResDto> accountHistories = findByAccountId(accountId, isFx);
 
 
     return success(ACCOUNT_HISTORY_SUCCESS, accountHistories);
@@ -102,9 +128,10 @@ public class AccHistoryService {
   }
 
   // response 객체 생성
-  private List<AccHistoryResDto> findByAccountId(String accountId) {
+  private List<AccHistoryResDto> findByAccountId(String accountId, boolean isFx) {
     // 1. 계좌 내역 조회
-    List<AccountHistory> result = accHistoryRepository.findByAccCode(accountId);
+//    List<AccountHistory> result = accHistoryRepository.findByAccCode(accountId);
+      List<AccountHistory> result = accHistoryRepository.findByAccCodeAndIsFx(accountId, isFx);
 
     // 2. 계좌 내역이 없는 경우 -> 예외처리 삭제, 빈 리스트 반환
 
@@ -125,7 +152,7 @@ public class AccHistoryService {
     }
   }
 
-  public void createAccountHistory(AccountHistoryInfoDto outAcc, AccountHistoryInfoDto inAcc, String memo, Long amount, TransType transType, String hashtag) {
+  public void createAccountHistory(AccountHistoryInfoDto outAcc, AccountHistoryInfoDto inAcc, String memo, Long amount, TransType transType, String hashtag, boolean isFx) {
     AccountHistory accountHistory = AccountHistory.builder()
             .memo(memo)
             .transDate(LocalDateTime.now())
@@ -139,6 +166,7 @@ public class AccHistoryService {
             .beforeOutBal(outAcc.getBalance()+amount)
             .afterOutBal(outAcc.getBalance())
             .hashtag(hashtag)
+            .isFx(isFx)
             .build();
 
     accHistoryRepository.save(accountHistory);

@@ -10,11 +10,8 @@ import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.hana.hana1pick.domain.moaclub.entity.MoaClubStatus.*;
 
 @Entity
 @Table(name = "moaclub")
@@ -36,12 +33,6 @@ public class MoaClub extends Account {
     @Column
     private int atDate;
 
-    @ElementCollection
-    @CollectionTable(name = "moaclub_invitee", joinColumns = @JoinColumn(name = "account_id"))
-    @MapKeyColumn(name = "name")
-    @Column(name = "status")
-    private Map<String, MoaClubStatus> inviteeList;
-
     @Column
     @NotNull
     private Currency currency;
@@ -59,13 +50,6 @@ public class MoaClub extends Account {
         this.clubFee = clubFee;
         this.atDate = atDate;
         this.currency = currency;
-        this.inviteeList = new HashMap<>();
-    }
-
-    public void invite(List<String> invitees) {
-        for (String name : invitees) {
-            this.inviteeList.put(name, PENDING);
-        }
     }
 
     public MoaClub update(ClubUpdateReqDto request) {

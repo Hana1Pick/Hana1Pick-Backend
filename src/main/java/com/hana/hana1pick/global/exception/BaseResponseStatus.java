@@ -16,7 +16,12 @@ public enum BaseResponseStatus {
     // User
     USER_PW_CHECK_SUCCESS(OK, "사용자 비밀번호 확인 성공"),
     LOGIN_SUCCESS(OK, "카카오 로그인 성공"),
+    JOIN_SUCCESS(CREATED, "카카오 회원가입 성공"),
     ACCOUNT_LIST_SUCCESS(OK, "계좌 목록 조회 성공"),
+    USER_UPDATE_SUCCESS(OK, "사용자 정보 수정 성공"),
+
+    //Deposit
+    DEPOSIT_CREATED_SUCCESS(CREATED, "입출금 계좌 개설 성공"),
 
     // MoaClub
     MOACLUB_CREATED_SUCCESS(CREATED, "모아클럽 개설 성공"),
@@ -31,6 +36,7 @@ public enum BaseResponseStatus {
     MOACLUB_VOTE_SUCCESS(OK, "모아클럽 투표 성공"),
     MOACLUB_REQUEST_FETCH_SUCCESS(OK, "모아클럽 요청 조회 성공"),
     MOACLUB_AUTO_TRANSFER_SET_SUCCESS(CREATED, "모아클럽 자동이체 설정 성공"),
+    MOACLUB_MANAGER_CHECK_SUCCESS(OK, "모아클럽 관리자 확인 성공"),
 
     // Celublog
     CELUBLOG_CREATED_SUCCESS(CREATED, "셀럽로그 개설 성공"),
@@ -48,6 +54,10 @@ public enum BaseResponseStatus {
     ACCOUNT_CASH_OUT_SUCCESS(OK, "계좌이체 성공"),
     AUTO_TRANSFER_DELETE_SUCCESS(OK, "자동이체 삭제 성공"),
 
+    // Account History
+    ACCOUNT_HISTORY_SUCCESS(OK , "계좌 내역 조회 성공"),
+    ACCOUNT_HISTORY_FOR_QR_SUCCESS(OK, "QR 속 계좌번호에 대한 거래내역 조회 성공"),
+
     /**
      * 202 : Request 오류
      */
@@ -63,13 +73,11 @@ public enum BaseResponseStatus {
     // User
     USER_NOT_FOUND(ACCEPTED, "E200", "존재하지 않는 회원입니다."),
     USER_TRSF_LIMIT_NOT_FOUND(ACCEPTED, "E201", "회원 이체한도를 조회할 수 없습니다"),
+    USER_TRSF_LIMIT_OVER(ACCEPTED,"E202", "회원 이체한도를 초과했습니다."),
 
     // Account
     ACCOUNT_NOT_FOUND(ACCEPTED, "E300", "존재하지 않는 계좌입니다."),
     ACCOUNT_INACTIVE(ACCEPTED, "E303", "해지된 계좌입니다."),
-
-    // Account History
-    ACCOUNT_HISTORY_SUCCESS(OK , "계좌 내역 조회 성공"),
 
     // MoaClub
     MOACLUB_NOT_FOUND(ACCEPTED, "E400", "존재하지 않는 모아클럽입니다."),

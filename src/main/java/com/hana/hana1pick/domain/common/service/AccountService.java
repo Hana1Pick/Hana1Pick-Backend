@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.hana.hana1pick.domain.moaclub.entity.Currency.KRW;
 import static com.hana.hana1pick.global.exception.BaseResponse.success;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 
@@ -93,6 +94,7 @@ public class AccountService {
     }
 
     public BaseResponse.SuccessResult cashOut(CashOutReqDto request){
+        UUID userIdx = request.getUserIdx();
         String outAccId = request.getOutAccId();
         String inAccId = request.getInAccId();
         Long amount = request.getAmount();
@@ -101,24 +103,46 @@ public class AccountService {
         handleAccStatus(outAccId);
         handleAccStatus(inAccId);
 
-        // 2. 입출금 및 입출금 로그 생성
+        // 2. 출금 계좌 소유자의 회원 이체한도 초과 확인
+        if(userTrsfLimitService.checkTrsfLimit(userIdx, amount)){
+            throw new BaseException(USER_TRSF_LIMIT_OVER);
+        };
+
+        // 3. 입출금 및 입출금 로그 생성
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
         try {
-            // 2-1. 입출금
+            // 3-1. 입출금
             AccountHistoryInfoDto outAcc = handleAccBalance(outAccId, -amount);
             AccountHistoryInfoDto inAcc = handleAccBalance(inAccId, +amount);
             transactionManager.commit(status);
 
-            // 2-2. 입출금 로그 생성
-            accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), amount, request.getTransType(), request.getHashtag());
-            // 2-3. 사용자 누적 금액 수정
+            // 3-2. 입출금 로그 생성
+            createAccHis(request, outAccId, inAccId, outAcc, inAcc);
 
+            // 3-3. 사용자 누적 금액 수정
+            if (!getAccountTypeByAccId(outAccId).equals("moaclub")) {
+                userTrsfLimitService.accumulate(request.getUserIdx(), amount);
+            }
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new BaseException(ACCOUNT_CASH_OUT_FAIL);
         }
 
         return success(ACCOUNT_CASH_OUT_SUCCESS);
+    }
+
+    private void createAccHis(CashOutReqDto request, String outAccId, String inAccId, AccountHistoryInfoDto outAcc, AccountHistoryInfoDto inAcc) {
+        // 모아클럽 거래이면서 거래 통화가 KRW인 경우 거래내역 2개 생성
+        if ((outAccId.substring(3, 5).equals("02") || inAccId.substring(3, 5).equals("02")) && !request.getCurrency().equals(KRW)) {
+            // 외화 거래
+            accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), request.getAmount(), request.getTransType(), request.getHashtag(), true);
+            // 환율 계산 - 임시
+            Long changeAmount = request.getAmount() * 1000;
+            // 원화 거래
+            accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), changeAmount, request.getTransType(), request.getHashtag(), false);
+        } else {
+            accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), request.getAmount(), request.getTransType(), request.getHashtag(), false);
+        }
     }
 
     public void handleAccStatus(String accId){
