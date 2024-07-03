@@ -139,5 +139,10 @@ public class UserController {
             return new BaseException(FAIL_TO_UPLOAD_FILE);
         }
     }
+    @Operation(summary = "사용자 정보 조회")
+    @PostMapping("/info")
+    public SuccessResult<UserInfoResDto> getUser(@RequestParam("email") String email) {
+        return userService.getUser(email);
+    }
 
 }
