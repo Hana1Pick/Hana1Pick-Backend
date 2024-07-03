@@ -23,6 +23,8 @@ public enum BaseResponseStatus {
     //Deposit
     DEPOSIT_CREATED_SUCCESS(CREATED, "입출금 계좌 개설 성공"),
 
+    DEPOSIT_OCR_SUCCESS(OK, "외국인등록증 OCR 성공"),
+
     // MoaClub
     MOACLUB_CREATED_SUCCESS(CREATED, "모아클럽 개설 성공"),
     MOACLUB_INVITE_SUCCESS(OK, "모아클럽 초대 성공"),
@@ -69,6 +71,12 @@ public enum BaseResponseStatus {
     DEPOSIT_NOT_FOUND(ACCEPTED, "E300", "존재하지 않는 계좌입니다."),
     NOT_ACCOUNT_OWNER(ACCEPTED, "E301", "계좌의 소유자가 아닙니다."),
     INVALID_TRANSFER_AMOUNT(ACCEPTED, "E302", "유효하지 않은 금액입니다."),
+
+    INVALID_REDIS_KEY(ACCEPTED, "E303", "유효하지 않는 key 입니다."),
+
+    IMAGE_NOT_FOUND(ACCEPTED, "E304", "유효하지 않은 image 입니다."),
+
+    FAIL_TO_UPLOAD_FILE(ACCEPTED, "E305", "파일 업로드에 실패했습니다."),
 
     // User
     USER_NOT_FOUND(ACCEPTED, "E200", "존재하지 않는 회원입니다."),
