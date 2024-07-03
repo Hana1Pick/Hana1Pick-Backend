@@ -89,10 +89,22 @@ public class MoaClubController {
         return moaClubService.voteMoaClubRequest(type, request);
     }
 
+    @Operation(summary = "모아클럽 멤버 리스트 조회")
+    @GetMapping("/member")
+    public SuccessResult<List<ClubResDto.MoaClubMember>> getMoaClubMemberList(@RequestParam(name = "accountId") String accountId) {
+        return moaClubService.getMoaClubMemberList(accountId);
+    }
+
     @Operation(summary = "모아클럽 자동이체 설정")
-    @PostMapping("/auto-transfer")
+    @PostMapping("/auto-transfer/setting")
     public SuccessResult registerAutoTransfer(@RequestBody ClubAutoTransferReqDto request) {
         return moaClubService.registerAutoTransfer(request);
+    }
+
+    @Operation(summary = "모아클럽 자동이체 조회")
+    @PostMapping("/auto-transfer")
+    public SuccessResult<ClubAutoTransferResDto> getAutoTransfer(@RequestBody AccIdReqDto request) {
+        return moaClubService.getAutoTransfer(request);
     }
 
     @Operation(summary = "모아클럽 자동이체 삭제")

@@ -16,7 +16,6 @@ import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.moaclub.dto.request.*;
 import com.hana.hana1pick.domain.moaclub.dto.response.*;
 import com.hana.hana1pick.domain.moaclub.entity.*;
-import com.hana.hana1pick.domain.moaclub.entity.Currency;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubMembersRepository;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubRepository;
 import com.hana.hana1pick.domain.user.entity.User;
@@ -114,7 +113,7 @@ public class MoaClubService {
         validateClubMember(user, moaClub);
 
         // 클럽 회원 정보 저장
-        List<ClubResDto.MoaClubMember> clubMemberList = getClubMemberList(moaClub);
+        List<ClubResDto.MoaClubMember> clubMemberList = getClubMemberListExceptNonmember(moaClub);
 
         return success(MOACLUB_FETCH_SUCCESS, ClubResDto.of(moaClub, clubMemberList));
     }
@@ -283,11 +282,32 @@ public class MoaClubService {
         return success(MOACLUB_VOTE_SUCCESS);
     }
 
+    public SuccessResult<List<ClubResDto.MoaClubMember>> getMoaClubMemberList(String accountId) {
+        MoaClub moaClub = getClubByAccId(accountId);
+        List<MoaClubMembers> memberList = moaClub.getClubMemberList();
+
+        List<ClubResDto.MoaClubMember> result = new ArrayList<>();
+        for (MoaClubMembers member : memberList) {
+            result.add(ClubResDto.MoaClubMember.from(member));
+        }
+
+        return success(MOACLUB_MEMBER_FETCH_SUCCESS, result);
+    }
+
     public SuccessResult registerAutoTransfer(ClubAutoTransferReqDto request) {
         AutoTransfer autoTransfer = createAutoTransfer(request);
         autoTransferRepository.save(autoTransfer);
 
         return success(MOACLUB_AUTO_TRANSFER_SET_SUCCESS);
+    }
+
+    public SuccessResult<ClubAutoTransferResDto> getAutoTransfer(AccIdReqDto request) {
+        User user = getUserByIdx(request.getUserIdx());
+
+        AutoTransfer autoTransfer = autoTransferRepository.findByInAccIdAndOutAccId(request.getAccountId(), user.getDeposit().getAccountId())
+                .orElseThrow(() -> new BaseException(AUTO_TRANSFER_NOT_FOUND));
+
+        return success(MOACLUB_AUTO_TRANSFER_FETCH_SUCCESS, ClubAutoTransferResDto.from(autoTransfer));
     }
 
     public SuccessResult deleteAutoTransfer(ClubAutoTransferReqDto request) {
@@ -429,7 +449,7 @@ public class MoaClubService {
         }
     }
 
-    private List<ClubResDto.MoaClubMember> getClubMemberList(MoaClub moaClub) {
+    private List<ClubResDto.MoaClubMember> getClubMemberListExceptNonmember(MoaClub moaClub) {
         return moaClub.getClubMemberList().stream()
                 .filter(member -> member.getRole() != NONMEMBER)
                 .map(member -> ClubResDto.MoaClubMember.from(member))
@@ -531,6 +551,7 @@ public class MoaClubService {
                 .id(autoTransferId)
                 .amount(moaClub.getClubFee())
                 .outAcc(user.getDeposit())
+                .currency(moaClub.getCurrency())
                 .build();
 
         return autoTransfer;
