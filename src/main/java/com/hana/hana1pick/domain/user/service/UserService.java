@@ -16,6 +16,8 @@ import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +39,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserTrsfLimitRepository userTrsfLimitRepository;
     private final AccountsRepository accountsRepository;
-    private final DepositRepository depositRepository;
-
+    private final RedisTemplate<String,Object> createRedisTemplate;
 
 
     public SuccessResult<PwCheckResDto> checkPw(PwCheckReqDto request) {
