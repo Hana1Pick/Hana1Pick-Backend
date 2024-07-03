@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.celebrity.entity.Celebrity;
 import com.hana.hana1pick.domain.common.entity.Account;
+import com.hana.hana1pick.domain.common.entity.AccountStatus;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Builder
+//@Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
@@ -49,4 +50,15 @@ public class Celublog extends Account {
     @OneToMany(mappedBy = "celublog")
     @JsonManagedReference
     private List<Rules> ruleList = new ArrayList<>();
+    @Builder
+    public Celublog(String accountId, String name, String imgSrc, Deposit outAcc, Celebrity celebrity, User user, List<Rules> ruleList, Long balance) {
+        super(balance, AccountStatus.ACTIVE);
+        this.accountId = accountId;
+        this.name = name;
+        this.imgSrc = imgSrc;
+        this.outAcc = outAcc;
+        this.celebrity = celebrity;
+        this.user = user;
+        this.ruleList = ruleList;
+    }
 }

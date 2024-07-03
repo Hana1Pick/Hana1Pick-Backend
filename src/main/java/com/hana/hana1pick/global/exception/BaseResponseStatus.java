@@ -48,6 +48,7 @@ public enum BaseResponseStatus {
     CELUBLOG_ACCOUNT_IN_SUCCESS(OK, "셀럽로그 입금 성공"),
     CELUBLOG_CELUBLIST_SUCCESS(OK, "셀럽로그 연예인 조회 성공"),
     CELUBLOG_SEARCH_CELUBLIST_SUCCESS(OK, "셀럽로그 연예인 검색 성공"),
+    CELUBLOG_MODIFY_CELUBLIST_SUCCESS(OK, "셀럽로그 계좌 정보 변경 성공"),
   
     // Account
     ACCOUNT_CASH_OUT_LIST_SUCCESS(OK, "계좌 번호 목록 조회 성공"),
@@ -102,6 +103,7 @@ public enum BaseResponseStatus {
     // Celublog
     CELEBRITY_NOT_FOUND(ACCEPTED, "E500", "존재하지 않는 연예인입니다."),
     CELEBRITY_NOT_FOUND_ACCOUNT(ACCEPTED, "E501", "유효하지 않은 계좌입니다."),
+    CELEBRITY_UPLOAD_FAIL(ACCEPTED, "E502", "사진 업로드 실패"),
 
     // Account
     ACCOUNT_STATUS_INVALID(ACCEPTED, "E600", "유효하지 않는 계좌입니다."),
