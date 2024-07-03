@@ -1,5 +1,5 @@
 server:
-  address: 3.38.2.169
+  address: 0.0.0.0
   port: 8081
   servlet:
     encoding:
