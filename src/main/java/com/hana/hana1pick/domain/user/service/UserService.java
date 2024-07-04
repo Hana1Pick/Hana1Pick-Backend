@@ -7,6 +7,7 @@ import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.user.dto.request.PwCheckReqDto;
 import com.hana.hana1pick.domain.user.dto.request.UserUpdateReqDto;
 import com.hana.hana1pick.domain.user.dto.response.PwCheckResDto;
+import com.hana.hana1pick.domain.user.dto.response.UserInfoResDto;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.entity.UserTrsfLimit;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
@@ -145,5 +146,13 @@ public class UserService {
         userRepository.save(user);
 
         return success(USER_UPDATE_SUCCESS);
+    }
+
+    // 사용자 정보를 조회
+    public SuccessResult<UserInfoResDto> getUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+        UserInfoResDto userInfo = UserInfoResDto.from(user);
+        return success(USER_INFO_SUCCESS, userInfo);
     }
 }
