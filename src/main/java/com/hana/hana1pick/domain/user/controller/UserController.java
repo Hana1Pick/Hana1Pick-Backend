@@ -69,7 +69,8 @@ public class UserController {
         User user = userService.findUserByEmail(userInfo.getEmail());
 
         if (user == null) {
-            userService.saveUserWithEmailAndProfile(userInfo.getEmail(), userInfo.getProfile());
+            User newUser = userService.saveUserWithEmailAndProfile(userInfo.getEmail(), userInfo.getProfile());
+            userInfo.setUserIdx(newUser.getIdx());
             return success(JOIN_SUCCESS, userInfo);
         } else {
             userInfo.setUserIdx(user.getIdx());
