@@ -110,6 +110,8 @@ public class AccountService {
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
         try {
             // 3-1. 입출금
+            // TODO: 원화 통장: 무조건 원화
+
             AccountHistoryInfoDto outAcc = handleAccBalance(outAccId, -amount);
             AccountHistoryInfoDto inAcc = handleAccBalance(inAccId, +amount);
             transactionManager.commit(status);
@@ -128,12 +130,12 @@ public class AccountService {
     }
 
     private void createAccHis(CashOutReqDto request, String outAccId, String inAccId, AccountHistoryInfoDto outAcc, AccountHistoryInfoDto inAcc) {
-        // 모아클럽 거래이면서 거래 통화가 KRW인 경우 거래내역 2개 생성
+        // TODO: 모아클럽 거래이면서 거래 통화가 KRW가 아닌 경우 거래내역 2개 생성
         if ((outAccId.substring(3, 5).equals("02") || inAccId.substring(3, 5).equals("02")) && !request.getCurrency().equals(KRW)) {
             // 외화 거래
             accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), request.getAmount(), request.getTransType(), request.getHashtag(), true);
-            // 환율 계산 - 임시
-            Long changeAmount = request.getAmount() * 1000;
+            // 환율 계산 - 해야함
+            Long changeAmount = request.getAmount() * 1000; // 환율 곱하기(+ 수수료)
             // 원화 거래
             accountHistoryService.createAccountHistory(outAcc, inAcc, request.getMemo(), changeAmount, request.getTransType(), request.getHashtag(), false);
         } else {

@@ -7,6 +7,7 @@ import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
 import com.hana.hana1pick.domain.user.dto.request.PwCheckReqDto;
 import com.hana.hana1pick.domain.user.dto.request.UserUpdateReqDto;
 import com.hana.hana1pick.domain.user.dto.response.PwCheckResDto;
+import com.hana.hana1pick.domain.user.dto.response.UserInfoResDto;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.entity.UserTrsfLimit;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
@@ -16,6 +17,8 @@ import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +40,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserTrsfLimitRepository userTrsfLimitRepository;
     private final AccountsRepository accountsRepository;
-    private final DepositRepository depositRepository;
-
+    private final RedisTemplate<String,Object> createRedisTemplate;
 
 
     public SuccessResult<PwCheckResDto> checkPw(PwCheckReqDto request) {
@@ -144,5 +146,13 @@ public class UserService {
         userRepository.save(user);
 
         return success(USER_UPDATE_SUCCESS);
+    }
+
+    // 사용자 정보를 조회
+    public SuccessResult<UserInfoResDto> getUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BaseException(USER_NOT_FOUND));
+        UserInfoResDto userInfo = UserInfoResDto.from(user);
+        return success(USER_INFO_SUCCESS, userInfo);
     }
 }
