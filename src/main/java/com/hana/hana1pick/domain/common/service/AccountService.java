@@ -98,11 +98,9 @@ public class AccountService {
         String outAccId = request.getOutAccId();
         String inAccId = request.getInAccId();
         Long amount = request.getAmount();
-
         // 1. 입출금 계좌의 유효성 검사
         handleAccStatus(outAccId);
         handleAccStatus(inAccId);
-
         // 2. 출금 계좌 소유자의 회원 이체한도 초과 확인
         if(userTrsfLimitService.checkTrsfLimit(userIdx, amount)){
             throw new BaseException(USER_TRSF_LIMIT_OVER);
@@ -115,10 +113,8 @@ public class AccountService {
             AccountHistoryInfoDto outAcc = handleAccBalance(outAccId, -amount);
             AccountHistoryInfoDto inAcc = handleAccBalance(inAccId, +amount);
             transactionManager.commit(status);
-
             // 3-2. 입출금 로그 생성
             createAccHis(request, outAccId, inAccId, outAcc, inAcc);
-
             // 3-3. 사용자 누적 금액 수정
             if (!getAccountTypeByAccId(outAccId).equals("moaclub")) {
                 userTrsfLimitService.accumulate(request.getUserIdx(), amount);
