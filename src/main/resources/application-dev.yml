@@ -1,6 +1,5 @@
 server:
-  address: 0.0.0.0
-  port: 8081
+  port: 8080
   servlet:
     encoding:
       charset: UTF-8
@@ -26,7 +25,7 @@ spring:
         default_batch_fetch_size: 1000
   data:
     redis:
-      host: ENC(MuUW51x2nX3/2gIGdGibaHycC2vhc/da)
+      host: localhost
       port: 6379
       password: ENC(WcleD41+xdAwEkXoKUcJ4g==)
 
