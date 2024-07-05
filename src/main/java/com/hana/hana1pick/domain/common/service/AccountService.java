@@ -138,8 +138,8 @@ public class AccountService {
             log.info("isMoaClubTransaction={}, isForeignCurrency={}", isMoaClubTransaction, isForeignCurrency);
 
             // 입,출금 계좌 구분
-            AccountHistoryInfoDto outAcc = null;
-            AccountHistoryInfoDto inAcc = null;
+            AccountHistoryInfoDto outAcc;
+            AccountHistoryInfoDto inAcc;
 
             //  모아클럽이면서 원화가 아닌 경우
             if (isMoaClubTransaction && isForeignCurrency) {
@@ -149,14 +149,14 @@ public class AccountService {
                 log.info("Calculated foreignAmountWithFee={}", foreignAmountWithFee);
 
                 // 원화로 출금하고 외화로 입금
-                // outAccId에서 환전된 원화로 출금 (수수료 계산 필요)
-                outAcc = handleAccBalance(outAccId, -foreignAmountWithFee);
 
-                // inAccId가 모아 클럽 계좌이면 요청 금액(amount)으로 입금
-                if (getAccountTypeByAccId(inAccId).equals("moaclub")) {
-                    inAcc = handleAccBalance(inAccId, amount);
-                } else {
+                //  outAccId가 모아 클럽 계좌이면 환전 금액(foreignAmountWithFee)으로 입금
+                if (getAccountTypeByAccId(outAccId).equals("moaclub")) {
+                    outAcc = handleAccBalance(outAccId, -amount);
                     inAcc = handleAccBalance(inAccId, foreignAmountWithFee);
+                } else { // 일반 -> 모아
+                    outAcc = handleAccBalance(outAccId, -foreignAmountWithFee);
+                    inAcc = handleAccBalance(inAccId, amount);
                 }
 
                 // 거래 로그 생성
