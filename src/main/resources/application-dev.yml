@@ -1,6 +1,5 @@
 server:
-  address: 0.0.0.0
-  port: 8081
+  port: 8080
   servlet:
     encoding:
       charset: UTF-8
@@ -14,7 +13,11 @@ spring:
     username: ENC(hcNtwlmLW45yLgLo1SCenQ==)
     password: ENC(sDTTfhyMJjrINkuZI2c+i53Mud2AEKEQ)
     hikari:
-      max-lifetime: 177000
+      idle-timeout: 120000
+      minimum-idle: 10
+      maximum-pool-size: 20
+      max-lifetime: 500000
+      leak-detection-threshold: 60000
 
   jpa:
     hibernate:
@@ -26,7 +29,7 @@ spring:
         default_batch_fetch_size: 1000
   data:
     redis:
-      host: ENC(MuUW51x2nX3/2gIGdGibaHycC2vhc/da)
+      host: localhost
       port: 6379
       password: ENC(WcleD41+xdAwEkXoKUcJ4g==)
 
