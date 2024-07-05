@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class Notification {
 
@@ -40,4 +41,12 @@ public class Notification {
 
     @Column(columnDefinition = "Boolean default false")
     private Boolean checked = false;
+
+    @Column
+    private NotificationType type;
+
+    public Notification checkNotification(boolean checked) {
+        this.checked = checked;
+        return this;
+    }
 }
