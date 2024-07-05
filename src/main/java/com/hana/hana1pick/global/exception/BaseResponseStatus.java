@@ -63,6 +63,9 @@ public enum BaseResponseStatus {
     ACCOUNT_HISTORY_SUCCESS(OK , "계좌 내역 조회 성공"),
     ACCOUNT_HISTORY_FOR_QR_SUCCESS(OK, "QR 속 계좌번호에 대한 거래내역 조회 성공"),
 
+    // Exchange
+    EXCHANGE_INFO_FETCH_SUCCESS(OK, "환전 정보 조회 성공"),
+
     /**
      * 202 : Request 오류
      */
