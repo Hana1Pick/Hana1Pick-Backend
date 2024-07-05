@@ -104,7 +104,7 @@ public class AccountService {
         handleAccStatus(inAccId);
 
         // 2. 출금 계좌 소유자의 회원 이체한도 초과 확인
-        if(userTrsfLimitService.checkTrsfLimit(userIdx, amount)){
+        if(!outAccId.substring(3, 5).equals("02") && userTrsfLimitService.checkTrsfLimit(userIdx, amount)){
             throw new BaseException(USER_TRSF_LIMIT_OVER);
         };
 
