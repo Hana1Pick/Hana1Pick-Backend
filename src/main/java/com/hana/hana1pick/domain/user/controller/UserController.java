@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -71,10 +70,12 @@ public class UserController {
         if (user == null) {
             User newUser = userService.saveUserWithEmailAndProfile(userInfo.getEmail(), userInfo.getProfile());
             userInfo.setUserIdx(newUser.getIdx());
+            userInfo.setNation(newUser.getNation().getValue());
             return success(JOIN_SUCCESS, userInfo);
         } else {
             userInfo.setUserIdx(user.getIdx());
             userInfo.setName(user.getName());
+            userInfo.setNation(user.getNation().getValue());
             return success(LOGIN_SUCCESS, userInfo);
         }
     }
