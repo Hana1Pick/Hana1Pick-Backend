@@ -14,6 +14,7 @@ import com.hana.hana1pick.domain.celublog.entity.Rules;
 import com.hana.hana1pick.domain.celublog.repository.CelublogRepository;
 import com.hana.hana1pick.domain.celublog.repository.RulesRepository;
 import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
+import com.hana.hana1pick.domain.common.entity.Account;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.common.service.AccountService;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
@@ -113,9 +114,11 @@ public class CelublogService {
 
     //사용자가 입력한 규칙 추가
     public SuccessResult celubAddRules(AddRuleReqDto dto){
-        Celublog celublog = celublogRepository.findById(dto.getAccountId())
+            Celublog celublog = celublogRepository.findById(dto.getAccountId())
                 .orElseThrow(() -> new BaseException(CELEBRITY_NOT_FOUND_ACCOUNT));
-                dto.getRuleList().forEach(rule->{
+            rulesRepository.deleteRules(dto.getAccountId());
+            log.info("뭐야 또");
+            dto.getRuleList().forEach(rule->{
                 Rules rules = Rules.builder().ruleName(rule.getRuleName()).ruleMoney(rule.getRuleMoney()).celublog(celublog).build();
                 rulesRepository.save(rules);
             });
@@ -129,7 +132,7 @@ public class CelublogService {
         Celublog celub = celublogRepository.findByAccountId(accountId);
         LocalDateTime today = LocalDateTime.now();
         long duration = ChronoUnit.DAYS.between(celub.getCreateDate(), today);
-        AccDetailResDto.AccInfo accInfo = new AccDetailResDto.AccInfo(celub.getAccountId(), celub.getBalance(), celub.getName(), celub.getImgSrc(), celub.getOutAcc(), celub.getCelebrity(), duration, celub.getCreateDate());
+        AccDetailResDto.AccInfo accInfo = new AccDetailResDto.AccInfo(celub.getAccountId(), celub.getBalance(), celub.getName(), celub.getImgSrc(), celub.getOutAcc(), celub.getCelebrity(), duration, celub.getCreateDate(), celub.getOutAcc().getBalance());
         //계좌 거래 내역
         List<AccountHistory> history = accountHistoryRepository.findByAccountId(accountId);
         List<AccReport> accountReportList = new ArrayList<>();
