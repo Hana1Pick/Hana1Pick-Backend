@@ -117,7 +117,6 @@ public class CelublogService {
             Celublog celublog = celublogRepository.findById(dto.getAccountId())
                 .orElseThrow(() -> new BaseException(CELEBRITY_NOT_FOUND_ACCOUNT));
             rulesRepository.deleteRules(dto.getAccountId());
-            log.info("뭐야 또");
             dto.getRuleList().forEach(rule->{
                 Rules rules = Rules.builder().ruleName(rule.getRuleName()).ruleMoney(rule.getRuleMoney()).celublog(celublog).build();
                 rulesRepository.save(rules);
