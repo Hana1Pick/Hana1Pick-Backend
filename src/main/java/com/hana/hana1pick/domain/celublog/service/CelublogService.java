@@ -129,7 +129,7 @@ public class CelublogService {
         Celublog celub = celublogRepository.findByAccountId(accountId);
         LocalDateTime today = LocalDateTime.now();
         long duration = ChronoUnit.DAYS.between(celub.getCreateDate(), today);
-        AccDetailResDto.AccInfo accInfo = new AccDetailResDto.AccInfo(celub.getAccountId(), celub.getBalance(), celub.getName(), celub.getImgSrc(), celub.getOutAcc(), celub.getCelebrity(), duration);
+        AccDetailResDto.AccInfo accInfo = new AccDetailResDto.AccInfo(celub.getAccountId(), celub.getBalance(), celub.getName(), celub.getImgSrc(), celub.getOutAcc(), celub.getCelebrity(), duration, celub.getCreateDate());
         //계좌 거래 내역
         List<AccountHistory> history = accountHistoryRepository.findByAccountId(accountId);
         List<AccReport> accountReportList = new ArrayList<>();
@@ -147,7 +147,7 @@ public class CelublogService {
         List<AccListResDto> resList = new ArrayList<>();
         for(int i=0; i<celublogList.size(); i++){
             Celublog tmp = celublogList.get(i);
-            AccListResDto dto = new AccListResDto(tmp.getName(), tmp.getAccountId() , tmp.getBalance(), tmp.getImgSrc());
+            AccListResDto dto = new AccListResDto(tmp.getName(), tmp.getAccountId() , tmp.getBalance(), tmp.getImgSrc(), tmp.getCreateDate());
             resList.add(dto);
         }
         return success(CELUBLOG_ACCOUNT_LIST_SUCCESS, resList);

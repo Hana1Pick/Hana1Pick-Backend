@@ -71,7 +71,7 @@ public class CelublogController {
     @Operation(summary = "셀럽로그 배경, 이름 변경")
     @PostMapping("/alteration")
     public SuccessResult celubModifyInfo(@RequestParam String accountId, @RequestParam String field,
-                                         @RequestParam MultipartFile srcImg, @RequestParam String name){
+                                         @RequestParam(required = false) MultipartFile srcImg, @RequestParam String name){
         AlterationReqDto req = new AlterationReqDto(accountId, field, srcImg, name);
         return celublogService.celubModifyInfo(req);
     }

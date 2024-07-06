@@ -32,8 +32,9 @@ public class AccDetailResDto {
         private String outAccId;
         private long celebrityIdx;
         private long duration;
+        private LocalDate createDate;
 
-        public AccInfo(String accountId,Long balance, String name, String imgSrc, Deposit outAcc, Celebrity celebrity, Long duration) {
+        public AccInfo(String accountId,Long balance, String name, String imgSrc, Deposit outAcc, Celebrity celebrity, Long duration, LocalDate createDate) {
             this.accountId = accountId;
             this.balance = balance;
             this.name = name;
@@ -41,6 +42,7 @@ public class AccDetailResDto {
             this.outAccId = outAcc.getAccountId();
             this.celebrityIdx = celebrity.getIdx();
             this.duration = duration;
+            this.createDate = createDate;
         }
     }
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
