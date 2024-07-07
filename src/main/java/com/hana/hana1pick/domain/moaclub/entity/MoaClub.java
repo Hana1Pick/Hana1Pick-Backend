@@ -37,7 +37,7 @@ public class MoaClub extends Account {
     @NotNull
     private Currency currency;
 
-    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private final List<MoaClubMembers> clubMemberList = new ArrayList<>();
 

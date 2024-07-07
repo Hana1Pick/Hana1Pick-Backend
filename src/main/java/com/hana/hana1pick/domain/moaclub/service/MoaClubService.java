@@ -18,6 +18,8 @@ import com.hana.hana1pick.domain.moaclub.dto.response.*;
 import com.hana.hana1pick.domain.moaclub.entity.*;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubMembersRepository;
 import com.hana.hana1pick.domain.moaclub.repository.MoaClubRepository;
+import com.hana.hana1pick.domain.notification.entity.NotificationType;
+import com.hana.hana1pick.domain.notification.service.NotificationService;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
 import com.hana.hana1pick.global.exception.BaseException;
@@ -39,6 +41,7 @@ import static com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto
 import static com.hana.hana1pick.domain.moaclub.dto.response.ClubFeeStatusResDto.ClubFeeStatus.UNPAID;
 import static com.hana.hana1pick.domain.moaclub.entity.Currency.KRW;
 import static com.hana.hana1pick.domain.moaclub.entity.MoaClubMemberRole.*;
+import static com.hana.hana1pick.domain.notification.entity.NotificationType.VOTE;
 import static com.hana.hana1pick.global.exception.BaseResponse.*;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 
@@ -57,6 +60,7 @@ public class MoaClubService {
     private final AccountService accountService;
     private final AutoTransferRepository autoTransferRepository;
     private final AutoTransferService autoTransferService;
+    private final NotificationService notificationService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChannelTopic managerChangeTopic;
     private final ChannelTopic withdrawTopic;
@@ -208,7 +212,8 @@ public class MoaClubService {
                 moaClub.getAccountId(), memberUser.getUserName(), memberCandidate.getUserName(), LocalDateTime.now(), new HashMap<>());
         redisTemplate.opsForValue().set(key, changeReq, Duration.ofHours(24));
 
-        // 관리자 제외 클럽멤버에게 실시간 알림 발송 - 추후 개발 예정
+        // 관리자 제외 클럽멤버에게 실시간 알림 발송
+        sendNotification(moaClub, user, "관리자 변경", "manager");
 
         return success(MOACLUB_REQUEST_SUCCESS);
     }
@@ -239,7 +244,8 @@ public class MoaClubService {
         );
         redisTemplate.opsForValue().set(key, changeReq, Duration.ofHours(24));
 
-        // 관리자 제외 클럽멤버에게 실시간 알림 발송 - 추후 개발 예정
+        // 관리자 제외 클럽멤버에게 실시간 알림 발송
+        sendNotification(moaClub, user, "출금", "trsf");
 
         return success(MOACLUB_REQUEST_SUCCESS);
     }
@@ -569,5 +575,28 @@ public class MoaClubService {
 
     private void deleteAutoTransfer(MoaClub moaClub) {
         autoTransferService.deleteAutoTrsfByInAccId(moaClub.getAccountId());
+    }
+
+    private void sendNotification(MoaClub moaClub, User user, String action, String endpoint) {
+        List<User> clubMembers = getClubMemberUser(moaClub);
+
+        String content = "[모아클럽🗳️]\n" + "'" + moaClub.getName() + "'에서 " + user.getName() + "님이 " + action + "을 요청했어요. 지금 바로 투표해 보세요️!";
+        String url = "/moaclub/vote/" + endpoint + "/" + moaClub.getAccountId();
+
+        for (User member : clubMembers) {
+            notificationService.send(member, content, url, VOTE);
+        }
+    }
+
+    private List<User> getClubMemberUser(MoaClub moaClub) {
+        List<User> clubMembers = new ArrayList<>();
+
+        for (MoaClubMembers member : moaClub.getClubMemberList()) {
+            if (member.getRole() == MEMBER) {
+                clubMembers.add(member.getUser());
+            }
+        }
+
+        return clubMembers;
     }
 }
