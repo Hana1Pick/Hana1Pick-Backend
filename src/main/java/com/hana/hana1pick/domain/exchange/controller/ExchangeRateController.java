@@ -17,30 +17,23 @@ public class ExchangeRateController {
     @Autowired
     private ExchangeRateService exchangeRateService;
 
-    //   getExchangeRate(Currency currency)
-//    @GetMapping("/current")
-//    public Map<String, Double> getExchangeRate() {
-//        return exchangeRateService.getExchangeRate();
-//    }
+    @GetMapping("/current")
+    public Map<String, Double> getExchangeRate() {
+        return exchangeRateService.getCurrentRatesAsDoubles();
+    }
 
     @GetMapping("/previous-day")
     public Map<String, Double> getPreviousDayRates() {
-        LocalDate previousDay = LocalDate.now().minusDays(1);
-        Map<String, Double> rates = exchangeRateService.getRatesForDate(previousDay);
-        if (rates == null || rates.isEmpty()) {
-            // Handle case where no rates are found for the previous day
-            Map<String, Double> defaultRates = new HashMap<>();
-            defaultRates.put("USD", 0.0);
-            defaultRates.put("JPY", 0.0);
-            defaultRates.put("CNY", 0.0);
-            return defaultRates;
-        }
-        return rates;
+        return exchangeRateService.getPreviousDayRates();
     }
 
     @GetMapping("/date")
     public Map<String, Double> getRatesForDate(@RequestParam String date) {
-        LocalDate localDate = LocalDate.parse(date);
-        return exchangeRateService.getRatesForDate(localDate);
+        return exchangeRateService.getRatesForDate(date);
     }
 }
+
+
+
+
+

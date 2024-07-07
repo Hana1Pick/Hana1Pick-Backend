@@ -4,6 +4,7 @@ import com.hana.hana1pick.domain.user.entity.UserTrsfLimit;
 import com.hana.hana1pick.domain.user.repository.UserTrsfLimitRepository;
 import com.hana.hana1pick.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import static com.hana.hana1pick.global.exception.BaseResponseStatus.USER_TRSF_L
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class UserTrsfLimitService {
 
     private final UserTrsfLimitRepository userTrsfLimitRepository;
