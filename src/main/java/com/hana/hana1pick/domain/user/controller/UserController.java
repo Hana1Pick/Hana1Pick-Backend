@@ -69,7 +69,8 @@ public class UserController {
         User user = userService.findUserByEmail(userInfo.getEmail());
 
         if (user == null) {
-            userService.saveUserWithEmailAndProfile(userInfo.getEmail(), userInfo.getProfile());
+            User newUser = userService.saveUserWithEmailAndProfile(userInfo.getEmail(), userInfo.getProfile());
+            userInfo.setUserIdx(newUser.getIdx());
             return success(JOIN_SUCCESS, userInfo);
         } else {
             userInfo.setUserIdx(user.getIdx());
@@ -138,6 +139,11 @@ public class UserController {
             log.error("File upload failed", e);
             return new BaseException(FAIL_TO_UPLOAD_FILE);
         }
+    }
+    @Operation(summary = "사용자 정보 조회")
+    @PostMapping("/info")
+    public SuccessResult<UserInfoResDto> getUser(@RequestParam("email") String email) {
+        return userService.getUser(email);
     }
 
 }
