@@ -33,4 +33,12 @@ public class UserTrsfLimit {
     @ColumnDefault("500000")
     @Builder.Default()
     private Long transferLimit = 500000L;
+
+    public void accumulate(Long amount) {
+        dailyAmount += amount;
+    }
+
+    public void resetDailyAccAmount() {
+        dailyAmount = 0L;
+    }
 }

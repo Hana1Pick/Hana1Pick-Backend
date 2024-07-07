@@ -1,34 +1,79 @@
 package com.hana.hana1pick.domain.celublog.controller;
 
-import com.hana.hana1pick.domain.celublog.dto.request.AcceReqDto;
+import com.hana.hana1pick.domain.celebrity.entity.CelubType;
+import com.hana.hana1pick.domain.celublog.dto.request.*;
+import com.hana.hana1pick.domain.celublog.dto.response.AccDetailResDto;
+import com.hana.hana1pick.domain.celublog.dto.response.AccListResDto;
 import com.hana.hana1pick.domain.celublog.dto.response.AccResDto;
+import com.hana.hana1pick.domain.celublog.dto.response.AddRuleResDto;
 import com.hana.hana1pick.domain.celublog.service.CelublogService;
-import com.hana.hana1pick.global.exception.BaseResponse;
+import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
 import com.hana.hana1pick.global.exception.BaseResponse.SuccessResult;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/celub")
+@Slf4j
 public class CelublogController {
     private final CelublogService celublogService;
-
-//    public BaseResponse.SuccessResult getCelubList(){
-//        return celublogService.getCelubList;
-//    }
 
     @Operation(summary="셀럽로그 계좌 개설")
     @PostMapping("/accession")
     public SuccessResult<AccResDto> accedeCelublog(@RequestBody AcceReqDto req){
-        //AcceReqDto req = AcceReqDto.builder().accPw("1234").outAccId("02-00-0000507").name("김가원").celebrityIdx(Long.parseLong("1")).userIdx(UUID.fromString("123e4567-e89b-12d3-a456-556655440000")).imgSrc("imgimgimg").build();
        return celublogService.accedeCelublog(req);
+    }
+
+    @Operation(summary="셀럽로그 계좌 리스트")
+    @PostMapping("/account-list")
+    public SuccessResult<AccListResDto> celubAccList(@RequestParam("userIdx") String userId){
+        UUID userIdx = UUID.fromString(userId);
+        return celublogService.celubAccList(userIdx);
+    }
+    @Operation(summary="셀럽로그 계좌 상세 보기")
+    @PostMapping("/list/detail")
+    public SuccessResult<AccDetailResDto> celubAccDetail(@RequestParam("accountId") String accountId){
+        return celublogService.celubAccDetail(accountId);
+    }
+
+    @Operation(summary="셀럽로그 규칙 추가")
+    @PostMapping("/rule")
+    public SuccessResult<AddRuleResDto> celubAddRules(@RequestBody AddRuleReqDto req){
+        return celublogService.celubAddRules(req);
+    }
+
+    @Operation(summary="셀럽로그 입금")
+    @PostMapping("/in")
+    public SuccessResult celubAddIn(@RequestBody AccInReqDto req){
+        return celublogService.celubAddIn(req);
+    }
+
+    @Operation(summary = "셀럽로그 연예인 조회")
+    @GetMapping("/list")
+    public SuccessResult celubList(@RequestParam UUID userIdx){
+        return celublogService.celubList(userIdx);
+    }
+
+    @Operation(summary = "셀럽로그 연예인 검색")
+    @GetMapping("/list/search")
+    public SuccessResult celubSearchList(@RequestParam("userIdx") UUID userIdx, @RequestParam("type") CelubType type, @RequestParam("name") String name){
+        SearchReqDto req = new SearchReqDto(userIdx, type, name);
+
+        return celublogService.celubSearchList(req);
+    }
+
+    @Operation(summary = "셀럽로그 배경, 이름 변경")
+    @PostMapping("/alteration")
+    public SuccessResult celubModifyInfo(@RequestParam String accountId, @RequestParam String field,
+                                         @RequestParam MultipartFile srcImg, @RequestParam String name){
+        AlterationReqDto req = new AlterationReqDto(accountId, field, srcImg, name);
+        return celublogService.celubModifyInfo(req);
     }
 
 }

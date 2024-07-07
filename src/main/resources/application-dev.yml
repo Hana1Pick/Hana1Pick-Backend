@@ -27,7 +27,7 @@ spring:
     redis:
       host: localhost
       port: 6379
-      password: ENC(sKNJHs6GxopYsPXKdf7UCg==)
+      password: ENC(WcleD41+xdAwEkXoKUcJ4g==)
 
   springdoc:
     swagger-ui:
@@ -41,3 +41,35 @@ spring:
       disabled: true
     default-consumes-media-type: application/json;charset=UTF-8
     default-produces-media-type: application/json;charset=UTF-81
+
+app:
+  kakao:
+    rest_api_key: ENC(2dRfMOBeXknUrSUVvEcI8IkW+4/p1b62TztLehKIZ8BEdqc/oaA067MLJB1uR3vh)
+    login-redirect: /api/user/oauth/kakao
+    logout-redirect: /api/user/logout/kakao
+    url:
+      login: https://kauth.kakao.com/oauth/authorize
+      logout: https://kauth.kakao.com/oauth/logout
+      token: https://kauth.kakao.com/oauth/token
+      profile: https://kapi.kakao.com/v2/user/me
+      unlink: https://kapi.kakao.com/v1/user/unlink
+
+  ocr:
+    secretKey: ENC(gEgWONfXNB7212GGHw6GbQygH4GN2KXK4yFwzDUOmGerpT1mvDTU1vlPoJPB8IXytYIK7y1NuxU=)
+    apiURL: ENC(Loa6jfaSecrRNQbrZLFcLYtE1uxFBHYrycEKs86q2EYs1UhKQEI5/3FPIMG/Wnh7SvHqpM54XT+8avY3ObeYGVgeeDXD96e5PLYh9CskG2aloDpUtbWLYUh8hN7M/P38ZdFD/JgFYBFdpbBK4lNXMYOUqs9Nl3R63Q3Pv97KUmoEvHbSofAOkQ==)
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ENC(Ww7Xsz4DtOIeyCGyoAyfP/TVC8R4OZnVh556tdnGrJQ=)
+      secretKey: ENC(0oKd/dlZ1a7ryXvJOrRv4ppB7Y5ksEsBSytvc2yjdjG5wNwTVUyU82UuwvRAynGH0Luo2ktyOpg=)
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: hana1pick
+    stack:
+      auto: false
+
+jasypt:
+  encryptor:
+    password: gkskdnjsvlr2@
