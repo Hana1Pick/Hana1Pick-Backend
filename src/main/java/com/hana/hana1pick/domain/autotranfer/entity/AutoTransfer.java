@@ -2,17 +2,21 @@ package com.hana.hana1pick.domain.autotranfer.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
+import com.hana.hana1pick.domain.moaclub.entity.Currency;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class AutoTransfer {
 
     @EmbeddedId
@@ -22,9 +26,23 @@ public class AutoTransfer {
     @NotNull
     private Long amount;
 
+    @Column
+    private Currency currency;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDate createDate;
+
     @ManyToOne
     @MapsId("outAccId")
     @JoinColumn(name = "out_acc_id")
     @JsonManagedReference
-    private Deposit deposit;
+    private Deposit outAcc;
+
+    public AutoTransfer updateAutoTransfer(int atDate, Long amount) {
+        this.id.updateAtDate(atDate);
+        this.amount = amount;
+
+        return this;
+    }
 }

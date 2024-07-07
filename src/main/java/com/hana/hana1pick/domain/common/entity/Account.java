@@ -8,6 +8,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 
+import static com.hana.hana1pick.domain.common.entity.AccountStatus.INACTIVE;
+
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
@@ -20,8 +22,8 @@ public class Account {
     @Column
     private Long balance;
 
-    @Column
     @CreatedDate
+    @Column(updatable = false)
     private LocalDate createDate;
 
     @Column
@@ -30,6 +32,17 @@ public class Account {
     public Account(Long balance, AccountStatus status) {
         this.balance = balance;
         this.status = status;
+    }
+
+    public Account(Long balance, AccountStatus status, String name, LocalDate createDate) {
+        this.balance = balance;
+        this.status = status;
+        this.name = name;
+        this.createDate = createDate;
+    }
+
+    public void closeAccount() {
+        this.status = INACTIVE;
     }
 
     public Account cashOut(Long amount){

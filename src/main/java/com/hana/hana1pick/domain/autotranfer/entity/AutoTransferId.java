@@ -11,6 +11,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @AllArgsConstructor
 @Builder
+@Getter
 public class AutoTransferId implements Serializable {
 
     @Column
@@ -21,4 +22,8 @@ public class AutoTransferId implements Serializable {
 
     @Column
     private String outAccId;
+
+    public void updateAtDate(int atDate) {
+        this.atDate = atDate;
+    }
 }
