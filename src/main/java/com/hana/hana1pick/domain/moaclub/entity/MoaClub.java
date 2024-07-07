@@ -1,6 +1,7 @@
 package com.hana.hana1pick.domain.moaclub.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.hana.hana1pick.domain.chat.entity.ChatRoom;
 import com.hana.hana1pick.domain.common.entity.Account;
 import com.hana.hana1pick.domain.common.entity.AccountStatus;
 import com.hana.hana1pick.domain.moaclub.dto.request.ClubUpdateReqDto;
@@ -40,6 +41,9 @@ public class MoaClub extends Account {
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private final List<MoaClubMembers> clubMemberList = new ArrayList<>();
+
+    @OneToOne(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ChatRoom chatRoom;
 
     @Builder
     public MoaClub(Long balance, AccountStatus status,

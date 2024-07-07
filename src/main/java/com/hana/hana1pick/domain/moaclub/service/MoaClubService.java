@@ -8,6 +8,9 @@ import com.hana.hana1pick.domain.autotranfer.entity.AutoTransfer;
 import com.hana.hana1pick.domain.autotranfer.entity.AutoTransferId;
 import com.hana.hana1pick.domain.autotranfer.repository.AutoTransferRepository;
 import com.hana.hana1pick.domain.autotranfer.service.AutoTransferService;
+import com.hana.hana1pick.domain.chat.entity.ChatRoom;
+import com.hana.hana1pick.domain.chat.repository.ChatRoomRepository;
+import com.hana.hana1pick.domain.chat.service.ChatRoomService;
 import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.common.service.AccountService;
@@ -64,6 +67,8 @@ public class MoaClubService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChannelTopic managerChangeTopic;
     private final ChannelTopic withdrawTopic;
+    private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
 
     private static final String MANAGER_CHANGE_KEY_PREFIX = "managerChangeRequest:";
     private static final String WITHDRAW_KEY_PREFIX = "withdrawRequest:";
@@ -82,6 +87,10 @@ public class MoaClubService {
 
         // MoaClubMembers 생성
         createClubMembers(user, moaClub, user.getName(), MANAGER);
+
+        // ChatRoom 생성
+        ChatRoom chatRoom = chatRoomService.createChatRoom(moaClub);
+        chatRoomRepository.save(chatRoom);
 
         return success(MOACLUB_CREATED_SUCCESS, new ClubOpeningResDto(accId));
     }
@@ -119,7 +128,10 @@ public class MoaClubService {
         // 클럽 회원 정보 저장
         List<ClubResDto.MoaClubMember> clubMemberList = getClubMemberListExceptNonmember(moaClub);
 
-        return success(MOACLUB_FETCH_SUCCESS, ClubResDto.of(moaClub, clubMemberList));
+        // 클럽 채팅방 정보 저장
+        Long chatRoomId = moaClub.getChatRoom().getChatRoomId();
+
+        return success(MOACLUB_FETCH_SUCCESS, ClubResDto.of(moaClub, clubMemberList, chatRoomId));
     }
 
     public SuccessResult<ClubManagerCheckResDto> checkMoaClubManager(AccIdReqDto request) {
