@@ -103,20 +103,9 @@ public class UserController {
     @PostMapping("/ocr")
     public Object ocrimpl(UserOCRReqDto ocrDto, @RequestParam("file") MultipartFile uploadImg, HttpSession session) {
         try {
-            // Redis에 저장할 키
-            String key = UUID.randomUUID().toString().substring(0, 10);
-            session.setAttribute("key", key);
-
-            // 이미지 파일을 Redis에 저장
-            redisTemplate.opsForValue().set(key, uploadImg.getBytes());
-
             log.info("Uploaded image name: " + uploadImg.getOriginalFilename());
             String imgname = "uploads/" + uploadImg.getOriginalFilename();
 
-            // Redis에서 파일을 가져와 OCR 처리
-            String imageString = (String) redisTemplate.opsForValue().get(key);
-            byte[] imageBytes = imageString.getBytes(StandardCharsets.UTF_8);
-            if (imageBytes != null) {
                 FileUpload.saveFile(uploadImg);
 
                 JSONObject jsonObject = OCR.getResult(imgname);
@@ -128,22 +117,17 @@ public class UserController {
                 }
                 Map<String, Object> map = OCR.getData(jsonObject);
 
-                map.put("key", key);
                 log.info("map 정보: " + map);
                 return success(DEPOSIT_OCR_SUCCESS, map);
-            } else {
-                log.error("Failed to retrieve image from Redis");
-                return new BaseException(IMAGE_NOT_FOUND);
-            }
         } catch (IOException e) {
             log.error("File upload failed", e);
             return new BaseException(FAIL_TO_UPLOAD_FILE);
         }
     }
+
     @Operation(summary = "사용자 정보 조회")
     @PostMapping("/info")
     public SuccessResult<UserInfoResDto> getUser(@RequestParam("email") String email) {
         return userService.getUser(email);
     }
-
 }
