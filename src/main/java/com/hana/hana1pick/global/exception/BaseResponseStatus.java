@@ -42,6 +42,10 @@ public enum BaseResponseStatus {
     MOACLUB_MANAGER_CHECK_SUCCESS(OK, "모아클럽 관리자 확인 성공"),
     MOACLUB_MEMBER_FETCH_SUCCESS(OK, "모아클럽 멤버 리스트 조회 성공"),
     MOACLUB_AUTO_TRANSFER_FETCH_SUCCESS(OK, "모아클럽 자동이체 조회 성공"),
+    
+    // Chat
+    CHAT_MESSAGE_LIST_LOAD_SUCCESS(OK, "채팅방 내 메시지 내역 조회 성공"),
+    CHAT_MESSAGE_CREATED_SUCCESS(CREATED, "채팅 메시지 저장 성공"),
 
     // Celublog
     CELUBLOG_CREATED_SUCCESS(CREATED, "셀럽로그 개설 성공"),

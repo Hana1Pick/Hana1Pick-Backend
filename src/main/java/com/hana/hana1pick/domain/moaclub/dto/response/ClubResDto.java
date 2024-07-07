@@ -24,8 +24,9 @@ public class ClubResDto {
     private Currency currency;
     private LocalDate createDate;
     private List<MoaClubMember> memberList;
+    private Long chatRoomId;
 
-    public static ClubResDto of(MoaClub moaClub, List<MoaClubMember> memberList) {
+    public static ClubResDto of(MoaClub moaClub, List<MoaClubMember> memberList, Long chatRoomId) {
         return ClubResDto.builder()
                 .name(moaClub.getName())
                 .accountId(moaClub.getAccountId())
@@ -35,6 +36,7 @@ public class ClubResDto {
                 .currency(moaClub.getCurrency())
                 .createDate(moaClub.getCreateDate())
                 .memberList(memberList)
+                .chatRoomId(chatRoomId)
                 .build();
     }
 

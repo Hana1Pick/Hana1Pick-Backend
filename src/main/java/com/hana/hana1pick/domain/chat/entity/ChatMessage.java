@@ -2,24 +2,31 @@ package com.hana.hana1pick.domain.chat.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "chat_message")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+@Getter
 @EntityListeners(AuditingEntityListener.class)
 public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatMessageId;
 
-    private String content;
+    private String contentKorea;
+
+    private String contentChina;
+
+    private String contentJapan;
 
     private String writer;
+
+    private LocalDateTime chatDate;
 
     @ManyToOne
     @JoinColumn(name = "chat_room_id")

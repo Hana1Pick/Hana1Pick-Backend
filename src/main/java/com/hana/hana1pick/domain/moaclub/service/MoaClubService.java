@@ -124,7 +124,10 @@ public class MoaClubService {
         // 클럽 회원 정보 저장
         List<ClubResDto.MoaClubMember> clubMemberList = getClubMemberListExceptNonmember(moaClub);
 
-        return success(MOACLUB_FETCH_SUCCESS, ClubResDto.of(moaClub, clubMemberList));
+        // 클럽 채팅방 정보 저장
+        Long chatRoomId = moaClub.getChatRoom().getChatRoomId();
+
+        return success(MOACLUB_FETCH_SUCCESS, ClubResDto.of(moaClub, clubMemberList, chatRoomId));
     }
 
     public SuccessResult<ClubManagerCheckResDto> checkMoaClubManager(AccIdReqDto request) {
