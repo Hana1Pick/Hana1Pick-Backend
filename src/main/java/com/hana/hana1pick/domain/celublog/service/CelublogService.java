@@ -114,14 +114,14 @@ public class CelublogService {
 
     //사용자가 입력한 규칙 추가
     public SuccessResult celubAddRules(AddRuleReqDto dto){
-            Celublog celublog = celublogRepository.findById(dto.getAccountId())
+        Celublog celublog = celublogRepository.findById(dto.getAccountId())
                 .orElseThrow(() -> new BaseException(CELEBRITY_NOT_FOUND_ACCOUNT));
-            rulesRepository.deleteRules(dto.getAccountId());
-            dto.getRuleList().forEach(rule->{
-                Rules rules = Rules.builder().ruleName(rule.getRuleName()).ruleMoney(rule.getRuleMoney()).celublog(celublog).build();
-                rulesRepository.save(rules);
-            });
-            Celublog ruleList = celublogRepository.findByAccountId(dto.getAccountId());
+        rulesRepository.deleteRules(dto.getAccountId());
+        dto.getRuleList().forEach(rule->{
+            Rules rules = Rules.builder().ruleName(rule.getRuleName()).ruleMoney(rule.getRuleMoney()).celublog(celublog).build();
+            rulesRepository.save(rules);
+        });
+        Celublog ruleList = celublogRepository.findByAccountId(dto.getAccountId());
         return success(CELUBLOG_ADD_RULES_SUCCESS, ruleList.getRuleList());
     }
 

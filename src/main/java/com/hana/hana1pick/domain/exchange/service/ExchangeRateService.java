@@ -2,8 +2,6 @@ package com.hana.hana1pick.domain.exchange.service;
 
 import com.hana.hana1pick.domain.exchange.entity.ExchangeRate;
 import com.hana.hana1pick.domain.exchange.repository.ExchangeRateRepository;
-import com.hana.hana1pick.domain.moaclub.entity.Currency;
-import com.hana.hana1pick.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,43 +17,41 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ExchangeRateService {
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final String apiUrl = "https://api.exchangerate-api.com/v4/latest/KRW";
 
     @Autowired
     private ExchangeRateRepository exchangeRateRepository;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final String apiUrl = "https://api.exchangerate-api.com/v4/latest/KRW";
 
     public Map<String, Double> getCurrentRatesAsDoubles() {
         String url = UriComponentsBuilder.fromHttpUrl(apiUrl).toUriString();
         Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        // 로그 추가
-        System.out.println("API Response: " + response);
-
         Map<String, Double> rates = new HashMap<>();
         if (response != null && response.get("rates") instanceof Map) {
             Map<String, Object> ratesObject = (Map<String, Object>) response.get("rates");
             for (Map.Entry<String, Object> entry : ratesObject.entrySet()) {
-                try {
-                    rates.put(entry.getKey(), ((Number) entry.getValue()).doubleValue());
-                } catch (Exception e) {
-                    System.err.println("Error parsing rate for currency: " + entry.getKey());
-                    e.printStackTrace();
-                }
+                rates.put(entry.getKey(), ((Number) entry.getValue()).doubleValue());
             }
         }
+
+        // Save only "JPY", "USD", "CNY" rates
+        saveRates(rates);
+
         return rates;
     }
 
-    public double getExchangeRate(Currency currency) {
-        Map<String, Double> rates = getCurrentRatesAsDoubles();
-        return rates.get(currency.name());
+    public Map<String, Double> getPreviousDayRates() {
+        LocalDate previousDay = LocalDate.now().minusDays(1);
+        return getRatesForDate(previousDay.toString());
     }
 
-    public Map<String, Double> getRatesForDate(LocalDate date) {
-        List<ExchangeRate> exchangeRates = exchangeRateRepository.findByDate(date);
+    public Map<String, Double> getRatesForDate(String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        List<ExchangeRate> exchangeRates = exchangeRateRepository.findByDate(localDate);
         if (exchangeRates.isEmpty()) {
-            return null;
+            return new HashMap<>();
         }
         Map<String, Double> rates = new HashMap<>();
         for (ExchangeRate exchangeRate : exchangeRates) {
@@ -64,17 +60,20 @@ public class ExchangeRateService {
         return rates;
     }
 
-    public void saveRates(Map<String, Double> rates) {
+    private void saveRates(Map<String, Double> rates) {
         LocalDate today = LocalDate.now();
-        for (Map.Entry<String, Double> entry : rates.entrySet()) {
-            Optional<ExchangeRate> existingRate = exchangeRateRepository.findByCurrencyAndDate(entry.getKey(), today);
-            if (existingRate.isEmpty()) {
-                ExchangeRate exchangeRate = ExchangeRate.builder()
-                        .currency(entry.getKey())
-                        .rate(entry.getValue().doubleValue())
-                        .date(today)
-                        .build();
-                exchangeRateRepository.save(exchangeRate);
+        String[] targetCurrencies = {"JPY", "USD", "CNY"};
+        for (String currency : targetCurrencies) {
+            if (rates.containsKey(currency)) {
+                Optional<ExchangeRate> existingRate = exchangeRateRepository.findByCurrencyAndDate(currency, today);
+                if (existingRate.isEmpty()) {
+                    ExchangeRate exchangeRate = ExchangeRate.builder()
+                            .currency(currency)
+                            .rate(rates.get(currency))
+                            .date(today)
+                            .build();
+                    exchangeRateRepository.save(exchangeRate);
+                }
             }
         }
     }

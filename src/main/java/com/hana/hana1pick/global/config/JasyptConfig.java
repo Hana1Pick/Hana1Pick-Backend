@@ -6,12 +6,14 @@ import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableEncryptableProperties
 public class JasyptConfig {
 
-    private static final String KEY = "gkskdnjsvlr2@";
+    @Value("${jasypt.encryptor.password}")
+    private String KEY;
     private static final String ALGORITHM =  "PBEWithMD5AndDES";
 
     @Bean("jasyptStringEncryptor")
