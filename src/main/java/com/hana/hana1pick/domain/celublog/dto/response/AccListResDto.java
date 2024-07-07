@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -15,4 +16,5 @@ public class AccListResDto {
     private String account_id;
     private long balance;
     private String imgSrc;
+    private LocalDate createDate;
 }

@@ -58,4 +58,5 @@ public class AccountHistory {
 
     @Column
     private boolean isFx;
+
 }
