@@ -63,8 +63,14 @@ public enum BaseResponseStatus {
     ACCOUNT_HISTORY_SUCCESS(OK , "계좌 내역 조회 성공"),
     ACCOUNT_HISTORY_FOR_QR_SUCCESS(OK, "QR 속 계좌번호에 대한 거래내역 조회 성공"),
 
+    // Notification
+    NOTIFICATION_FETCH_SUCCESS(OK, "알림 목록 조회 성공"),
+    NOTIFICATION_CHECK_SUCCESS(OK, "알림 확인 성공"),
+    NOTIFICATION_DELETE_SUCCESS(OK, "알림 삭제 성공"),
+
     // Exchange
     EXCHANGE_INFO_FETCH_SUCCESS(OK, "환전 정보 조회 성공"),
+
 
     /**
      * 202 : Request 오류
@@ -116,7 +122,10 @@ public enum BaseResponseStatus {
     ACCOUNT_CASH_OUT_FAIL(ACCEPTED, "E601", "계좌이체를 실패했습니다."),
 
     // AutoTransfer
-    AUTO_TRANSFER_NOT_FOUND(ACCEPTED, "E700", "자동이체를 찾을 수 없습니다")
+    AUTO_TRANSFER_NOT_FOUND(ACCEPTED, "E700", "자동이체를 찾을 수 없습니다"),
+
+    // Notification
+    NOTIFICATION_NOT_FOUND(ACCEPTED, "E800", "알림을 찾을 수 없습니다.")
     ;
     private final HttpStatus httpStatus;
     private String errorCode;

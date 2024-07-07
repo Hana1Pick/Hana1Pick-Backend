@@ -6,6 +6,7 @@ import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.moaclub.dto.request.ClubUpdateReqDto;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClub;
 import com.hana.hana1pick.domain.moaclub.entity.MoaClubMembers;
+import com.hana.hana1pick.domain.notification.entity.Notification;
 import com.hana.hana1pick.domain.user.dto.request.UserUpdateReqDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -71,6 +72,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
     private final List<MoaClubMembers> clubList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @Builder.Default
+    private List<Notification> notificationList = new ArrayList<>();
 
     // 이메일과 프로필만 설정하는 생성자 추가
     public User(String email, String profile) {

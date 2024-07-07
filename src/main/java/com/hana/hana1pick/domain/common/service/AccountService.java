@@ -119,14 +119,9 @@ public class AccountService {
         }
 
         // 2. 출금 계좌 소유자의 회원 이체한도 초과 확인
-        try {
-            if (userTrsfLimitService.checkTrsfLimit(userIdx, amount)) {
-                throw new BaseException(USER_TRSF_LIMIT_OVER);
-            }
-        } catch (Exception e) {
-            log.error("User transfer limit check failed", e);
-            throw new BaseException(ACCOUNT_CASH_OUT_FAIL);
-        }
+        if(!outAccId.substring(3, 5).equals("02") && userTrsfLimitService.checkTrsfLimit(userIdx, amount)){
+            throw new BaseException(USER_TRSF_LIMIT_OVER);
+        };
 
         // 3. 입출금 및 입출금 로그 생성
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
