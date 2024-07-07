@@ -19,6 +19,7 @@ public enum BaseResponseStatus {
     JOIN_SUCCESS(CREATED, "카카오 회원가입 성공"),
     ACCOUNT_LIST_SUCCESS(OK, "계좌 목록 조회 성공"),
     USER_UPDATE_SUCCESS(OK, "사용자 정보 수정 성공"),
+    USER_INFO_SUCCESS(OK, "사용자 정보 조회 성공"),
 
     //Deposit
     DEPOSIT_CREATED_SUCCESS(CREATED, "입출금 계좌 개설 성공"),
@@ -66,6 +67,9 @@ public enum BaseResponseStatus {
     NOTIFICATION_FETCH_SUCCESS(OK, "알림 목록 조회 성공"),
     NOTIFICATION_CHECK_SUCCESS(OK, "알림 확인 성공"),
     NOTIFICATION_DELETE_SUCCESS(OK, "알림 삭제 성공"),
+
+    // Exchange
+    EXCHANGE_INFO_FETCH_SUCCESS(OK, "환전 정보 조회 성공"),
 
     /**
      * 202 : Request 오류

@@ -14,10 +14,12 @@ import com.hana.hana1pick.domain.celublog.entity.Rules;
 import com.hana.hana1pick.domain.celublog.repository.CelublogRepository;
 import com.hana.hana1pick.domain.celublog.repository.RulesRepository;
 import com.hana.hana1pick.domain.common.dto.request.CashOutReqDto;
+import com.hana.hana1pick.domain.common.entity.Account;
 import com.hana.hana1pick.domain.common.service.AccIdGenerator;
 import com.hana.hana1pick.domain.common.service.AccountService;
 import com.hana.hana1pick.domain.deposit.entity.Deposit;
 import com.hana.hana1pick.domain.deposit.repository.DepositRepository;
+import com.hana.hana1pick.domain.moaclub.entity.Currency;
 import com.hana.hana1pick.domain.user.entity.User;
 import com.hana.hana1pick.domain.user.repository.UserRepository;
 import com.hana.hana1pick.global.config.S3Service;
@@ -104,7 +106,7 @@ public class CelublogService {
         //출금 계좌번호
         String out_account = tmpAccount.getAccountId();
         //Dto setting
-        CashOutReqDto dto = CashOutReqDto.builder().inAccId(req.getAccountId()).outAccId(out_account).memo(req.getMemo()).hashtag(req.getHashtag()).amount(req.getAmount()).transType(DEPOSIT).build();
+        CashOutReqDto dto = CashOutReqDto.builder().userIdx(celub.getUser().getIdx()).inAccId(req.getAccountId()).outAccId(out_account).memo(req.getMemo()).hashtag(req.getHashtag()).amount(req.getAmount()).transType(DEPOSIT).currency(Currency.KRW).build();
         accountService.cashOut(dto);
 
         return success(CELUBLOG_ACCOUNT_IN_SUCCESS);
@@ -114,11 +116,12 @@ public class CelublogService {
     public SuccessResult celubAddRules(AddRuleReqDto dto){
         Celublog celublog = celublogRepository.findById(dto.getAccountId())
                 .orElseThrow(() -> new BaseException(CELEBRITY_NOT_FOUND_ACCOUNT));
-                dto.getRuleList().forEach(rule->{
-                Rules rules = Rules.builder().ruleName(rule.getRuleName()).ruleMoney(rule.getRuleMoney()).celublog(celublog).build();
-                rulesRepository.save(rules);
-            });
-            Celublog ruleList = celublogRepository.findByAccountId(dto.getAccountId());
+        rulesRepository.deleteRules(dto.getAccountId());
+        dto.getRuleList().forEach(rule->{
+            Rules rules = Rules.builder().ruleName(rule.getRuleName()).ruleMoney(rule.getRuleMoney()).celublog(celublog).build();
+            rulesRepository.save(rules);
+        });
+        Celublog ruleList = celublogRepository.findByAccountId(dto.getAccountId());
         return success(CELUBLOG_ADD_RULES_SUCCESS, ruleList.getRuleList());
     }
 
@@ -128,7 +131,7 @@ public class CelublogService {
         Celublog celub = celublogRepository.findByAccountId(accountId);
         LocalDateTime today = LocalDateTime.now();
         long duration = ChronoUnit.DAYS.between(celub.getCreateDate(), today);
-        AccDetailResDto.AccInfo accInfo = new AccDetailResDto.AccInfo(celub.getAccountId(), celub.getBalance(), celub.getName(), celub.getImgSrc(), celub.getOutAcc(), celub.getCelebrity(), duration);
+        AccDetailResDto.AccInfo accInfo = new AccDetailResDto.AccInfo(celub.getAccountId(), celub.getBalance(), celub.getName(), celub.getImgSrc(), celub.getOutAcc(), celub.getCelebrity(), duration, celub.getCreateDate(), celub.getOutAcc().getBalance());
         //계좌 거래 내역
         List<AccountHistory> history = accountHistoryRepository.findByAccountId(accountId);
         List<AccReport> accountReportList = new ArrayList<>();
@@ -146,7 +149,7 @@ public class CelublogService {
         List<AccListResDto> resList = new ArrayList<>();
         for(int i=0; i<celublogList.size(); i++){
             Celublog tmp = celublogList.get(i);
-            AccListResDto dto = new AccListResDto(tmp.getName(), tmp.getAccountId() , tmp.getBalance(), tmp.getImgSrc());
+            AccListResDto dto = new AccListResDto(tmp.getName(), tmp.getAccountId() , tmp.getBalance(), tmp.getImgSrc(), tmp.getCreateDate());
             resList.add(dto);
         }
         return success(CELUBLOG_ACCOUNT_LIST_SUCCESS, resList);
