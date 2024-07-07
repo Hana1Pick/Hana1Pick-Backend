@@ -23,8 +23,8 @@ public enum BaseResponseStatus {
 
     //Deposit
     DEPOSIT_CREATED_SUCCESS(CREATED, "입출금 계좌 개설 성공"),
-
     DEPOSIT_OCR_SUCCESS(OK, "외국인등록증 OCR 성공"),
+    DEPOSIT_FETCH_SUCCESS(OK, "입출금 계좌 조회 성공"),
 
     // MoaClub
     MOACLUB_CREATED_SUCCESS(CREATED, "모아클럽 개설 성공"),
@@ -70,6 +70,7 @@ public enum BaseResponseStatus {
 
     // Exchange
     EXCHANGE_INFO_FETCH_SUCCESS(OK, "환전 정보 조회 성공"),
+
 
     /**
      * 202 : Request 오류

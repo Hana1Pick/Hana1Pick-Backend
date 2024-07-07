@@ -1,8 +1,10 @@
 package com.hana.hana1pick.domain.deposit.controller;
 
 
+import com.hana.hana1pick.domain.deposit.dto.request.DepositAccIdReqDto;
 import com.hana.hana1pick.domain.deposit.dto.request.DepositCreateReqDto;
 import com.hana.hana1pick.domain.deposit.dto.response.DepositCreateResDto;
+import com.hana.hana1pick.domain.deposit.dto.response.DepositDetailResDto;
 import com.hana.hana1pick.domain.deposit.service.DepositService;
 import com.hana.hana1pick.global.exception.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,5 +25,11 @@ public class DepositController {
     @PostMapping
     public BaseResponse.SuccessResult<DepositCreateResDto> openDeposit(@RequestBody DepositCreateReqDto request) {
         return depositService.createDeposit(request);
+    }
+
+    @Operation(summary = "입출금 계좌 조회")
+    @PostMapping("/detail")
+    public BaseResponse.SuccessResult<DepositDetailResDto> getDeposit(@RequestBody DepositAccIdReqDto request) {
+        return depositService.getDepositDetail(request);
     }
 }
