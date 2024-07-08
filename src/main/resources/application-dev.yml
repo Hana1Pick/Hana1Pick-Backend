@@ -80,4 +80,4 @@ cloud:
 
 jasypt:
   encryptor:
-    password: ${JASYPT_ENCRYPTOR_PW}
+    password: gkskdnjsvlr2@

@@ -53,7 +53,11 @@ public class CelublogController {
     public SuccessResult celubAddIn(@RequestBody AccInReqDto req){
         return celublogService.celubAddIn(req);
     }
-
+    @Operation(summary = "셀럽로그 출금")
+    @PostMapping("/out")
+    public SuccessResult celubOut(@RequestBody AccOutReqDto req){
+        return celublogService.celubOut(req);
+    }
     @Operation(summary = "셀럽로그 연예인 조회")
     @GetMapping("/list")
     public SuccessResult celubList(@RequestParam UUID userIdx){

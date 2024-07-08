@@ -1,7 +1,10 @@
 package com.hana.hana1pick.domain.celublog.service;
 
+import com.hana.hana1pick.domain.acchistory.dto.request.AccHistoryReqDto;
+import com.hana.hana1pick.domain.acchistory.dto.response.AccHistoryResDto;
 import com.hana.hana1pick.domain.acchistory.entity.AccountHistory;
 import com.hana.hana1pick.domain.acchistory.repository.AccHistoryRepository;
+import com.hana.hana1pick.domain.acchistory.service.AccHistoryService;
 import com.hana.hana1pick.domain.celebrity.entity.Celebrity;
 import com.hana.hana1pick.domain.celebrity.repository.CelebrityRepository;
 import com.hana.hana1pick.domain.celublog.dto.request.*;
@@ -40,6 +43,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.hana.hana1pick.domain.acchistory.entity.TransType.DEPOSIT;
+import static com.hana.hana1pick.domain.acchistory.entity.TransType.WITHDRAW;
 import static com.hana.hana1pick.global.exception.BaseResponse.success;
 import static com.hana.hana1pick.global.exception.BaseResponseStatus.*;
 
@@ -57,7 +61,7 @@ public class CelublogService {
     private final RulesRepository rulesRepository;
     private final AccountService accountService;
     private final S3Service s3Service;
-
+    private final AccHistoryService accHistoryService;
     //셀럽로그 배경, 이름 변경
     public SuccessResult celubModifyInfo(AlterationReqDto req){
         Celublog celub = getCelubByAccId(req.getAccountId());
@@ -111,7 +115,16 @@ public class CelublogService {
 
         return success(CELUBLOG_ACCOUNT_IN_SUCCESS);
     }
+    //출금
+    public SuccessResult celubOut(AccOutReqDto req){
 
+        //Dto setting
+        CashOutReqDto dto = CashOutReqDto.builder().userIdx(req.getUserIdx()).hashtag("출금").inAccId(req.getInAccId()).outAccId(req.getOutAccId()).memo(req.getMemo()).amount(req.getAmount()).transType(WITHDRAW).currency(Currency.KRW).build();
+        accountService.cashOut(dto);
+
+
+        return success(CELUBLOG_ACCOUNT_OUT_SUCCESS);
+    }
     //사용자가 입력한 규칙 추가
     public SuccessResult celubAddRules(AddRuleReqDto dto){
         Celublog celublog = celublogRepository.findById(dto.getAccountId())
