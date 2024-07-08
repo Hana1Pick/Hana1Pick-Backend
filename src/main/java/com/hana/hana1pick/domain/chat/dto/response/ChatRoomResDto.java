@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 @Builder
 public class ChatRoomResDto {
-    private List<ChatMessageResDto> messageList;
+    private List<ChatMessageListResDto> messageList;
 }

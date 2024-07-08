@@ -59,24 +59,20 @@ public class ChatMessageService {
 
         Long chatMessageId = chatMessageRepository.save(chatMessage).getChatMessageId();
 
-        String content = switch (request.nation()) {
-            case "Korea" -> contentKO;
-            case "China" -> contentZH;
-            default -> contentJA; // Japan
-        };
-
-        return success(CHAT_MESSAGE_CREATED_SUCCESS, new ChatMessageResDto(chatMessageId, request.from(), content, chatDate));
+        return success(CHAT_MESSAGE_CREATED_SUCCESS, new ChatMessageResDto(chatMessageId, request.from(), contentKO, contentZH, contentJA, chatDate));
     }
 
     public BaseResponse.SuccessResult<ChatRoomResDto> getChatMessage(Long roomId, String nation, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ChatMessage> chatMessagesPage = chatMessageRepository.findByChatRoomId(roomId, pageable);
 
-        List<ChatMessageResDto> messageList = chatMessagesPage.getContent().stream()
-                .map(chatMessage -> ChatMessageResDto.builder()
+        List<ChatMessageListResDto> messageList = chatMessagesPage.getContent().stream()
+                .map(chatMessage -> ChatMessageListResDto.builder()
                         .chatMessageId(chatMessage.getChatMessageId())
                         .from(chatMessage.getWriter())
-                        .content(getContentByNation(nation, chatMessage))
+                        .contentKO(chatMessage.getContentKorea())
+                        .contentZH(chatMessage.getContentChina())
+                        .contentJA(chatMessage.getContentJapan())
                         .chatDate(chatMessage.getChatDate())
                         .build())
                 .collect(Collectors.toList());
@@ -86,14 +82,6 @@ public class ChatMessageService {
                 .build();
 
         return success(CHAT_MESSAGE_LIST_LOAD_SUCCESS, chatRoomResDto);
-    }
-
-    public String getContentByNation(String nation, ChatMessage chatMessage){
-        return switch (nation) {
-            case "Korea" -> chatMessage.getContentKorea();
-            case "China" -> chatMessage.getContentChina();
-            default -> chatMessage.getContentJapan(); // Japan
-        };
     }
 
     public TranslationResDto translate(@RequestBody TranslationReqDto request) {
