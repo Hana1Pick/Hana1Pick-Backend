@@ -23,8 +23,8 @@ public enum BaseResponseStatus {
 
     //Deposit
     DEPOSIT_CREATED_SUCCESS(CREATED, "입출금 계좌 개설 성공"),
-
     DEPOSIT_OCR_SUCCESS(OK, "외국인등록증 OCR 성공"),
+    DEPOSIT_FETCH_SUCCESS(OK, "입출금 계좌 조회 성공"),
 
     // MoaClub
     MOACLUB_CREATED_SUCCESS(CREATED, "모아클럽 개설 성공"),
@@ -42,6 +42,10 @@ public enum BaseResponseStatus {
     MOACLUB_MANAGER_CHECK_SUCCESS(OK, "모아클럽 관리자 확인 성공"),
     MOACLUB_MEMBER_FETCH_SUCCESS(OK, "모아클럽 멤버 리스트 조회 성공"),
     MOACLUB_AUTO_TRANSFER_FETCH_SUCCESS(OK, "모아클럽 자동이체 조회 성공"),
+    
+    // Chat
+    CHAT_MESSAGE_LIST_LOAD_SUCCESS(OK, "채팅방 내 메시지 내역 조회 성공"),
+    CHAT_MESSAGE_CREATED_SUCCESS(CREATED, "채팅 메시지 저장 성공"),
 
     // Celublog
     CELUBLOG_CREATED_SUCCESS(CREATED, "셀럽로그 개설 성공"),
@@ -63,8 +67,14 @@ public enum BaseResponseStatus {
     ACCOUNT_HISTORY_SUCCESS(OK , "계좌 내역 조회 성공"),
     ACCOUNT_HISTORY_FOR_QR_SUCCESS(OK, "QR 속 계좌번호에 대한 거래내역 조회 성공"),
 
+    // Notification
+    NOTIFICATION_FETCH_SUCCESS(OK, "알림 목록 조회 성공"),
+    NOTIFICATION_CHECK_SUCCESS(OK, "알림 확인 성공"),
+    NOTIFICATION_DELETE_SUCCESS(OK, "알림 삭제 성공"),
+
     // Exchange
     EXCHANGE_INFO_FETCH_SUCCESS(OK, "환전 정보 조회 성공"),
+
 
     /**
      * 202 : Request 오류
@@ -116,7 +126,10 @@ public enum BaseResponseStatus {
     ACCOUNT_CASH_OUT_FAIL(ACCEPTED, "E601", "계좌이체를 실패했습니다."),
 
     // AutoTransfer
-    AUTO_TRANSFER_NOT_FOUND(ACCEPTED, "E700", "자동이체를 찾을 수 없습니다")
+    AUTO_TRANSFER_NOT_FOUND(ACCEPTED, "E700", "자동이체를 찾을 수 없습니다"),
+
+    // Notification
+    NOTIFICATION_NOT_FOUND(ACCEPTED, "E800", "알림을 찾을 수 없습니다.")
     ;
     private final HttpStatus httpStatus;
     private String errorCode;

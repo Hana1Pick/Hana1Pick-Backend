@@ -13,7 +13,11 @@ spring:
     username: ENC(hcNtwlmLW45yLgLo1SCenQ==)
     password: ENC(sDTTfhyMJjrINkuZI2c+i53Mud2AEKEQ)
     hikari:
-      max-lifetime: 177000
+      idle-timeout: 120000
+      minimum-idle: 10
+      maximum-pool-size: 20
+      max-lifetime: 500000
+      leak-detection-threshold: 60000
 
   jpa:
     hibernate:
@@ -57,6 +61,10 @@ app:
   ocr:
     secretKey: ENC(gEgWONfXNB7212GGHw6GbQygH4GN2KXK4yFwzDUOmGerpT1mvDTU1vlPoJPB8IXytYIK7y1NuxU=)
     apiURL: ENC(Loa6jfaSecrRNQbrZLFcLYtE1uxFBHYrycEKs86q2EYs1UhKQEI5/3FPIMG/Wnh7SvHqpM54XT+8avY3ObeYGVgeeDXD96e5PLYh9CskG2aloDpUtbWLYUh8hN7M/P38ZdFD/JgFYBFdpbBK4lNXMYOUqs9Nl3R63Q3Pv97KUmoEvHbSofAOkQ==)
+
+  deepl:
+    secretKey: ENC(JhJhUc2f55h2xr6fRXwE4BLNPUBgidI8jU613M2ahOeJ6PCUvCvGsw7utcVTZy8t)
+    apiURL: ENC(VT9SZZ+HUmIEEtzGpmSG9j87ZKXP7LYKXG4XItIHzbkFCDOSPtWGubVtflO8JXwP)
 
 cloud:
   aws:

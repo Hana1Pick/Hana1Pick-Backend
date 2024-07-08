@@ -27,7 +27,7 @@ public class CelublogController {
     @Operation(summary="셀럽로그 계좌 개설")
     @PostMapping("/accession")
     public SuccessResult<AccResDto> accedeCelublog(@RequestBody AcceReqDto req){
-       return celublogService.accedeCelublog(req);
+        return celublogService.accedeCelublog(req);
     }
 
     @Operation(summary="셀럽로그 계좌 리스트")
