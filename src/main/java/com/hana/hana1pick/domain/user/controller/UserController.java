@@ -70,7 +70,6 @@ public class UserController {
         if (user == null) {
             User newUser = userService.saveUserWithEmailAndProfile(userInfo.getEmail(), userInfo.getProfile());
             userInfo.setUserIdx(newUser.getIdx());
-            userInfo.setNation(newUser.getNation().getValue());
             return success(JOIN_SUCCESS, userInfo);
         } else {
             userInfo.setUserIdx(user.getIdx());
